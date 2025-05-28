@@ -8,7 +8,7 @@ from .base import FunPayObject, FunPayObjectStructure
 
 class MoneyValueStructure(FunPayObjectStructure):
     """
-    A TypedDict that defines the dictionary representation of a `MoneyValue` object.
+    The structure of the dict representation of the `MoneyValue` object.
     """
     value: int | float
     currency: Literal['USD', 'EUR', 'RUB', 'UAH', 'UNK']
