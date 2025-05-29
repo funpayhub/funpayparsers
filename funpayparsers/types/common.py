@@ -1,21 +1,13 @@
-__all__ = ('MoneyValueStructure', 'MoneyValue')
+__all__ = ('MoneyValue', )
 
 
 from typing import Literal
 from dataclasses import dataclass
-from .base import FunPayObject, FunPayObjectStructure
-
-
-class MoneyValueStructure(FunPayObjectStructure):
-    """
-    The structure of the dict representation of the `MoneyValue` object.
-    """
-    value: int | float
-    currency: Literal['USD', 'EUR', 'RUB', 'UAH', 'UNK']
+from .base import FunPayObject
 
 
 @dataclass
-class MoneyValue(FunPayObject[MoneyValueStructure]):
+class MoneyValue(FunPayObject):
     """
     Represents a monetary value with an associated currency.
 
