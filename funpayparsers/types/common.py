@@ -1,4 +1,4 @@
-__all__ = ('MoneyValue', )
+__all__ = ('MoneyValue', 'UserBadge')
 
 
 from typing import Literal
@@ -24,3 +24,28 @@ class MoneyValue(FunPayObject):
     currency: Literal['USD', 'EUR', 'RUB', 'UAH', 'UNK']
     """The currency of the value. 'UNK' is used for unknown currency."""
 
+
+@dataclass
+class UserBadge(FunPayObject):
+    """
+    Represents a user badge.
+
+    This badge is shown in heading messages sent by support, arbitration, or the FunPay auto-issue bot,
+    and also appears on the profile pages of support users.
+    """
+
+    text: str
+    """Badge text."""
+
+    css_class: str
+    """
+    The full CSS class of the badge.
+
+    Known values:
+        - `label-default` — FunPay auto-issue bot
+        - `label-primary` — FunPay system notifications (e.g., new order, order completed, new review, etc.)
+        - `label-success` — Support or arbitration
+
+    **WARNING**: This field contains the **full** CSS class. To check the badge type,
+    use the `in` operator rather than `==`, as the class may include additional modifiers.
+    """
