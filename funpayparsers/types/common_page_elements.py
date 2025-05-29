@@ -1,31 +1,12 @@
-__all__ = ('WebPushStructure', 'AppDataStructure', 'WebPush', 'AppData')
+__all__ = ('WebPush', 'AppData')
 
 from typing import Literal
 from dataclasses import dataclass
-from .base import FunPayObject, FunPayObjectStructure
-
-
-class WebPushStructure(FunPayObjectStructure):
-    """
-    The structure of the dict representation of a `WebPush` object.
-    """
-    app: str
-    enabled: bool
-    hwid_required: bool
-
-
-class AppDataStructure(FunPayObjectStructure):
-    """
-    The structure of the dict representation of an `AppData` object.
-    """
-    locale: Literal['en', 'ru', 'uk']
-    csrf_token: str
-    user_id: int
-    webpush: WebPushStructure
+from .base import FunPayObject
 
 
 @dataclass
-class WebPush(FunPayObject[WebPushStructure]):
+class WebPush(FunPayObject):
     """
     Represents a WebPush data extracted from an AppData dict.
     """
@@ -41,7 +22,7 @@ class WebPush(FunPayObject[WebPushStructure]):
 
 
 @dataclass
-class AppData(FunPayObject[AppDataStructure]):
+class AppData(FunPayObject):
     """
     Represents an AppData dict.
     """
