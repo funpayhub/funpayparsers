@@ -29,8 +29,8 @@ class LotSeller(FunPayObject):
     register_date_text: str
     """The seller's registration date (as a formatted string)."""
 
-    grade: Literal[0, 1, 2, 3, 4, 5]
-    """The seller's grade (number of stars)."""
+    rating: Literal[0, 1, 2, 3, 4, 5]
+    """The seller's rating (number of stars)."""
 
     reviews_amount: int
     """The total number of reviews received by the seller."""

@@ -1,7 +1,6 @@
 __all__ = ('MoneyValue', 'UserBadge')
 
 
-from typing import Literal
 from dataclasses import dataclass
 from .base import FunPayObject
 from .enums import Currency
@@ -25,6 +24,9 @@ class MoneyValue(FunPayObject):
     currency: Currency
     """The currency of the value."""
 
+    character: str
+    """The currency character, e.g., $, €, ₽, ¤, etc."""
+
 
 @dataclass
 class UserBadge(FunPayObject):
@@ -43,9 +45,10 @@ class UserBadge(FunPayObject):
     The full CSS class of the badge.
 
     Known values:
-        - `label-default` — FunPay auto-issue bot
-        - `label-primary` — FunPay system notifications (e.g., new order, order completed, new review, etc.)
-        - `label-success` — Support or arbitration
+        - `label-default` — FunPay auto-issue bot;
+        - `label-primary` — FunPay system notifications (e.g., new order, order completed, new review, etc.);
+        - `label-success` — support or arbitration;
+        - `label-danger` - blocked user;
 
     **WARNING**: This field contains the **full** CSS class. To check the badge type,
     use the `in` operator rather than `==`, as the class may include additional modifiers.
