@@ -1,4 +1,4 @@
-__all__ = ('OrderStatus', 'Currency')
+__all__ = ('OrderStatus', 'Currency', 'TransactionStatus', 'PaymentMethod')
 
 
 from enum import Enum
@@ -18,3 +18,9 @@ class Currency(Enum):
     UAH = 4
 
 
+class TransactionStatus(Enum):
+    ...
+
+
+class PaymentMethod(Enum):
+    ...
