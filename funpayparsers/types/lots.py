@@ -42,7 +42,7 @@ class LotPreview(FunPayObject):
     Represents a preview of a lot.
     """
 
-    id: int
+    id: int | str
     """The unique ID of the lot."""
 
     auto_issue: bool
