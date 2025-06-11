@@ -4,6 +4,7 @@ __all__ = ('MoneyValue', 'UserBadge')
 from typing import Literal
 from dataclasses import dataclass
 from .base import FunPayObject
+from .enums import Currency
 
 
 @dataclass
@@ -21,8 +22,8 @@ class MoneyValue(FunPayObject):
     value: int | float
     """The numeric amount of the monetary value."""
 
-    currency: Literal['USD', 'EUR', 'RUB', 'UAH', 'UNK']
-    """The currency of the value. 'UNK' is used for unknown currency."""
+    currency: Currency
+    """The currency of the value."""
 
 
 @dataclass
