@@ -13,15 +13,15 @@ class OrderStatus(StrEnum):
     """
 
     PAID = 'text-primary'
-    """Paid, but not complete order."""
+    """Paid, but not completed order."""
 
-    COMPLETE = 'text-success'
+    COMPLETED = 'text-success'
     """Completed order."""
 
     REFUNDED = 'text-warning'
     """Refunded order."""
 
-    UNKNOWN = 'unknown'
+    UNKNOWN = ''
     """Unknown status. Just in case, for future FunPay updates."""
 
 
@@ -37,10 +37,10 @@ class OrderStatus(StrEnum):
         <OrderStatus.REFUNDED: 'text-warning'>
 
         >>> OrderStatus.get_by_css_class('some_another_css_class text-success')
-        <OrderStatus.COMPLETE: 'text-success'>
+        <OrderStatus.COMPLETED: 'text-success'>
 
         >>> OrderStatus.get_by_css_class('some_another_css_class')
-        <OrderStatus.UNKNOWN: 'unknown'>
+        <OrderStatus.UNKNOWN: ''>
         """
         for i in OrderStatus:
             if i is OrderStatus.UNKNOWN:
@@ -55,13 +55,13 @@ class OrderStatus(StrEnum):
 class Currency(StrEnum):
     """Currencies enumeration."""
 
-    UNK = ''
+    UNKNOWN = ''
     """Unknown currency. Just in case, for future FunPay updates."""
 
     RUB = '₽'
     USD = '$'
     EUR = '€'
-    UAH = '.'  # todo: does funpay has UAH currency?
+    UAH = '.'  # todo: does FunPay has UAH currency?
 
     @staticmethod
     def get_by_character(character: str) -> 'Currency':
@@ -76,18 +76,30 @@ class Currency(StrEnum):
 
         >>> Currency.get_by_character('€')
         <Currency.EUR: '€'>
+
+        >>> Currency.get_by_character('Amongus')
+        <Currency.UNKNOWN: ''>
         """
         for i in Currency:
-            if i is Currency.UNK:
+            if i is Currency.UNKNOWN:
                 continue
             if character == i.value:
                 return i
-        return Currency.UNK
+        return Currency.UNKNOWN
 
 
 @verify(UNIQUE)
 class TransactionStatus(Enum):
-    ...
+    """Transaction statuses enumeration."""
+
+    pending = 0
+    """Pending transaction."""
+
+    completed = 1
+    """Completed transaction."""
+
+    cancelled = 2
+    """Cancelled transaction."""
 
 
 @verify(UNIQUE)
