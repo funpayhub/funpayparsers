@@ -6,11 +6,23 @@ from enum import StrEnum, Enum, verify, UNIQUE
 
 @verify(UNIQUE)
 class OrderStatus(StrEnum):
-    PAID = 'text-primary'
-    COMPLETE = 'text-success'
-    REFUNDED = 'text-warning'
-    UNKNOWN = 'unknown'
+    """
+    Order statuses enumeration.
 
+    Each value is a css class, that identifies order status.
+    """
+
+    PAID = 'text-primary'
+    """Paid, but not complete order."""
+
+    COMPLETE = 'text-success'
+    """Completed order."""
+
+    REFUNDED = 'text-warning'
+    """Refunded order."""
+
+    UNKNOWN = 'unknown'
+    """Unknown status. Just in case, for future FunPay updates."""
 
 
     @staticmethod
@@ -40,12 +52,37 @@ class OrderStatus(StrEnum):
 
 
 @verify(UNIQUE)
-class Currency(Enum):
-    UNK = 0
-    RUB = 1
-    USD = 2
-    EUR = 3
-    UAH = 4
+class Currency(StrEnum):
+    """Currencies enumeration."""
+
+    UNK = ''
+    """Unknown currency. Just in case, for future FunPay updates."""
+
+    RUB = '₽'
+    USD = '$'
+    EUR = '€'
+    UAH = '.'  # todo: does funpay has UAH currency?
+
+    @staticmethod
+    def get_by_character(character: str) -> 'Currency':
+        """
+        Determines the currency based on a given currency string.
+
+        >>> Currency.get_by_character('$')
+        <Currency.USD: '$'>
+
+        >>> Currency.get_by_character('₽')
+        <Currency.RUB: '₽'>
+
+        >>> Currency.get_by_character('€')
+        <Currency.EUR: '€'>
+        """
+        for i in Currency:
+            if i is Currency.UNK:
+                continue
+            if character == i.value:
+                return i
+        return Currency.UNK
 
 
 @verify(UNIQUE)
