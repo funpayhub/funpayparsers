@@ -7,7 +7,7 @@ from funpayparsers.types.base import FunPayObject
 @dataclass
 class SettingsPage(FunPayObject):
     """
-    Presents the settings page
+    Represents the settings page
 
     https://funpay.com/account/settings
     """
