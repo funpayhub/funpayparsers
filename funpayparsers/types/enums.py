@@ -61,7 +61,6 @@ class Currency(StrEnum):
     RUB = '₽'
     USD = '$'
     EUR = '€'
-    UAH = '.'  # todo: does FunPay has UAH currency?
 
     @staticmethod
     def get_by_character(character: str) -> 'Currency':

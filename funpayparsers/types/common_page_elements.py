@@ -38,3 +38,8 @@ class AppData(FunPayObject):
 
     webpush: WebPush
     """WebPush info."""
+
+
+@dataclass
+class PageHeader(FunPayObject):
+    ...  # todo
