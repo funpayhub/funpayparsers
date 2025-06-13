@@ -1,7 +1,14 @@
-__all__ = ('OrderStatus', 'Currency', 'TransactionStatus', 'PaymentMethod')
+__all__ = ('OrderStatus', 'Currency', 'TransactionStatus', 'PaymentMethod', 'SubCategoryType')
 
 
 from enum import StrEnum, Enum, verify, UNIQUE
+
+
+class SubCategoryType(Enum):
+    COMMON = 0
+    """Lots"""
+    CURRENCY = 1
+    """Chips"""
 
 
 @verify(UNIQUE)
