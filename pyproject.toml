@@ -1,0 +1,50 @@
+[project]
+name = "funpayparsers"
+description = "Set of parsers for FunPay website."
+keywords = ["funpay", "parser", "bot", "api", "funpayapi", "funpayparser", "funpaybot"]
+version = "0.1.0dev1"
+readme = "README.md"
+license = "MIT"
+
+requires-python = ">=3.10"
+dependencies = [
+    "lxml"
+]
+
+authors = [
+    {name = "Qvvonk", email="qvvonk@gmail.com"}
+]
+
+maintainers = [
+    {name = "Qvvonk", email="qvvonk@gmail.com"}
+]
+
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+]
+
+
+[project.urls]
+"Telegram Channel" = "https://t.me/funpay_hub"
+Repository = "https://github.com/funpayhub/funpayparsers"
+Issues = "https://github.com/funpyahub/funpayparsers/issues"
+
+
+[project.optional-dependencies]
+test = [
+    "pytest"
+]
+dev = [
+    "ruff"
+]
+
+
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
