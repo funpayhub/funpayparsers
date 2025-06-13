@@ -1,9 +1,10 @@
-__all__ = ('UserProfile',)
+__all__ = ('UserProfilePage',)
 
 from dataclasses import dataclass
 from funpayparsers.tools import MONTHS
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.common import UserBadge
+
 
 @dataclass
 class UserProfilePage(FunPayObject):
