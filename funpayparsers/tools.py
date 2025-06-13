@@ -1,7 +1,7 @@
 from collections.abc import Sequence, Mapping, Iterable
 from datetime import datetime, timezone, timedelta
 import re
-from .types.message import Message
+from funpayparsers.types.message import Message
 
 
 MONTHS = {

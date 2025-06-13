@@ -2,8 +2,8 @@ __all__ = ('Review', )
 
 
 from dataclasses import dataclass
-from .common import MoneyValue
-from .base import FunPayObject
+from funpayparsers.types.common import MoneyValue
+from funpayparsers.types.base import FunPayObject
 
 
 @dataclass

@@ -2,7 +2,7 @@ __all__ = ('WebPush', 'AppData')
 
 from typing import Literal
 from dataclasses import dataclass
-from .base import FunPayObject
+from funpayparsers.types.base import FunPayObject
 
 
 @dataclass

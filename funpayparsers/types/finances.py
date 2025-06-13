@@ -2,9 +2,9 @@ __all__ = ('TransactionPreview', )
 
 
 from dataclasses import dataclass
-from .base import FunPayObject
-from .common import MoneyValue
-from .enums import TransactionStatus, PaymentMethod
+from funpayparsers.types.base import FunPayObject
+from funpayparsers.types.common import MoneyValue
+from funpayparsers.types.enums import TransactionStatus, PaymentMethod
 
 
 @dataclass

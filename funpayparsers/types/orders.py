@@ -2,9 +2,9 @@ __all__ = ('OrderCounterpartyInfo', 'OrderPreview')
 
 
 from dataclasses import dataclass
-from .base import FunPayObject
-from .enums import OrderStatus
-from .common import MoneyValue
+from funpayparsers.types.base import FunPayObject
+from funpayparsers.types.enums import OrderStatus
+from funpayparsers.types.common import MoneyValue
 
 
 @dataclass

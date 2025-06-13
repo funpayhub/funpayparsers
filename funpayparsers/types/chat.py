@@ -1,4 +1,4 @@
-from .base import FunPayObject
+from funpayparsers.types.base import FunPayObject
 
 
 class PrivateChatPreview(FunPayObject):
