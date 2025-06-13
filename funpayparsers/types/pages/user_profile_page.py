@@ -15,8 +15,8 @@ class UserProfilePage(FunPayObject):
     username: str
     """
     Username of the user.
-    сan be changed by admins
-    if you need to save user -- use ONLY user_id
+    Can be changed by admins
+    If you need to save user -- use ONLY user_id
     """
 
     avatar_link: str
