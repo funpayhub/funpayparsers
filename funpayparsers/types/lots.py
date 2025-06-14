@@ -1,7 +1,8 @@
-__all__ = ('LotSeller', 'LotPreview')
+__all__ = ('LotPreview', 'LotSeller')
 
 from dataclasses import dataclass
 from typing import Literal
+
 from .base import FunPayObject
 from .common import MoneyValue
 

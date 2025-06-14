@@ -48,3 +48,75 @@ dev = [
 [build-system]
 requires = ["setuptools >= 77.0.3"]
 build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+select = [
+    "F",
+    "E",
+    "W",
+    "I",
+    "N",
+    "D",
+    "YTT",
+    "ANN",
+    "B",
+    "A",
+    "COM",
+    "C4",
+    "DTZ",
+    "ISC",
+    "ICN",
+    "INP",
+    "PIE",
+    "PT",
+    "RET",
+    "SIM",
+    "TID",
+    "ARG",
+    "PLC",
+    "PLE",
+    "PLR",
+    "PLW",
+    "RUF",
+]
+ignore = [
+    "F401",
+    "D105",
+    "D107",
+    "D203",
+    "D212",
+    "UP006",
+    "UP007",
+    "D400",
+    "D406",
+    "D407",
+    "PLC1901",
+    "UP035",
+    "D100",
+    "D205",
+    "D104",
+    "RUF001",
+    "D200",
+    "D101", # временно в игноре, это докстроки
+    "D102", # временно в игноре, это докстроки
+    "D103", # временно в игноре, это докстроки
+    "W291",
+]
+unfixable = ["F401", "F841"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/__init__.py" = ["F403"]
+
+[tool.isort]
+sections = ["STDLIB", "THIRDPARTY", "LOCALFOLDER"]
+lines-between-types = 1
+multi_line_output = 3
+
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true

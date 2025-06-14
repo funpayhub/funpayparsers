@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic
-from ..types.base import FunPayObject
+from typing import Generic, TypeVar
 
+from funpayparsers.types.base import FunPayObject
 
 T = TypeVar('T', bound=FunPayObject)
 
