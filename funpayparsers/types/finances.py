@@ -9,11 +9,15 @@ from .enums import TransactionStatus, PaymentMethod
 
 @dataclass
 class TransactionPreview(FunPayObject):
+    """
+    Represents a transaction preview.
+    """
+
     id: int
-    """Transaction ID."""
+    """Unique transaction ID."""
 
     date_text: str
-    """Transaction date text."""
+    """Transaction date (as human-readable text)."""
 
     desc: str
     """Transaction description."""

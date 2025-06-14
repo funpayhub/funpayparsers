@@ -9,23 +9,30 @@ from .common import MoneyValue
 
 @dataclass
 class OrderCounterpartyInfo(FunPayObject):
+    """
+    Represents an order counterparty details.
+
+    Represents the other participant of the order
+    (buyer or seller, depending on the context).
+    """
+
     id: int
-    """Counterparty user id."""
+    """Counterparty ID."""
 
     username: str
-    """Counterparty user username."""
+    """Counterparty username."""
 
     online: bool
-    """Whether the counterparty is online."""
+    """True, if counterparty is online."""
 
     blocked: bool
-    """Whether the counterparty is blocked."""
+    """True, if counterparty is blocked."""
 
     last_online_text: str | None
-    """Last online text of the counterparty (if exists)."""
+    """Last online status text (if available)."""
 
     avatar_url: str
-    """Counterpart avatar url."""
+    """Counterpart avatar URL."""
 
 
 
@@ -33,16 +40,17 @@ class OrderCounterpartyInfo(FunPayObject):
 class OrderPreview(FunPayObject):
     """
     Represents an order preview.
+    Order previews can be found on sells or purchases pages.
     """
 
     id: str
     """Order ID."""
 
     date_text: str
-    """Order date text."""
+    """Order date (as human-readable text)."""
 
     desc: str | None
-    """Order description (if exists)."""
+    """Order description (if available)."""
 
     category_text: str
     """Order category and subcategory text."""
@@ -54,4 +62,4 @@ class OrderPreview(FunPayObject):
     """Order amount."""
 
     counterparty: OrderCounterpartyInfo
-    """Order counterpart info."""
+    """Associated counterparty info."""

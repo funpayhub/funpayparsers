@@ -39,11 +39,11 @@ class LotSeller(FunPayObject):
 @dataclass
 class LotPreview(FunPayObject):
     """
-    Represents a preview of a lot.
+    Represents a lot preview.
     """
 
     id: int | str
-    """The unique ID of the lot."""
+    """Unique lot ID."""
 
     auto_issue: bool
     """Whether auto-issue is enabled for this lot."""
@@ -73,4 +73,7 @@ class LotPreview(FunPayObject):
     """Additional data related to the lot, such as server ID, side ID, etc., if applicable."""
 
     other_data_names: dict[str, str]
-    """Human-readable names corresponding to entries in `other_data`, if applicable."""
+    """
+    Human-readable names corresponding to entries in `other_data`, if applicable.
+    Not all entries, that are exists in other_data can be found here.
+    """

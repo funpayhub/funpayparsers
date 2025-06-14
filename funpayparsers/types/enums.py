@@ -111,3 +111,8 @@ class TransactionStatus(Enum):
 @verify(UNIQUE)
 class PaymentMethod(Enum):
     ...
+
+
+@verify(UNIQUE)
+class SystemMessageType(Enum):
+    ...

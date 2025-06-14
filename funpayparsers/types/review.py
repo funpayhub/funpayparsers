@@ -11,6 +11,18 @@ class Review(FunPayObject):
     """
     Represents a review.
     Reviews can be found on sellers page or on order page.
+
+    :note: This dataclass does not include a field for the review's visibility for two reasons:
+
+    1. Reviews appear in two contexts: on seller pages (public)
+        and on private order detail pages (visible only to the involved parties).
+        Visibility status is only available on private order pages.
+        For consistency, the field was omitted.
+
+    2. The HTML structure of reviews is identical in both cases,
+        while the visibility flag is located outside the review block.
+        Therefore, visibility status is handled in the dataclass representing
+        the private order page.
     """
 
     rating: int | None
