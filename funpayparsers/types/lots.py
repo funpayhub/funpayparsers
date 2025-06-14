@@ -3,8 +3,8 @@ __all__ = ('LotPreview', 'LotSeller')
 from dataclasses import dataclass
 from typing import Literal
 
-from .base import FunPayObject
-from .common import MoneyValue
+from funpayparsers.types.base import FunPayObject
+from funpayparsers.types.common import MoneyValue
 
 
 @dataclass

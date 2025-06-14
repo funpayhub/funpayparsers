@@ -3,8 +3,8 @@ __all__ = ('MoneyValue', 'UserBadge')
 
 from dataclasses import dataclass
 
-from .base import FunPayObject
-from .enums import Currency
+from funpayparsers.types.base import FunPayObject
+from funpayparsers.types.enums import Currency
 
 
 @dataclass
