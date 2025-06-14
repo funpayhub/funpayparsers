@@ -12,7 +12,7 @@ T = TypeVar('T', bound=FunPayObject)
 P = TypeVar('P', bound='FunPayObjectParserOptions')
 
 
-@dataclass
+@dataclass(frozen=True)
 class FunPayObjectParserOptions:
     """
     Base class for all parser option dataclasses.
@@ -31,8 +31,9 @@ class FunPayObjectParser(ABC, Generic[T, P]):
         """
         :param raw_source: raw source of an object (HTML / JSON string)
         """
-        self.raw_source = raw_source
-        self.options = self._build_options(options, **overrides)
+
+        self._raw_source = raw_source
+        self._options = self._build_options(options, **overrides)
         self._tree = None
 
     @abstractmethod
@@ -45,6 +46,14 @@ class FunPayObjectParser(ABC, Generic[T, P]):
 
         self._tree = html.fromstring(self.raw_source)
         return self._tree
+
+    @property
+    def raw_source(self) -> str:
+        return self._raw_source
+
+    @property
+    def options(self) -> P:
+        return self._options
 
     @classmethod
     def _build_options(cls, options: P | None, **overrides) -> P:
