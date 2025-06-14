@@ -1,14 +1,35 @@
-__all__ = ('Currency', 'OrderStatus', 'PaymentMethod', 'SubCategoryType', 'TransactionStatus')
+__all__ = ('Currency', 'OrderStatus', 'PaymentMethod', 'SubcategoryType', 'TransactionStatus')
 
 
 from enum import UNIQUE, Enum, StrEnum, verify
 
 
-class SubCategoryType(Enum):
-    COMMON = 0
-    """Lots"""
-    CURRENCY = 1
-    """Chips"""
+@verify(UNIQUE)
+class SubcategoryType(StrEnum):
+    """
+    Subcategory types enumerations.
+    """
+
+    COMMON = 'lots'
+    """Common lots."""
+
+    CURRENCY = 'chips'
+    """Currency lots (/chips/)."""
+
+    UNKNOWN = ''
+    """Unknown type. Just in case, for future FunPay updates."""
+
+    def get_by_url(self, url: str) -> 'SubcategoryType':
+        """
+        Determine a subcategory type by URL.
+        """
+        for i in SubcategoryType:
+            if i is SubcategoryType.UNKNOWN:
+                continue
+            if i.value in url:
+                return i
+        return SubcategoryType.UNKNOWN
+
 
 
 @verify(UNIQUE)
