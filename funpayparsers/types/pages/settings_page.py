@@ -1,4 +1,4 @@
-__all__ = ('SettingsPage', )
+__all__ = ('SettingsPage',)
 
 from dataclasses import dataclass
 

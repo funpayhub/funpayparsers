@@ -1,4 +1,4 @@
-__all__ = ('Review', )
+__all__ = ('Review',)
 
 
 from dataclasses import dataclass
@@ -13,7 +13,7 @@ class Review(FunPayObject):
     Represents a review.
     Reviews can be found on sellers page or on order page.
 
-    :note: This dataclass does not include a field for the review's visibility for two reasons:
+    :note: This DC doesn't include a field for the reviews visibility for 2 reasons:
 
     1. Reviews appear in two contexts: on seller pages (public)
         and on private order detail pages (visible only to the involved parties).

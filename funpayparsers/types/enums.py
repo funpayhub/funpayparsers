@@ -1,4 +1,10 @@
-__all__ = ('Currency', 'OrderStatus', 'PaymentMethod', 'SubcategoryType', 'TransactionStatus')
+__all__ = (
+    'Currency',
+    'OrderStatus',
+    'PaymentMethod',
+    'SubcategoryType',
+    'TransactionStatus',
+)
 
 
 from enum import UNIQUE, Enum, StrEnum, verify
@@ -31,7 +37,6 @@ class SubcategoryType(StrEnum):
         return SubcategoryType.UNKNOWN
 
 
-
 @verify(UNIQUE)
 class OrderStatus(StrEnum):
     """
@@ -51,7 +56,6 @@ class OrderStatus(StrEnum):
 
     UNKNOWN = ''
     """Unknown status. Just in case, for future FunPay updates."""
-
 
     @staticmethod
     def get_by_css_class(css_class: str) -> 'OrderStatus':
@@ -130,10 +134,8 @@ class TransactionStatus(Enum):
 
 
 @verify(UNIQUE)
-class PaymentMethod(Enum):
-    ...
+class PaymentMethod(Enum): ...
 
 
 @verify(UNIQUE)
-class SystemMessageType(Enum):
-    ...
+class SystemMessageType(Enum): ...

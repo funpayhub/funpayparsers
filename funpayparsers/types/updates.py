@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import Literal, Generic, TypeVar
+from typing import Generic, Literal, TypeVar
+
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.chat import PrivateChatPreview
-
 
 UpdateType = TypeVar('UpdateType')
 
@@ -75,8 +75,9 @@ class UpdateObject(FunPayObject, Generic[UpdateType]):
     Represents a single update data from updates object.
     """
 
-    type: Literal['order_counters', 'chat_counter', 'chat_bookmarks', 'c-p-u',
-    'chat_node']
+    type: Literal[
+        'order_counters', 'chat_counter', 'chat_bookmarks', 'c-p-u', 'chat_node',
+    ]
     """Update type."""
 
     id: int | str  # todo: wtf is this? tag = id

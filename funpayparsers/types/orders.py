@@ -36,7 +36,6 @@ class OrderCounterpartyInfo(FunPayObject):
     """Counterpart avatar URL."""
 
 
-
 @dataclass
 class OrderPreview(FunPayObject):
     """
