@@ -1,4 +1,4 @@
-__all__ = ('FunPayObjectParser',)
+__all__ = ('FunPayObjectParser', 'FunPayObjectParserOptions')
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, replace
@@ -37,7 +37,13 @@ class FunPayObjectParser(ABC, Generic[T, P]):
         self._tree = None
 
     @abstractmethod
-    def parse(self) -> T: ...
+    def _parse(self) -> T: ...
+
+    def parse(self):
+        try:
+            self._parse()
+        except Exception as e:
+            raise e  # todo: make custom exceptions e.g. ParsingError
 
     @property
     def tree(self):
