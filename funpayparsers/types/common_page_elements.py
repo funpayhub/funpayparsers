@@ -1,7 +1,8 @@
-__all__ = ('WebPush', 'AppData')
+__all__ = ('AppData', 'WebPush')
 
-from typing import Literal
 from dataclasses import dataclass
+from typing import Literal
+
 from .base import FunPayObject
 
 
