@@ -34,8 +34,8 @@ class UserBadge(FunPayObject):
     """
     Represents a user badge.
 
-    This badge is shown in heading messages sent by support, arbitration, or the FunPay auto-issue bot,
-    and also appears on the profile pages of support users.
+    This badge is shown in heading messages sent by support, arbitration,
+    or the FunPay issue bot, and also appears on the profile pages of support users.
     """
 
     text: str
@@ -47,10 +47,12 @@ class UserBadge(FunPayObject):
 
     Known values:
         - `label-default` — FunPay auto-issue bot;
-        - `label-primary` — FunPay system notifications (e.g., new order, order completed, new review, etc.);
+        - `label-primary` — FunPay system notifications 
+            (e.g., new order, order completed, new review, etc.);
         - `label-success` — support or arbitration;
         - `label-danger` - blocked user;
 
     **WARNING**: This field contains the **full** CSS class. To check the badge type,
-    use the `in` operator rather than `==`, as the class may include additional modifiers.
+        use the `in` operator rather than `==`, as the class may include 
+        additional modifiers.
     """

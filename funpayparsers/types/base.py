@@ -1,4 +1,4 @@
-__all__ = ('FunPayObject', )
+__all__ = ('FunPayObject',)
 
 from dataclasses import asdict, dataclass
 from typing import Any, Type, TypeVar

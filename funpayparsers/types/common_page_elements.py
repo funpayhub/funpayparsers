@@ -42,5 +42,4 @@ class AppData(FunPayObject):
 
 
 @dataclass
-class PageHeader(FunPayObject):
-    ...  # todo
+class PageHeader(FunPayObject): ...  # todo

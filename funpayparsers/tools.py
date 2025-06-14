@@ -50,9 +50,15 @@ DAY_NUM_RE = r'(?:[1-9]|[12][0-9]|3[01])'  # zero-stripped day number (1-31)
 HOUR_NUM_RE = r'(?:[0-9]|1[0-9]|2[0-3])'  # zero-stripped hour number (0-23)
 MIN_NUM_RE = r'(?:[0-5][0-9])'  # zero-padded minute number (00-59)
 
-TODAY_OR_YESTERDAY_RE = re.compile(rf'^({"|".join(TODAY_WORDS + YESTERDAY_WORDS)}), ({HOUR_NUM_RE}):({MIN_NUM_RE})')
-CURR_YEAR_DATE_RE = re.compile(rf'^({DAY_NUM_RE}) ([a-zA-Zа-яА-Я]+), ({HOUR_NUM_RE}):({MIN_NUM_RE})')
-DATE_RE = re.compile(rf'^({DAY_NUM_RE}) ({"|".join(MONTHS.keys())}) (20[0-2][0-9]), ({HOUR_NUM_RE}):({MIN_NUM_RE})')
+TODAY_OR_YESTERDAY_RE = re.compile(
+    rf'^({"|".join(TODAY_WORDS + YESTERDAY_WORDS)}), ({HOUR_NUM_RE}):({MIN_NUM_RE})',
+)
+CURR_YEAR_DATE_RE = re.compile(
+    rf'^({DAY_NUM_RE}) ([a-zA-Zа-яА-Я]+), ({HOUR_NUM_RE}):({MIN_NUM_RE})',
+)
+DATE_RE = re.compile(
+    rf'^({DAY_NUM_RE}) ({"|".join(MONTHS.keys())}) (20[0-2][0-9]), ({HOUR_NUM_RE}):({MIN_NUM_RE})',
+)
 
 
 def parse_date_string(date_string: str, /) -> int:
@@ -71,8 +77,7 @@ def parse_date_string(date_string: str, /) -> int:
         if day in TODAY_WORDS:
             return int(date.replace(hour=int(h), minute=int(m)).timestamp())
         return int(
-            (date.replace(hour=int(h), minute=int(m)) - timedelta(days=1))
-            .timestamp(),
+            (date.replace(hour=int(h), minute=int(m)) - timedelta(days=1)).timestamp(),
         )
 
     if match := CURR_YEAR_DATE_RE.match(date_string):
@@ -80,26 +85,19 @@ def parse_date_string(date_string: str, /) -> int:
         year = date.year
         month = MONTHS[month]
         return int(
-            date.replace(year=int(year),
-                         month=month,
-                         day=int(day),
-                         hour=int(h),
-                         minute=int(m)).timestamp(),
+            date.replace(
+                year=int(year), month=month, day=int(day), hour=int(h), minute=int(m),
+            ).timestamp(),
         )
 
     if match := DATE_RE.match(date_string):
         day, month, year, h, m = match.groups()
         month = MONTHS[month]
         return int(
-            date.replace(year=int(year),
-                         month=month,
-                         day=int(day),
-                         hour=int(h),
-                         minute=int(m)).timestamp(),
+            date.replace(
+                year=int(year), month=month, day=int(day), hour=int(h), minute=int(m),
+            ).timestamp(),
         )
 
     raise ValueError(f'Unable to parse date string: {date_string}.')
 
-
-def resolve_message_senders(messages: Sequence[Message]):
-    raise NotImplementedError()
