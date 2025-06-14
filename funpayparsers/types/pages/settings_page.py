@@ -1,13 +1,14 @@
 __all__ = ('SettingsPage', )
 
 from dataclasses import dataclass
+
 from funpayparsers.types.base import FunPayObject
 
 
 @dataclass
 class SettingsPage(FunPayObject):
     """
-    Represents the settings page
+    Represents the settings page.
 
     https://funpay.com/account/settings
     """

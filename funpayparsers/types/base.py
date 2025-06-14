@@ -1,8 +1,7 @@
 __all__ = ('FunPayObject', )
 
-from dataclasses import dataclass, asdict
-from typing import TypeVar, Type, Any
-
+from dataclasses import asdict, dataclass
+from typing import Any, Type, TypeVar
 
 SelfT = TypeVar('SelfT', bound='FunPayObject[Any]')
 
@@ -12,6 +11,7 @@ class FunPayObject:
     """
     Base class for all FunPay-parsed objects.
     """
+
     raw_source: str
 
     def as_dict(self) -> dict[str, Any]:

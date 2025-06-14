@@ -1,7 +1,7 @@
-__all__ = ('OrderStatus', 'Currency', 'TransactionStatus', 'PaymentMethod', 'SubCategoryType')
+__all__ = ('Currency', 'OrderStatus', 'PaymentMethod', 'SubCategoryType', 'TransactionStatus')
 
 
-from enum import StrEnum, Enum, verify, UNIQUE
+from enum import UNIQUE, Enum, StrEnum, verify
 
 
 class SubCategoryType(Enum):
@@ -35,7 +35,7 @@ class OrderStatus(StrEnum):
     @staticmethod
     def get_by_css_class(css_class: str) -> 'OrderStatus':
         """
-        Determines the order status based on a given CSS class string.
+         Determine the order status based on a given CSS class string.
 
         >>> OrderStatus.get_by_css_class('text-primary some_another_css_class')
         <OrderStatus.PAID: 'text-primary'>
@@ -72,7 +72,7 @@ class Currency(StrEnum):
     @staticmethod
     def get_by_character(character: str) -> 'Currency':
         """
-        Determines the currency based on a given currency string.
+        Determine the currency based on a given currency string.
 
         >>> Currency.get_by_character('$')
         <Currency.USD: '$'>

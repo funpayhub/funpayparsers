@@ -1,8 +1,8 @@
-from collections.abc import Sequence, Mapping, Iterable
-from datetime import datetime, timezone, timedelta
 import re
-from .types.message import Message
+from collections.abc import Iterable, Mapping, Sequence
+from datetime import datetime, timedelta, timezone
 
+from .types.message import Message
 
 MONTHS = {
     'января': 1,
@@ -57,6 +57,8 @@ DATE_RE = re.compile(rf'^({DAY_NUM_RE}) ({"|".join(MONTHS.keys())}) (20[0-2][0-9
 
 def parse_date_string(date_string: str, /) -> int:
     """
+    Parse date string.
+
     >>> parse_date_string('10 сентября 2022, 13:34')
     1662816840
     """
@@ -68,13 +70,12 @@ def parse_date_string(date_string: str, /) -> int:
         day, h, m = match.groups()
         if day in TODAY_WORDS:
             return int(date.replace(hour=int(h), minute=int(m)).timestamp())
-        else:
-            return int(
-                (date.replace(hour=int(h), minute=int(m)) - timedelta(days=1))
-                .timestamp()
-            )
+        return int(
+            (date.replace(hour=int(h), minute=int(m)) - timedelta(days=1))
+            .timestamp(),
+        )
 
-    elif match := CURR_YEAR_DATE_RE.match(date_string):
+    if match := CURR_YEAR_DATE_RE.match(date_string):
         day, month, h, m = match.groups()
         year = date.year
         month = MONTHS[month]
@@ -83,10 +84,10 @@ def parse_date_string(date_string: str, /) -> int:
                          month=month,
                          day=int(day),
                          hour=int(h),
-                         minute=int(m)).timestamp()
+                         minute=int(m)).timestamp(),
         )
 
-    elif match := DATE_RE.match(date_string):
+    if match := DATE_RE.match(date_string):
         day, month, year, h, m = match.groups()
         month = MONTHS[month]
         return int(
@@ -94,11 +95,10 @@ def parse_date_string(date_string: str, /) -> int:
                          month=month,
                          day=int(day),
                          hour=int(h),
-                         minute=int(m)).timestamp()
+                         minute=int(m)).timestamp(),
         )
 
-    else:
-        raise ValueError(f'Unable to parse date string: {date_string}.')
+    raise ValueError(f'Unable to parse date string: {date_string}.')
 
 
 def resolve_message_senders(messages: Sequence[Message]):
