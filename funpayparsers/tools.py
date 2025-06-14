@@ -2,7 +2,7 @@ import re
 from collections.abc import Iterable, Mapping, Sequence
 from datetime import datetime, timedelta, timezone
 
-from .types.message import Message
+from funpayparsers.types.message import Message
 
 MONTHS = {
     'января': 1,

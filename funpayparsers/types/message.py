@@ -2,8 +2,8 @@ __all__ = ('Message', )
 
 from dataclasses import dataclass
 
-from .base import FunPayObject
-from .common import UserBadge
+from funpayparsers.types.base import FunPayObject
+from funpayparsers.types.common import UserBadge
 
 
 @dataclass
