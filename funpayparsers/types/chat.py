@@ -7,10 +7,10 @@ class PrivateChatPreview(FunPayObject):
     """
 
     id: int
-    """Chat id."""
+    """Chat ID."""
 
     is_unread: bool
-    """Is chat unread? (orange chat)."""
+    """True, if chat is unread (orange chat)."""
 
     name: str
     """Interlocutor username (chat name)."""
@@ -19,7 +19,7 @@ class PrivateChatPreview(FunPayObject):
     """Interlocutor avatar URL."""
 
     last_message_id: int
-    """Last message id."""
+    """Last message ID."""
 
     last_read_message_id: int
     """ID of the last message read by the current user."""
