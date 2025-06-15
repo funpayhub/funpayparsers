@@ -1,4 +1,4 @@
-__all__ = ('Message', )
+__all__ = ('Message',)
 
 from dataclasses import dataclass
 
@@ -50,7 +50,8 @@ class Message(FunPayObject):
     """
     Text content of the message.
 
-    Mutually exclusive with `image_url`: a message can contain either text or an image, but not both.
+    Mutually exclusive with `image_url`: a message can contain either text or an image, 
+        but not both.
     Will be None if the message contains an image.
     """
 
@@ -58,6 +59,7 @@ class Message(FunPayObject):
     """
     URL of the image in the message.
 
-    Mutually exclusive with `text`: a message can contain either an image or text, but not both.
+    Mutually exclusive with `text`: a message can contain either an image or text, 
+        but not both.
     Will be None if the message contains text.
     """

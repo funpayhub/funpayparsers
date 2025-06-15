@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.enums import SubcategoryType
 
@@ -25,7 +26,7 @@ class Subcategory(FunPayObject):
     id: int
     """
     Subcategory ID.
-    
+
     :warning: Subcategory ID is not unique. 
     IDs are unique per subcategory type but may repeat across types.
     """

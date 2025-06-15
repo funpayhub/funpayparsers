@@ -1,6 +1,8 @@
 from funpayparsers.types.base import FunPayObject
+from dataclasses import dataclass
 
 
+@dataclass
 class PrivateChatPreview(FunPayObject):
     """
     Represents a private chat preview.
@@ -35,7 +37,7 @@ class PrivateChatPreview(FunPayObject):
     last_message_time_text: str
     """
     Time of the last message. Formats:
-        - `HH:MM` if the message was sent today;  
-        - `Yesterday` (depends on the page language) if the message was sent yesterday;  
-        - `DD.MM` if the message was sent the day before yesterday or earlier;  
+    - `HH:MM` if the message was sent today.
+    - `Yesterday` (depends on the page language) if the message was sent yesterday.
+    - `DD.MM` if the message was sent the day before yesterday or earlier.
     """

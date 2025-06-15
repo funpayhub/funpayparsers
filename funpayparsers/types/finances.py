@@ -1,4 +1,4 @@
-__all__ = ('TransactionPreview', )
+__all__ = ('TransactionPreview',)
 
 
 from dataclasses import dataclass
@@ -37,20 +37,16 @@ class TransactionPreview(FunPayObject):
 
 
 @dataclass
-class Transaction(FunPayObject):
-    ...   # todo
+class Transaction(FunPayObject): ...  # todo
 
 
 @dataclass
-class WithdrawalTransaction(Transaction):
-    ...
+class WithdrawalTransaction(Transaction): ...
 
 
 @dataclass
-class DepositTransaction(Transaction):
-    ...
+class DepositTransaction(Transaction): ...
+
 
 @dataclass
-class OrderTransaction(Transaction):
-    ...
-
+class OrderTransaction(Transaction): ...
