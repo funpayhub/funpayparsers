@@ -27,7 +27,7 @@ class FunPayObjectParser(ABC, Generic[T, P]):
 
     options_cls: Type[P] = FunPayObjectParserOptions
 
-    def __init__(self, raw_source: str, options: P | None, **overrides):
+    def __init__(self, raw_source: str, options: P | None = None, **overrides):
         """
         :param raw_source: raw source of an object (HTML / JSON string)
         """
