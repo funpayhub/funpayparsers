@@ -6,34 +6,39 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class PrivateChatPreviewParserOptions(FunPayObjectParserOptions):
-    sort_by_id: bool = True
-    resolve_senders: bool = True
+    ...
 
 
 class PrivateChatPreviewParser(
-    FunPayObjectParser[list[PrivateChatPreview], PrivateChatPreviewParserOptions]):
+    FunPayObjectParser[
+        list[PrivateChatPreview],
+        PrivateChatPreviewParserOptions
+    ]):
+    """
+    Private chat previews parser.
+    TODO: more informative doc-string.
+    """
+
     options_class = PrivateChatPreviewParserOptions
 
     def _parse(self):
         previews = []
-        for chat in self.tree.xpath('//a[@class="contact-item"]'):
-            source = html.tostring(chat, encoding='unicode')
-            avatar_style = chat.xpath('string(.//div[@class="avatar-photo"][1]/@style)')
+        for p in self.tree.xpath('//a[@class="contact-item"]'):
+            source = html.tostring(p, encoding='unicode')
+            avatar_style = p.xpath('string(.//div[@class="avatar-photo"][1]/@style)')
 
-            preview =  PrivateChatPreview(
+            preview = PrivateChatPreview(
                 raw_source=source,
-                id=int(chat.get('data-id')),
-                is_unread='unread' in chat.get('class'),
-                interlocutor_username=chat.xpath(
-                    'string(.//div[@class="media-user-name"][1])'),
-                interlocutor_avatar_url=parse_avatar_link(avatar_style),
-                last_message_id=int(chat.get('data-node-msg')),
-                last_read_message_id=int(chat.get('data-user-msg')),
-                last_message_preview=chat.xpath(
+                id=int(p.get('data-id')),
+                is_unread='unread' in p.get('class'),
+                name=p.xpath('string(.//div[@class="media-user-name"][1])'),
+                avatar_url='',  # todo: parse avatar url function
+                last_message_id=int(p.get('data-node-msg')),
+                last_read_message_id=int(p.get('data-user-msg')),
+                last_message_preview=p.xpath(
                     'string(.//div[@class="contact-item-message"][1])'),
-                last_message_time_text=chat.xpath(
+                last_message_time_text=p.xpath(
                     'string(.//div[@class="contact-item-time"][1])'),
             )
-
+            previews.append(preview)
         return previews
-
