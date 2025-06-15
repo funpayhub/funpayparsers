@@ -1,5 +1,6 @@
-from funpayparsers.types.base import FunPayObject
 from dataclasses import dataclass
+
+from funpayparsers.types.base import FunPayObject
 
 
 @dataclass

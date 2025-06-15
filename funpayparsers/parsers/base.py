@@ -17,7 +17,7 @@ class FunPayObjectParserOptions:
     """
     Base class for all parser option dataclasses.
     """
-    ...
+
 
 
 class FunPayObjectParser(ABC, Generic[T, P]):
@@ -31,7 +31,6 @@ class FunPayObjectParser(ABC, Generic[T, P]):
         """
         :param raw_source: raw source of an object (HTML / JSON string)
         """
-
         self._raw_source = raw_source
         self._options = self._build_options(options, **overrides)
         self._tree = None

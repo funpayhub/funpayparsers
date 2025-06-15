@@ -1,8 +1,10 @@
-from funpayparsers.parsers.base import FunPayObjectParser, FunPayObjectParserOptions
-from funpayparsers.types.chat import PrivateChatPreview
-from lxml import html
 from dataclasses import dataclass
+
+from lxml import html
+
+from funpayparsers.parsers.base import FunPayObjectParser, FunPayObjectParserOptions
 from funpayparsers.parsers.utils import extract_url
+from funpayparsers.types.chat import PrivateChatPreview
 
 
 @dataclass(frozen=True)
@@ -13,7 +15,7 @@ class PrivateChatPreviewParserOptions(FunPayObjectParserOptions):
 class PrivateChatPreviewParser(
     FunPayObjectParser[
         list[PrivateChatPreview],
-        PrivateChatPreviewParserOptions
+        PrivateChatPreviewParserOptions,
     ]):
     """
     Private chat previews parser.
