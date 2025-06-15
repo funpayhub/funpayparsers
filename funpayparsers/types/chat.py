@@ -1,6 +1,8 @@
 from funpayparsers.types.base import FunPayObject
+from dataclasses import dataclass
 
 
+@dataclass
 class PrivateChatPreview(FunPayObject):
     """
     Represents a private chat preview.
