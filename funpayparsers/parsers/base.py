@@ -41,7 +41,7 @@ class FunPayObjectParser(ABC, Generic[T, P]):
 
     def parse(self):
         try:
-            self._parse()
+            return self._parse()
         except Exception as e:
             raise e  # todo: make custom exceptions e.g. ParsingError
 
