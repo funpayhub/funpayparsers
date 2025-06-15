@@ -1,4 +1,4 @@
-__all__ = ('FunPayObjectParser',)
+__all__ = ('FunPayObjectParser', 'FunPayObjectParserOptions')
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, replace
@@ -27,7 +27,7 @@ class FunPayObjectParser(ABC, Generic[T, P]):
 
     options_cls: Type[P] = FunPayObjectParserOptions
 
-    def __init__(self, raw_source: str, options: P | None, **overrides):
+    def __init__(self, raw_source: str, options: P | None = None, **overrides):
         """
         :param raw_source: raw source of an object (HTML / JSON string)
         """
@@ -37,7 +37,13 @@ class FunPayObjectParser(ABC, Generic[T, P]):
         self._tree = None
 
     @abstractmethod
-    def parse(self) -> T: ...
+    def _parse(self) -> T: ...
+
+    def parse(self):
+        try:
+            return self._parse()
+        except Exception as e:
+            raise e  # todo: make custom exceptions e.g. ParsingError
 
     @property
     def tree(self):
