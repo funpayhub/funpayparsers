@@ -1,7 +1,8 @@
 __all__ = ('extract_css_url', )
 
 import re
-
+from collections.abc import Iterable
+from funpayparsers.types.message import Message
 
 CSS_URL_RE = re.compile(r'url\(([^()]+)\)', re.IGNORECASE)
 
@@ -31,3 +32,14 @@ def extract_css_url(source: str) -> str:
     """
     match = CSS_URL_RE.search(source)
     return match.group(1) if match else None
+
+
+def resolve_messages_senders(messages: Iterable[Message]) -> None:
+    username, userid, badge = None, None, None
+    for msg in messages:
+        if msg.is_heading:
+            username, userid = msg.sender_username, msg.sender_id
+            badge = None if 'label-default' in msg.badge else msg.badge
+            continue
+
+        msg.sender_username, msg.sender_id, msg.badge = username, userid, badge
