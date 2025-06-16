@@ -1,10 +1,10 @@
 __all__ = ('MoneyValue', 'UserBadge')
 
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from funpayparsers.types.base import FunPayObject
-from funpayparsers.types.enums import Currency
+from funpayparsers.types.enums import Currency, BadgeType
 
 
 @dataclass
@@ -56,3 +56,9 @@ class UserBadge(FunPayObject):
         use the `in` operator rather than `==`, as the class may include 
         additional modifiers.
     """
+
+    @property
+    def type(self) -> BadgeType:
+        """Badge type."""
+
+        return BadgeType.get_by_css_class(self.css_class)
