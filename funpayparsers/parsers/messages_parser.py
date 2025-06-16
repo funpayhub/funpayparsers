@@ -5,6 +5,7 @@ from lxml import html
 from funpayparsers.parsers.base import FunPayObjectParser, FunPayObjectParserOptions
 from funpayparsers.types.message import Message
 from funpayparsers.types.common import UserBadge
+from funpayparsers.parsers.utils import resolve_messages_senders
 
 
 @dataclass(frozen=True)
@@ -13,8 +14,8 @@ class MessagesParserOptions(FunPayObjectParserOptions):
     resolve_senders: bool = True
 
 
-class MessagesParser(FunPayObjectParser[list[Message, MessagesParserOptions]]):
-    options_class = MessagesParserOptions
+class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
+    options_cls = MessagesParserOptions
 
     def _parse(self):
         messages = []
@@ -50,6 +51,10 @@ class MessagesParser(FunPayObjectParser[list[Message, MessagesParserOptions]]):
                 text=text,
                 image_url=image_url,
             ))
+
+        if self.options.resolve_senders:
+            resolve_messages_senders(messages)
+        return messages  # todo: add sort by id
 
     @staticmethod
     def _parse_message_header(msg_tag: html.HtmlElement) -> tuple[
