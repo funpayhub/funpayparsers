@@ -5,7 +5,6 @@ from dataclasses import replace
 import pytest
 
 from funpayparsers.parsers import PrivateChatPreviewParser
-from funpayparsers.parsers.utils import extract_avatars, extract_url
 from funpayparsers.types import PrivateChatPreview
 
 html = """
@@ -26,9 +25,6 @@ def chat_preview_data() -> PrivateChatPreview:
     last_read_msg_id = random.randint(last_msg_id, last_msg_id + 1000000)
     chars = string.ascii_letters + string.digits
 
-    #todo delete
-    some_avatar = '<div class="avatar-photo pseudo-a" tabindex="0" data-href="https://funpay.com/users/00000/" style="background-image: url(https://sfunpay.com/s/avatar/dc/nc/prikoldes.jpg);" bis_skin_checked="1"></div>'
-
     return PrivateChatPreview(
         raw_source='',
         id=random.randint(1, 999999999),
@@ -36,13 +32,14 @@ def chat_preview_data() -> PrivateChatPreview:
         name=''.join(
             random.choice(chars) for _ in range(random.randint(5, 25))
         ),
-        avatar_url=extract_avatars(some_avatar, True),
+        avatar_url='https://sfunpay.com/s/avatar/dc/nc/someavatar.jpg',
         last_message_id=last_msg_id,
         last_read_message_id=last_read_msg_id,
         last_message_preview=''.join(
             random.choice(chars) for _ in range(random.randint(1, 250))
         ),
-        last_message_time_text=f'{random.randint(0,23):02}:{random.randint(0,59):02}',
+        last_message_time_text=f'{random.randint(0,23):02}:'
+                               f'{random.randint(0,59):02}',
     )
 
 
