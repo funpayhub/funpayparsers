@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from lxml import html
 
 from funpayparsers.parsers.base import FunPayObjectParser, FunPayObjectParserOptions
-from funpayparsers.parsers.utils import extract_url, extract_avatars
+from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.types.chat import PrivateChatPreview
 
 
@@ -35,7 +35,7 @@ class PrivateChatPreviewParser(
                 id=int(p.get('data-id')),
                 is_unread='unread' in p.get('class'),
                 name=p.xpath('string(.//div[@class="media-user-name"][1])'),
-                avatar_url=extract_avatars(avatar_css, True),
+                avatar_url=extract_css_url(avatar_css),
                 last_message_id=int(p.get('data-node-msg')),
                 last_read_message_id=int(p.get('data-user-msg')),
                 last_message_preview=p.xpath(
