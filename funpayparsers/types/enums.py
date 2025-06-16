@@ -4,6 +4,7 @@ __all__ = (
     'PaymentMethod',
     'SubcategoryType',
     'TransactionStatus',
+    'BadgeType',
 )
 
 
@@ -25,7 +26,8 @@ class SubcategoryType(StrEnum):
     UNKNOWN = ''
     """Unknown type. Just in case, for future FunPay updates."""
 
-    def get_by_url(self, url: str) -> 'SubcategoryType':
+    @staticmethod
+    def get_by_url(url: str, /) -> 'SubcategoryType':
         """
         Determine a subcategory type by URL.
         """
@@ -58,21 +60,22 @@ class OrderStatus(StrEnum):
     """Unknown status. Just in case, for future FunPay updates."""
 
     @staticmethod
-    def get_by_css_class(css_class: str) -> 'OrderStatus':
+    def get_by_css_class(css_class: str, /) -> 'OrderStatus':
         """
-         Determine the order status based on a given CSS class string.
+        Determine the order status based on a given CSS class string.
 
-        >>> OrderStatus.get_by_css_class('text-primary some_another_css_class')
-        <OrderStatus.PAID: 'text-primary'>
+        Examples:
+            >>> OrderStatus.get_by_css_class('text-primary some_another_css_class')
+            <OrderStatus.PAID: 'text-primary'>
 
-        >>> OrderStatus.get_by_css_class('some_another_css_class text-warning')
-        <OrderStatus.REFUNDED: 'text-warning'>
+            >>> OrderStatus.get_by_css_class('some_another_css_class text-warning')
+            <OrderStatus.REFUNDED: 'text-warning'>
 
-        >>> OrderStatus.get_by_css_class('some_another_css_class text-success')
-        <OrderStatus.COMPLETED: 'text-success'>
+            >>> OrderStatus.get_by_css_class('some_another_css_class text-success')
+            <OrderStatus.COMPLETED: 'text-success'>
 
-        >>> OrderStatus.get_by_css_class('some_another_css_class')
-        <OrderStatus.UNKNOWN: ''>
+            >>> OrderStatus.get_by_css_class('some_another_css_class')
+            <OrderStatus.UNKNOWN: ''>
         """
         for i in OrderStatus:
             if i is OrderStatus.UNKNOWN:
@@ -95,21 +98,22 @@ class Currency(StrEnum):
     EUR = '€'
 
     @staticmethod
-    def get_by_character(character: str) -> 'Currency':
+    def get_by_character(character: str, /) -> 'Currency':
         """
         Determine the currency based on a given currency string.
 
-        >>> Currency.get_by_character('$')
-        <Currency.USD: '$'>
+        Examples:
+            >>> Currency.get_by_character('$')
+            <Currency.USD: '$'>
 
-        >>> Currency.get_by_character('₽')
-        <Currency.RUB: '₽'>
+            >>> Currency.get_by_character('₽')
+            <Currency.RUB: '₽'>
 
-        >>> Currency.get_by_character('€')
-        <Currency.EUR: '€'>
+            >>> Currency.get_by_character('€')
+            <Currency.EUR: '€'>
 
-        >>> Currency.get_by_character('Amongus')
-        <Currency.UNKNOWN: ''>
+            >>> Currency.get_by_character('Amongus')
+            <Currency.UNKNOWN: ''>
         """
         for i in Currency:
             if i is Currency.UNKNOWN:
@@ -139,3 +143,35 @@ class PaymentMethod(Enum): ...
 
 @verify(UNIQUE)
 class SystemMessageType(Enum): ...
+
+
+@verify(UNIQUE)
+class BadgeType(StrEnum):
+    BANNED = 'label-danger'
+    NOTIFICATIONS = 'label-primary'
+    SUPPORT = 'label-success'
+    AUTOISSUE = 'label-default'
+    UNKNOWN = ''
+
+    @staticmethod
+    def get_by_css_class(css_class: str, /) -> 'BadgeType':
+        """
+        Determine the badge type based on a given CSS class string.
+
+        Examples:
+            >>> BadgeType.get_by_css_class('label-danger some_another_css_class')
+            <BadgeType.BANNED: 'label-danger'>
+
+            >>> BadgeType.get_by_css_class('some_another_css_class label-primary')
+            <BadgeType.NOTIFICATIONS: 'label-primary'>
+
+            >>> BadgeType.get_by_css_class('some_another_css_class')
+            <BadgeType.UNKNOWN: ''>
+        """
+        for i in BadgeType:
+            if i is BadgeType.UNKNOWN:
+                continue
+
+            if i.value in css_class:
+                return i
+        return BadgeType.UNKNOWN
