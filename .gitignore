@@ -1,4 +1,7 @@
 /.venv/
 /.idea/
 
+uv.lock
+dist
+/funpayparsers.egg-info/
 __pycache__/
