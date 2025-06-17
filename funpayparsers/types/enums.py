@@ -147,6 +147,10 @@ class SystemMessageType(Enum): ...
 
 @verify(UNIQUE)
 class BadgeType(StrEnum):
+    """
+    Badge types enumeration.
+    """
+
     BANNED = 'label-danger'
     NOTIFICATIONS = 'label-primary'
     SUPPORT = 'label-success'

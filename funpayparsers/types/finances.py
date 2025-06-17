@@ -1,4 +1,8 @@
-__all__ = ('TransactionPreview',)
+__all__ = ('TransactionPreview',
+           'Transaction',
+           'WithdrawalTransaction',
+           'DepositTransaction',
+           'OrderTransaction',)
 
 
 from dataclasses import dataclass

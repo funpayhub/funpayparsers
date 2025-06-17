@@ -1,3 +1,5 @@
+__all__ = ('PrivateChatPreview', )
+
 from funpayparsers.types.base import FunPayObject
 from dataclasses import dataclass
 
