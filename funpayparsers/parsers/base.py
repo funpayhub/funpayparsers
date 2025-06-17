@@ -1,8 +1,9 @@
 __all__ = ('FunPayObjectParser', 'FunPayObjectParserOptions')
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, replace
-from typing import Generic, Type, TypeVar
+from dataclasses import dataclass, replace, fields
+from typing import Generic, Type, TypeVar, Any
+from collections.abc import Sequence, Mapping
 
 from lxml import html
 
@@ -42,9 +43,34 @@ class FunPayObjectParser(ABC, Generic[T, P]):
 
     def parse(self):
         try:
-            return self._parse()
+            result = self._parse()
+
+            if self.options.empty_raw_source:
+                self.empty_raw_source(result)
+
+            return result
+
         except Exception as e:
             raise e  # todo: make custom exceptions e.g. ParsingError
+
+    def empty_raw_source(self,
+                         obj: FunPayObject |
+                              Sequence[FunPayObject] |
+                              Mapping[Any, FunPayObject]) -> None:
+        if hasattr(type(obj), '__dataclass_fields__'):  # if dataclass
+            if hasattr(obj, 'raw_source'):
+                setattr(obj, 'raw_source', '')
+
+            for f in fields(obj):
+                self.empty_raw_source(getattr(obj, f.name))
+
+        elif isinstance(obj, (list, tuple)):
+            for item in obj:
+                self.empty_raw_source(item)
+
+        elif isinstance(obj, dict):
+            for item in obj.values():
+                self.empty_raw_source(item)
 
     @property
     def tree(self):
