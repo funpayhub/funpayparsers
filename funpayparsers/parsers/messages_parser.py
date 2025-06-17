@@ -52,9 +52,12 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
                 image_url=image_url,
             ))
 
+        if self.options.sort_by_id or self.options.resolve_senders:
+            messages.sort(key=lambda m: m.id)
+
         if self.options.resolve_senders:
             resolve_messages_senders(messages)
-        return messages  # todo: add sort by id
+        return messages
 
     @staticmethod
     def _parse_message_header(msg_tag: html.HtmlElement) -> tuple[
