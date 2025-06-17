@@ -52,7 +52,7 @@ class FunPayObjectParser(ABC, Generic[T, P]):
     @abstractmethod
     def _parse(self) -> T: ...
 
-    def parse(self):
+    def parse(self) -> T:
         try:
             result = self._parse()
 
