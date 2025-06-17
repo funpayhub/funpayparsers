@@ -44,7 +44,7 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
                     text = msg_div.xpath('string(.//div[@class="chat-msg-text"][1])')
 
             messages.append(Message(
-                raw_source=html.tostring(msg_div, encoding="unicode") if not self.options.empty_raw_source else '',
+                raw_source=html.tostring(msg_div, encoding="unicode"),
                 id=message_id,
                 is_heading=has_header,
                 sender_id=userid,
@@ -93,7 +93,7 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
             name,
             date,
             UserBadge(
-                raw_source=html.tostring(badge[0], encoding="unicode") if not self.options.empty_raw_source else '',
+                raw_source=html.tostring(badge[0], encoding="unicode"),
                 text=badge[0].text,
                 css_class=badge[0].get("class"),
             ),
