@@ -46,6 +46,11 @@ class Message(FunPayObject):
     Will be None if the message is not a heading message.
     """
 
+    send_date_str: str | None
+    """
+    Message date (as human-readable text).
+    """
+
     text: str | None
     """
     Text content of the message.

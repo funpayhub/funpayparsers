@@ -1,3 +1,5 @@
+__all__ = ('MessagesParserOptions', 'MessagesParser')
+
 from dataclasses import dataclass
 
 from lxml import html
@@ -15,6 +17,7 @@ class MessagesParserOptions(FunPayObjectParserOptions):
 
 
 class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
+    # todo: add send_time field (can be found in heading messages)
     options_cls = MessagesParserOptions
 
     def _parse(self):
