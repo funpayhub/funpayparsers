@@ -29,26 +29,31 @@ class Message(FunPayObject):
     """
     Sender ID.
 
-    Will be None if the message is not a heading message.
+    Will be None by default if the message is not a heading message and 
+    `funpayparsers.parsers.utils.resolve_messages_senders` wasn't used.
     """
 
     sender_username: str | None
     """
     Sender username.
 
-    Will be None if the message is not a heading message.
+    Will be None by default if the message is not heading and 
+    `funpayparsers.parsers.utils.resolve_messages_senders` wasn't used.
     """
 
     badge: UserBadge | None
     """
     Sender's badge.
 
-    Will be None if the message is not a heading message.
+    Will be None by default if the message is not heading and 
+    `funpayparsers.parsers.utils.resolve_messages_senders` wasn't used.
     """
 
     send_date_str: str | None
     """
     Message date (as human-readable text).
+    Will be None by default if the message is not heading and 
+    `funpayparsers.parsers.utils.resolve_messages_senders` wasn't used.
     """
 
     text: str | None
