@@ -31,7 +31,7 @@ class PrivateChatPreviewParser(
             avatar_css = p.xpath('string(.//div[@class="avatar-photo"][1]/@style)')
 
             preview = PrivateChatPreview(
-                raw_source=source,
+                raw_source='' if self.options.empty_raw_source else source,
                 id=int(p.get('data-id')),
                 is_unread='unread' in p.get('class'),
                 name=p.xpath('string(.//div[@class="media-user-name"][1])'),
