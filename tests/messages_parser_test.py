@@ -1,9 +1,3 @@
-import random
-import string
-from dataclasses import replace
-
-import pytest
-
 from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParserOptions
 from funpayparsers.types import Message, UserBadge
 

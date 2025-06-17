@@ -5,9 +5,10 @@ from dataclasses import dataclass
 from lxml import html
 
 from funpayparsers.parsers.base import FunPayObjectParser, FunPayObjectParserOptions
-from funpayparsers.types.message import Message
+from funpayparsers.types.messages import Message
 from funpayparsers.types.common import UserBadge
 from funpayparsers.parsers.utils import resolve_messages_senders
+from funpayparsers.parsers.badge_parser import UserBadgeParserOptions, UserBadgeParser
 
 
 @dataclass(frozen=True)
@@ -62,8 +63,7 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
             resolve_messages_senders(messages)
         return messages
 
-    def _parse_message_header(self, msg_tag: html.HtmlElement) -> tuple[
-        int, str, str, UserBadge | None]:
+    def _parse_message_header(self, msg_tag: html.HtmlElement) -> tuple[int, str, str, UserBadge | None]:
         """
         Parses the message header to extract the author ID, author nickname,
         and an optional author/message badge.
@@ -75,8 +75,6 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
             - Author nickname as a string.
             - A MessageBadge object if a badge is present, otherwise None.
         """
-
-        # todo: make separate badge parser
 
         id_, name = 0, "FunPay"
 
@@ -92,9 +90,6 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
             id_,
             name,
             date,
-            UserBadge(
-                raw_source=html.tostring(badge[0], encoding="unicode"),
-                text=badge[0].text,
-                css_class=badge[0].get("class"),
-            ),
+            UserBadgeParser(html.tostring(badge[0], encoding="unicode"),
+                            options=UserBadgeParserOptions() & self.options).parse()
         )
