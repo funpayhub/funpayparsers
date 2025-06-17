@@ -49,7 +49,7 @@ class Message(FunPayObject):
     `funpayparsers.parsers.utils.resolve_messages_senders` wasn't used.
     """
 
-    send_date_str: str | None
+    send_date_text: str | None
     """
     Message date (as human-readable text).
     Will be None by default if the message is not heading and 

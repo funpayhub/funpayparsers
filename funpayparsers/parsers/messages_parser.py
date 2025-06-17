@@ -17,19 +17,18 @@ class MessagesParserOptions(FunPayObjectParserOptions):
 
 
 class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
-    # todo: add send_time field (can be found in heading messages)
     options_cls = MessagesParserOptions
 
     def _parse(self):
         messages = []
         for msg_div in self.tree.xpath('//div[contains(@class, "chat-msg-item")]'):
-            userid, username, badge = None, None, None
+            userid, username, date, badge = None, None, None, None
 
             message_id = int(msg_div["id"].split("-")[1])
             has_header, msg_badge = "chat-msg-with-head" in msg_div.get("class"), None
 
             if has_header:
-                userid, username, badge = self._parse_message_header(msg_div)
+                userid, username, date, badge = self._parse_message_header(msg_div)
 
             if image_tag := msg_div.xpath('.//a[@class="chat-img-link"]'):
                 image_url, text = image_tag[0].get("href"), None
@@ -50,6 +49,7 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
                 is_heading=has_header,
                 sender_id=userid,
                 sender_username=username,
+                send_date_text=date,
                 badge=badge,
                 text=text,
                 image_url=image_url,
@@ -64,7 +64,7 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
 
     @staticmethod
     def _parse_message_header(msg_tag: html.HtmlElement) -> tuple[
-        int, str, UserBadge | None]:
+        int, str, str, UserBadge | None]:
         """
         Parses the message header to extract the author ID, author nickname,
         and an optional author/message badge.
@@ -82,12 +82,15 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
         if user_tag := msg_tag.xpath('.//a[@class="chat-msg-author-link"][1]'):
             id_, name = int(user_tag[0].get("href").split("/")[-2]), user_tag[0].text
 
+        date = msg_tag.xpath('.//div[@class="chat-msg-date"][1]').get("title")
+
         if not (badge := msg_tag.xpath('.//span[contains(@class, "author-label")]')):
-            return id_, name, None
+            return id_, name, date, None
 
         return (
             id_,
             name,
+            date,
             UserBadge(
                 raw_source=html.tostring(badge[0], encoding="unicode"),
                 text=badge[0].text,
