@@ -7,6 +7,10 @@ from datetime import datetime, timedelta, timezone
 from funpayparsers.types.enums import BadgeType
 from funpayparsers.types.messages import Message
 
+
+CSS_URL_RE = re.compile(r'url\(([^()]+)\)', re.IGNORECASE)
+
+
 TODAY_WORDS = ['сегодня', 'сьогодні', 'today']
 YESTERDAY_WORDS = ['вчера', 'вчора', 'yesterday']
 
@@ -49,36 +53,33 @@ MONTHS = {
     'december': 12,
 }
 
-CSS_URL_RE = re.compile(r'url\(([^()]+)\)', re.IGNORECASE)
+MONTHS_NAMES_RE = '|'.join(MONTHS.keys())
+TODAY_YESTERDAY_RE = '|'.join(TODAY_WORDS + YESTERDAY_WORDS)
 
-DAY_NUM_RE = r'(?:[1-9]|[12][0-9]|3[01])'  # zero-stripped day number (1-31)
-HOUR_NUM_RE = r'(?:[0-9]|1[0-9]|2[0-3])'  # zero-stripped hour number (0-23)
-MIN_NUM_RE = r'(?:[0-5][0-9])'  # zero-padded minute number (00-59)
+MONTH_NUM_RE = r'[0]?\d|1[0-2]'  # zero-padded or stripped month number (1-12 or 01-12)
+DAY_RE = r'[01]?\d|2[0-9]|3[01]'  # zero-padded or stripped day number (1-31 or 01-31)
+HOUR_RE = r'[01]?\d|2[0-3]'  # zero-padded or stripped hour number (0-23 or 00-23)
+MIN_OR_SEC_RE = r'[0-5]?\d'  # zero-padded or stripped minute/second number (0-59 or 00-59)
 
-TIME_RE = re.compile(r'^([01]?\d|2[0-3]):([0-5]\d):([0-5]\d)$')
-SHORT_DATE_RE = re.compile(r'^(\d{1,2}):(\d{1,2}):(\d{2})$')
-DOT_DATE_TIME_RE = re.compile(r'^(\d{1,2})\.(\d{1,2})\.(\d{2,4}) (\d{1,2}):(\d{2})$')
-DOT_DATE_RE = re.compile(r'^(\d{1,2})\.(\d{1,2})\.(\d{2,4})$')
-SLASH_DATE_TIME_RE = re.compile(r'^(\d{1,2})/(\d{1,2})/(\d{2}) (\d{1,2}):(\d{2}):(\d{2})$')
+TIME_RE = re.compile(rf'^({HOUR_RE}):({MIN_OR_SEC_RE}):({MIN_OR_SEC_RE})$')
+SHORT_DATE_RE = re.compile(rf'^({DAY_RE})\.({MONTH_NUM_RE})\.(\d{2})$')
 
 TODAY_OR_YESTERDAY_RE = re.compile(
-    rf'^({"|".join(TODAY_WORDS + YESTERDAY_WORDS)}),?\s+({HOUR_NUM_RE}):({MIN_NUM_RE})',
+    rf'^({TODAY_YESTERDAY_RE}),?\s*({HOUR_RE}):({MIN_OR_SEC_RE})$',
 )
 
 CURR_YEAR_DATE_RE = re.compile(
-    rf'^({DAY_NUM_RE}) ([a-zA-Zа-яА-Я]+),?\s+({HOUR_NUM_RE}):({MIN_NUM_RE})',
+    rf'^({DAY_RE})\s*({MONTH_NUM_RE}),?\s*({HOUR_RE}):({MIN_OR_SEC_RE})$',
 )
 
 DATE_RE = re.compile(
-    rf'^({DAY_NUM_RE}) ({"|".join(MONTHS.keys())}) (\d{{4}}), ({HOUR_NUM_RE}):({MIN_NUM_RE})',
+    rf'^({DAY_RE})\s*({MONTHS_NAMES_RE})\s*(\d{{4}}),?\s*({HOUR_RE}):({MIN_OR_SEC_RE})$',
 )
+
 
 def parse_date_string(date_string: str, /) -> int:
     """
     Parse date string.
-
-    >>> parse_date_string('10 сентября 2022, 13:34')
-    1662816840
     """
     date_string = date_string.lower().strip()
     date = datetime.now(tz=timezone.utc).replace(second=0, microsecond=0)
@@ -89,21 +90,14 @@ def parse_date_string(date_string: str, /) -> int:
 
     if match := SHORT_DATE_RE.match(date_string):
         d, mo, y = map(int, match.groups())
-        y += 2000
-        return int(datetime(y, mo, d, tzinfo=timezone.utc).timestamp())
-
-    if match := SLASH_DATE_TIME_RE.match(date_string):
-        d, mo, y, h, m, s = match.groups()
-        y = int(y) + 2000
-        return int(datetime(y, int(mo), int(d), int(h), int(m), int(s), tzinfo=timezone.utc).timestamp())
+        return int(datetime(year=y+2000, month=mo, day=d, tzinfo=timezone.utc).timestamp())
 
     if match := TODAY_OR_YESTERDAY_RE.match(date_string):
         day, h, m = match.groups()
+        date = date.replace(hour=int(h), minute=int(m))
         if day in TODAY_WORDS:
-            return int(date.replace(hour=int(h), minute=int(m)).timestamp())
-        return int(
-            (date.replace(hour=int(h), minute=int(m)) - timedelta(days=1)).timestamp(),
-        )
+            return int(date.timestamp())
+        return int((date - timedelta(days=1)).timestamp())
 
     if match := CURR_YEAR_DATE_RE.match(date_string):
         day, month, h, m = match.groups()
@@ -124,19 +118,7 @@ def parse_date_string(date_string: str, /) -> int:
             ).timestamp(),
         )
 
-    if match := DOT_DATE_RE.match(date_string):
-        d, mo, y = map(int, match.groups())
-        if y < 100:
-            y += 2000
-        return int(datetime(y, mo, d, 0, 0, 0, tzinfo=timezone.utc).timestamp())
-
-    if match := DOT_DATE_TIME_RE.match(date_string):
-        d, mo, y, h, m = map(int, match.groups())
-        if y < 100:
-            y += 2000
-        return int(datetime(y, mo, d, h, m, tzinfo=timezone.utc).timestamp())
-
-    raise ValueError(f'Unable to parse date string: {date_string}.')
+    raise ValueError(f'Unable to parse date string \'{date_string}\'.')
 
 
 def extract_css_url(source: str) -> str:
