@@ -1,3 +1,5 @@
+__all__ = ('PrivateChatPreviewParser', 'PrivateChatPreviewParserOptions')
+
 from dataclasses import dataclass
 
 from lxml import html

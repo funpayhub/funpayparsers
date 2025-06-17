@@ -1,4 +1,4 @@
-__all__ = ('AppData', 'WebPush')
+__all__ = ('AppData', 'WebPush', 'PageHeader')
 
 from dataclasses import dataclass
 from typing import Literal

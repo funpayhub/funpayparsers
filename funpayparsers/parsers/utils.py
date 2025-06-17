@@ -2,7 +2,7 @@ __all__ = ('extract_css_url', 'resolve_messages_senders')
 
 import re
 from collections.abc import Iterable
-from funpayparsers.types.message import Message
+from funpayparsers.types.messages import Message
 from funpayparsers.types.enums import BadgeType
 
 

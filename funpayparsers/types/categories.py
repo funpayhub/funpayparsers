@@ -1,3 +1,5 @@
+__all__ = ('Category', 'Subcategory')
+
 from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
