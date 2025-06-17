@@ -14,7 +14,7 @@ class FunPayObjectParserOptions:
     """
     Base class for all parser option dataclasses.
     """
-    ...
+    empty_raw_source: bool = False
 
 
 T = TypeVar('T', bound=FunPayObject)

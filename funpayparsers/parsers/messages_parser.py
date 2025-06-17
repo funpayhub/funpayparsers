@@ -44,7 +44,7 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
                     text = msg_div.xpath('string(.//div[@class="chat-msg-text"][1])')
 
             messages.append(Message(
-                raw_source=html.tostring(msg_div, encoding="unicode"),
+                raw_source=html.tostring(msg_div, encoding="unicode") if not self.options.empty_raw_source else '',
                 id=message_id,
                 is_heading=has_header,
                 sender_id=userid,
@@ -62,8 +62,7 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
             resolve_messages_senders(messages)
         return messages
 
-    @staticmethod
-    def _parse_message_header(msg_tag: html.HtmlElement) -> tuple[
+    def _parse_message_header(self, msg_tag: html.HtmlElement) -> tuple[
         int, str, str, UserBadge | None]:
         """
         Parses the message header to extract the author ID, author nickname,
@@ -76,6 +75,8 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
             - Author nickname as a string.
             - A MessageBadge object if a badge is present, otherwise None.
         """
+
+        # todo: make separate badge parser
 
         id_, name = 0, "FunPay"
 
@@ -92,7 +93,7 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
             name,
             date,
             UserBadge(
-                raw_source=html.tostring(badge[0], encoding="unicode"),
+                raw_source=html.tostring(badge[0], encoding="unicode") if not self.options.empty_raw_source else '',
                 text=badge[0].text,
                 css_class=badge[0].get("class"),
             ),
