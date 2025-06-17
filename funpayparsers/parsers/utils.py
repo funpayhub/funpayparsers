@@ -1,11 +1,11 @@
-__all__ = ('extract_css_url', 'resolve_messages_senders')
+__all__ = ('extract_css_url', 'resolve_messages_senders', 'parse_date_string')
 
 import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta, timezone
 
 from funpayparsers.types.enums import BadgeType
-from funpayparsers.types.message import Message
+from funpayparsers.types.messages import Message
 
 TODAY_WORDS = ['сегодня', 'сьогодні', 'today']
 YESTERDAY_WORDS = ['вчера', 'вчора', 'yesterday']
