@@ -1,6 +1,6 @@
 __all__ = ('MoneyValue', 'UserBadge')
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.enums import Currency, BadgeType
