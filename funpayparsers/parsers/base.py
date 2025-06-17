@@ -1,7 +1,7 @@
 __all__ = ('FunPayObjectParser', 'FunPayObjectParserOptions')
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, replace, fields
+from dataclasses import dataclass, replace, fields, asdict
 from typing import Generic, Type, TypeVar, Any
 from collections.abc import Sequence, Mapping
 
@@ -16,6 +16,17 @@ class FunPayObjectParserOptions:
     Base class for all parser option dataclasses.
     """
     empty_raw_source: bool = False
+
+    def __and__(self, other):
+        self_fields = asdict(self)
+        other_fields = asdict(other)
+
+        for k in self_fields:
+            if k in other_fields:
+                self_fields[k] = other_fields[k]
+
+        return self.__class__(**self_fields)
+
 
 
 T = TypeVar('T', bound=FunPayObject)
