@@ -29,21 +29,31 @@ class Message(FunPayObject):
     """
     Sender ID.
 
-    Will be None if the message is not a heading message.
+    Will be None by default if the message is not a heading message and 
+    `funpayparsers.parsers.utils.resolve_messages_senders` wasn't used.
     """
 
     sender_username: str | None
     """
     Sender username.
 
-    Will be None if the message is not a heading message.
+    Will be None by default if the message is not heading and 
+    `funpayparsers.parsers.utils.resolve_messages_senders` wasn't used.
     """
 
     badge: UserBadge | None
     """
     Sender's badge.
 
-    Will be None if the message is not a heading message.
+    Will be None by default if the message is not heading and 
+    `funpayparsers.parsers.utils.resolve_messages_senders` wasn't used.
+    """
+
+    send_date_text: str | None
+    """
+    Message date (as human-readable text).
+    Will be None by default if the message is not heading and 
+    `funpayparsers.parsers.utils.resolve_messages_senders` wasn't used.
     """
 
     text: str | None
@@ -63,3 +73,9 @@ class Message(FunPayObject):
         but not both.
     Will be None if the message contains text.
     """
+
+    def __str__(self):
+        return (f"<Message {self.id} from {self.sender_username} "
+                f"[{self.badge.text if self.badge is not None else 'NoBadge'}] "
+                f"({self.sender_id}) dated {self.send_date_text}: "
+                f"{self.text if self.text is not None else self.image_url}>")

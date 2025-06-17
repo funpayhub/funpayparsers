@@ -8,16 +8,17 @@ from lxml import html
 
 from funpayparsers.types.base import FunPayObject
 
-T = TypeVar('T', bound=FunPayObject)
-P = TypeVar('P', bound='FunPayObjectParserOptions')
-
 
 @dataclass(frozen=True)
 class FunPayObjectParserOptions:
     """
     Base class for all parser option dataclasses.
     """
-    ...
+    empty_raw_source: bool = False
+
+
+T = TypeVar('T', bound=FunPayObject)
+P = TypeVar('P', bound=FunPayObjectParserOptions)
 
 
 class FunPayObjectParser(ABC, Generic[T, P]):
@@ -33,7 +34,7 @@ class FunPayObjectParser(ABC, Generic[T, P]):
         """
 
         self._raw_source = raw_source
-        self._options = self._build_options(options, **overrides)
+        self._options: P = self._build_options(options, **overrides)
         self._tree = None
 
     @abstractmethod
