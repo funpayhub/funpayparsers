@@ -44,7 +44,7 @@ class UserProfilePage(FunPayObject):
     grade: float | int | None
     """Average rating | 4.8 stars / 5 stars"""
 
-    reivews: None  # todo
+    reviews: None  # todo
     """#TODO: Replace with an object to represent the user last 25 reviews."""
 
     lots: None  # todo
