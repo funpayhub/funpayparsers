@@ -2,7 +2,7 @@ __all__ = ('UserProfilePage',)
 
 from dataclasses import dataclass
 
-from funpayparsers.tools import MONTHS
+from funpayparsers.parsers.utils import MONTHS
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.common import UserBadge
 
