@@ -24,7 +24,7 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
         for msg_div in self.tree.xpath('//div[contains(@class, "chat-msg-item")]'):
             userid, username, date, badge = None, None, None, None
 
-            message_id = int(msg_div["id"].split("-")[1])
+            message_id = int(msg_div.get("id").split("-")[1])
             has_header, msg_badge = "chat-msg-with-head" in msg_div.get("class"), None
 
             if has_header:
@@ -82,7 +82,7 @@ class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
         if user_tag := msg_tag.xpath('.//a[@class="chat-msg-author-link"][1]'):
             id_, name = int(user_tag[0].get("href").split("/")[-2]), user_tag[0].text
 
-        date = msg_tag.xpath('.//div[@class="chat-msg-date"][1]').get("title")
+        date = msg_tag.xpath('.//div[@class="chat-msg-date"]')[0].get("title")
 
         if not (badge := msg_tag.xpath('.//span[contains(@class, "author-label")]')):
             return id_, name, date, None
