@@ -28,7 +28,7 @@ jobs:
 
       - name: main runner
         run: |
-          python -m pytest --doctest-modules
+          .venv/bin/python -m pytest --doctest-modules
         env:
           VIRTUAL_ENV: .venv
           PATH: .venv/bin:$PATH
