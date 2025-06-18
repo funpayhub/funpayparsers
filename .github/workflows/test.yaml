@@ -17,19 +17,11 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: uv and venv create
+      - name: uv and install deps
         run: |
           pip install uv
           uv venv
-
-        env:
-          VIRTUAL_ENV: .venv
-          PATH: .venv/bin:$PATH
-
-      - name: dependencies install
-        run: |
-          python -m pip install --upgrade pip
-          uv pip install -r pyproject.toml --group test
+          uv sync --extra test
         env:
           VIRTUAL_ENV: .venv
           PATH: .venv/bin:$PATH
