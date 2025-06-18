@@ -20,6 +20,8 @@ class OrderPreviewsParser(FunPayObjectParser[
                               list[OrderPreview],
                               OrderPreviewsParserOptions
                           ]):
+    options: OrderPreviewsParserOptions
+
     def _parse(self):
         result = []
 
