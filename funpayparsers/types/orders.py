@@ -35,6 +35,9 @@ class OrderCounterpartyInfo(FunPayObject):
     avatar_url: str
     """Counterpart avatar URL."""
 
+    def __str__(self):
+        return f'{self.username} (id: {self.id}), status: {self.status_text}.'
+
 
 @dataclass
 class OrderPreview(FunPayObject):

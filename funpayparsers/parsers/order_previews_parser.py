@@ -20,12 +20,12 @@ class OrderPreviewsParser(FunPayObjectParser[
                               list[OrderPreview],
                               OrderPreviewsParserOptions
                           ]):
-    options: OrderPreviewsParserOptions
+    options_cls: OrderPreviewsParserOptions = OrderPreviewsParserOptions
 
     def _parse(self):
         result = []
 
-        for o in self._tree.xpath('//a[contains(@class, "tc-item")]'):
+        for o in self.tree.xpath('//a[contains(@class, "tc-item")]'):
             order_id: str = o.get('href').split('/')[-2]
             date: str = o.xpath('string(.//div[@class="tc-date-time"][1])')
 
