@@ -26,11 +26,11 @@ class OrderCounterpartyInfo(FunPayObject):
     online: bool
     """True, if counterparty is online."""
 
-    blocked: bool
-    """True, if counterparty is blocked."""
+    banned: bool
+    """True, if counterparty is banned."""
 
-    last_online_text: str | None
-    """Last online status text (if available)."""
+    status_text: str
+    """Status text (online / banned / last seen online)."""
 
     avatar_url: str
     """Counterpart avatar URL."""
@@ -49,8 +49,8 @@ class OrderPreview(FunPayObject):
     date_text: str
     """Order date (as human-readable text)."""
 
-    desc: str | None
-    """Order description (if available)."""
+    desc: str
+    """Order description."""
 
     category_text: str
     """Order category and subcategory text."""
