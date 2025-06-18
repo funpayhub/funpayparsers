@@ -1,0 +1,32 @@
+name: MainTests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: python install
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: uv and install deps
+        run: |
+          pip install uv
+          uv venv
+          uv sync --extra test
+        env:
+          VIRTUAL_ENV: .venv
+          PATH: .venv/bin:$PATH
+
+      - name: main runner
+        run: |
+          .venv/bin/python -m pytest --doctest-modules
+        env:
+          VIRTUAL_ENV: .venv
+          PATH: .venv/bin:$PATH
