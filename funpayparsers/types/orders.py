@@ -63,3 +63,7 @@ class OrderPreview(FunPayObject):
 
     counterparty: OrderCounterpartyInfo
     """Associated counterparty info."""
+
+    def __str__(self):
+        return (f'<{self.amount} {self.status.name} order {self.id} '
+                f'dated {self.date_text}: {self.desc}. ({self.category_text})>')

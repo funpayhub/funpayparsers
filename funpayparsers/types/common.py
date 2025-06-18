@@ -28,6 +28,9 @@ class MoneyValue(FunPayObject):
     def currency(self) -> Currency:
         return Currency.get_by_character(self.character)
 
+    def __str__(self):
+        return f'<MoneyValue: {self.value} {self.currency.name}>'
+
 
 @dataclass
 class UserBadge(FunPayObject):
