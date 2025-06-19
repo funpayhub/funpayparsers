@@ -1,8 +1,5 @@
 __all__ = ('TransactionPreview',
-           'Transaction',
-           'WithdrawalTransaction',
-           'DepositTransaction',
-           'OrderTransaction',)
+           'Transaction',)
 
 
 from dataclasses import dataclass
@@ -41,16 +38,6 @@ class TransactionPreview(FunPayObject):
 
 
 @dataclass
-class Transaction(FunPayObject): ...  # todo
-
-
-@dataclass
-class WithdrawalTransaction(Transaction): ...
-
-
-@dataclass
-class DepositTransaction(Transaction): ...
-
-
-@dataclass
-class OrderTransaction(Transaction): ...
+class Transaction(FunPayObject):
+    status: TransactionStatus
+    data: dict[str, str]
