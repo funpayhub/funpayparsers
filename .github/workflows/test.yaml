@@ -1,4 +1,4 @@
-name: MainTests
+name: Tests
 
 on: pull_request
 
@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: uv and install deps
+      - name: Install deps
         run: |
           pip install uv
           uv venv
@@ -24,7 +24,7 @@ jobs:
           VIRTUAL_ENV: .venv
           PATH: .venv/bin:$PATH
 
-      - name: main runner
+      - name: Run tests
         run: |
           .venv/bin/python -m pytest --doctest-modules
         env:
