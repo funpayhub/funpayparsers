@@ -37,7 +37,7 @@ class OrderPreviewsParser(FunPayObjectParser[
 
             val_str = o.xpath('string(.//div[contains(@class, "tc-price")])').strip()
             val, char = val_str.split()
-            value = MoneyValue(raw_source=val_str, value=val, character=char)
+            value = MoneyValue(raw_source=val_str, value=float(val), character=char)
 
             user_tag = o.xpath('.//div[contains(@class, "media-user")][1]')[0]
             photo_style = o.xpath(
@@ -48,7 +48,7 @@ class OrderPreviewsParser(FunPayObjectParser[
             online = 'online' in user_tag.get('class')
             banned = 'banned' in user_tag.get('class')
             user_status_text: str = user_tag.xpath(
-                './/div[contains(@class, "media-user-status")][1]/text()'
+                'string(.//div[contains(@class, "media-user-status")][1])'
             )
             photo_url = extract_css_url(photo_style)
 
