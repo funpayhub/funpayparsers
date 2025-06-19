@@ -158,7 +158,7 @@ def resolve_messages_senders(messages: Iterable[Message], /) -> None:
     for msg in messages:
         if msg.is_heading:
             username, userid = msg.sender_username, msg.sender_id
-            badge = badge if msg.badge and msg.badge.type is not BadgeType.AUTOISSUE else None
+            badge = msg.badge if msg.badge and msg.badge.type is not BadgeType.AUTOISSUE else None
             continue
 
         msg.sender_username, msg.sender_id, msg.badge = username, userid, badge
