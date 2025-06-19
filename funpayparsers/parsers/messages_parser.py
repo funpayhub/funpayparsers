@@ -18,7 +18,7 @@ class MessagesParserOptions(FunPayObjectParserOptions):
 
 
 class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
-    options_cls = MessagesParserOptions
+    __options_cls__ = MessagesParserOptions
 
     def _parse(self):
         messages = []

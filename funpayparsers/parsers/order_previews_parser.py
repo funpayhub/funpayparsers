@@ -20,7 +20,7 @@ class OrderPreviewsParser(FunPayObjectParser[
                               list[OrderPreview],
                               OrderPreviewsParserOptions
                           ]):
-    options_cls: OrderPreviewsParserOptions = OrderPreviewsParserOptions
+    __options_cls__ = OrderPreviewsParserOptions
 
     def _parse(self):
         result = []
