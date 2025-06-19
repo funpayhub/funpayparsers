@@ -4,7 +4,6 @@ import re
 from collections.abc import Iterable
 from funpayparsers.types.messages import Message
 from datetime import datetime, timedelta
-from copy import deepcopy
 
 from funpayparsers.types.enums import BadgeType
 
@@ -159,7 +158,7 @@ def resolve_messages_senders(messages: Iterable[Message], /) -> None:
     for msg in messages:
         if msg.is_heading:
             username, userid = msg.sender_username, msg.sender_id
-            badge = deepcopy(msg.badge) if msg.badge and msg.badge.type is not BadgeType.AUTOISSUE else None
+            badge = badge if msg.badge and msg.badge.type is not BadgeType.AUTOISSUE else None
             continue
 
         msg.sender_username, msg.sender_id, msg.badge = username, userid, badge
