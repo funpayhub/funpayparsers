@@ -9,6 +9,7 @@ __all__ = (
 
 
 from enum import UNIQUE, Enum, StrEnum, verify
+from types import MappingProxyType
 from functools import cache
 
 
@@ -224,8 +225,10 @@ class PaymentMethod(Enum):
 
     @staticmethod
     @cache
-    def css_classes_as_dict():
-        return {cls: val for val in PaymentMethod for cls in val.value}
+    def css_classes_as_dict() -> MappingProxyType[str, 'PaymentMethod']:
+        return MappingProxyType({
+            cls: val for val in PaymentMethod for cls in val.value
+        })
 
     @staticmethod
     def get_by_css_class(css_class: str) -> 'PaymentMethod':
