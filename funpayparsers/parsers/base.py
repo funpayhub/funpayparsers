@@ -29,7 +29,7 @@ class FunPayObjectParserOptions:
 
 
 
-T = TypeVar('T', bound=FunPayObject)
+T = TypeVar('T', bound=Any)
 P = TypeVar('P', bound=FunPayObjectParserOptions)
 
 
