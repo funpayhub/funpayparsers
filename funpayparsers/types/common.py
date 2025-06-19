@@ -21,11 +21,15 @@ class MoneyValue(FunPayObject):
     value: int | float
     """The numeric amount of the monetary value."""
 
-    currency: Currency
-    """The currency of the value."""
-
     character: str
     """The currency character, e.g., $, €, ₽, ¤, etc."""
+
+    @property
+    def currency(self) -> Currency:
+        return Currency.get_by_character(self.character)
+
+    def __str__(self):
+        return f'<MoneyValue: {self.value} {self.currency.name}>'
 
 
 @dataclass
