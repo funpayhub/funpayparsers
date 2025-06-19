@@ -38,7 +38,9 @@ class FunPayObjectParser(ABC, Generic[T, P]):
     Base class for all parsers.
     """
 
-    options_cls: Type[P] = FunPayObjectParserOptions
+    @property
+    @abstractmethod
+    def __options_cls__(self) -> Type[P]: ...
 
     def __init__(self, raw_source: str, options: P | None = None, **overrides):
         """
@@ -101,7 +103,7 @@ class FunPayObjectParser(ABC, Generic[T, P]):
 
     @classmethod
     def _build_options(cls, options: P | None, **overrides) -> P:
-        base = options or cls.options_cls()
-        overrides = {k: v for k, v in overrides.items() if k in
-                     getattr(base, '__dataclass_fields__', {})}
+        base = options or cls.__options_cls__()
+        overrides = {k: v for k, v in overrides.items() if
+                     k in getattr(base, '__dataclass_fields__', {})}
         return replace(base, **overrides)
