@@ -225,9 +225,27 @@ class PaymentMethod(Enum):
     @staticmethod
     @cache
     def css_classes_as_dict():
-        print('not cached.')
         return {cls: val for val in PaymentMethod for cls in val.value}
 
-    @classmethod
-    def get_by_css_class(cls, css_class: str) -> 'PaymentMethod':
-        return cls.css_classes_as_dict().get(css_class) or cls.UNKNOWN
+    @staticmethod
+    def get_by_css_class(css_class: str) -> 'PaymentMethod':
+        """
+        Determine the payment method based on a given CSS class string.
+
+        Examples:
+            >>> PaymentMethod.get_by_css_class('some text payment-method-1')
+            <PaymentMethod.QIWI: ('payment-method-1', 'payment-method-qiwi')>
+
+            >>> PaymentMethod.get_by_css_class('some_another_css_class')
+            <PaymentMethod.UNKNOWN: ('',)>
+        """
+        classes = PaymentMethod.css_classes_as_dict()
+        for cls in classes:
+            if classes[cls] is PaymentMethod.UNKNOWN:
+                continue
+
+            if cls in css_class:
+                return classes[cls]
+
+        return PaymentMethod.UNKNOWN
+
