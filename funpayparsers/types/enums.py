@@ -9,6 +9,7 @@ __all__ = (
 
 
 from enum import UNIQUE, Enum, StrEnum, verify
+from functools import cache
 
 
 @verify(UNIQUE)
@@ -138,10 +139,6 @@ class TransactionStatus(Enum):
 
 
 @verify(UNIQUE)
-class PaymentMethod(Enum): ...
-
-
-@verify(UNIQUE)
 class SystemMessageType(Enum): ...
 
 
@@ -179,3 +176,58 @@ class BadgeType(StrEnum):
             if i.value in css_class:
                 return i
         return BadgeType.UNKNOWN
+
+
+class PaymentMethod(Enum):
+    """
+    Enumeration of payment methods (withdrawal / deposit types).
+
+    Based on:
+        - Sprites: https://funpay.com/16/img/layout/sprites.min.png (resized to 405px in auto mode)
+        - CSS: https://funpay.com/687/css/main.css
+    """
+
+    QIWI = ('payment-method-1', 'payment-method-qiwi')  # 345, 94
+    YANDEX = ('payment-method-2', 'payment-method-yandex', 'payment-method-fps')  #345, 34
+    FPS = ('payment-method-21',)  # 345, 364
+
+    WEBMONEY_WME = ('payment-method-3', 'payment-method-wme')  # 345, 64
+    WEBMONEY_WMP = ('payment-method-4', 'payment-method-wmp')  # 345, 64
+    WEBMONEY_WMR = ('payment-method-5', 'payment-method-wmr')  # 345, 64
+    WEBMONEY_WMZ = ('payment-method-6', 'payment-method-wmz')  # 345, 64
+    WEBMONEY_UNKNOWN = ('payment-method-10',)  # 345, 64
+
+    CARD_RUB = ('payment-method-7', 'payment-method-card_rub')  # 345, 4
+    CARD_USD = ('payment-method-card_usd',)  # 345, 4
+    CARD_EUR = ('payment-method-card_eur',)  # 345, 4
+    CARD_UAH = ('payment-method-card_uah',)  # 345, 4
+    CARD_UNKNOWN = ('payment-method-11', 'payment-method-15', 'payment-method-16',
+                    'payment-method-25', 'payment-method-26', 'payment-method-27',
+                    'payment-method-32', 'payment-method-33', 'payment-method-34', 'payment-method-35',
+                    'payment-method-37', 'payment-method-38', 'payment-method-39', 'payment-method-40')  # 345, 4
+
+    MOBILE = ('payment-method-8',)  # 345, 124
+    APPLE = ('payment-method-9', 'payment-method-19', 'payment-method-20')  # 345, 154
+    MASTERCARD = ('payment-method-12', 'payment-method-22', 'payment-method-23')  # 345, 274
+    VISA = ('payment-method-13', 'payment-method-28', 'payment-method-29')  # 345, 304
+    GOOGLE = ('payment-method-14', 'payment-method-17', 'payment-method-18')  # 345, 244
+    FUNPAY = ('payment-method-24',)  # 345, 214
+    LITECOIN = ('payment-method-30',)  # 375, 4
+    BINANCE = ('payment-method-31',)  # 375, 34
+    BINANCE_USDT = ('payment-method-binance_usdt',)  # 375, 34
+    BINANCE_USDC = ('payment-method-binance_usdc',)  # 375, 34
+    PAYPAL = ('payment-method-36', 'payment-method-paypal')  # 345, 184
+    USDT_TRC = ('payment-method-usdt_trc',)  # 375, 64
+    UNKNOWN = ('',)
+
+    # MIR = 26, ('UNKNOWN', ), (345, Y)
+
+    @staticmethod
+    @cache
+    def css_classes_as_dict():
+        print('not cached.')
+        return {cls: val for val in PaymentMethod for cls in val.value}
+
+    @classmethod
+    def get_by_css_class(cls, css_class: str) -> 'PaymentMethod':
+        return cls.css_classes_as_dict().get(css_class) or cls.UNKNOWN
