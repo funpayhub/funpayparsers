@@ -2,12 +2,40 @@ import pytest
 from funpayparsers.parsers.utils import resolve_messages_senders
 from funpayparsers.types import Message, UserBadge
 
+
 # todo add it to fixture
-data_badge = UserBadge(
+support_badge = UserBadge(
     raw_source='',
     text='поддержка',
     css_class='label-success'
 )
+
+
+processed_messages = [
+    Message(
+        raw_source='',
+        id=1,
+        is_heading=True,
+        sender_id=1,
+        sender_username='SomeUser1',
+        badge=support_badge,
+        send_date_text='01.01.2077',
+        text='MessageText1',
+        image_url=None
+    ),
+    Message(
+        raw_source='',
+        id=2,
+        is_heading=False,
+        sender_id=1,
+        sender_username='SomeUser1',
+        badge=support_badge,
+        send_date_text='01.01.2077',
+        text='MessageText2',
+        image_url=None
+    )
+]
+
 
 @pytest.fixture
 def original_messages():
@@ -18,7 +46,7 @@ def original_messages():
             is_heading=True,
             sender_id=1,
             sender_username='SomeUser1',
-            badge=data_badge,
+            badge=support_badge,
             send_date_text='01.01.2077',
             text='MessageText1',
             image_url=None
@@ -38,30 +66,6 @@ def original_messages():
 
     return messages
 
-processed_messages = [
-    Message(
-        raw_source='',
-        id=1,
-        is_heading=True,
-        sender_id=1,
-        sender_username='SomeUser1',
-        badge=data_badge,
-        send_date_text='01.01.2077',
-        text='MessageText1',
-        image_url=None
-    ),
-    Message(
-        raw_source='',
-        id=2,
-        is_heading=False,
-        sender_id=1,
-        sender_username='SomeUser1',
-        badge=data_badge,
-        send_date_text='01.01.2077',
-        text='MessageText2',
-        image_url=None
-    )
-]
 
 def test_message_sender_resolver(original_messages):
     resolve_messages_senders(original_messages)
