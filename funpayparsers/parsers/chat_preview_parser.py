@@ -24,7 +24,7 @@ class PrivateChatPreviewParser(
     TODO: more informative doc-string.
     """
 
-    options_class = PrivateChatPreviewParserOptions
+    __options_cls__ = PrivateChatPreviewParserOptions
 
     def _parse(self):
         previews = []
