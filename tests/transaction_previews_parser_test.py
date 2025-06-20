@@ -26,12 +26,13 @@ complete_order_transaction_html = """
 </div>
 """
 
+
 complete_order_transaction_obj = TransactionPreview(
     raw_source='',
     id=12345,
     date_text='20 января 2024, 23:11',
     desc='Заказ #ABCDEFGH',
-    status=TransactionStatus.completed,
+    status=TransactionStatus.COMPLETED,
     amount=MoneyValue(
         raw_source='',
         value=1.23,
@@ -70,7 +71,7 @@ cancelled_withdrawal_transaction_obj = TransactionPreview(
     id=12345,
     date_text='20 января 2024, 23:11',
     desc='Вывод денег #54321',
-    status=TransactionStatus.cancelled,
+    status=TransactionStatus.CANCELLED,
     amount=MoneyValue(
         raw_source='',
         value=1234.56,
