@@ -50,7 +50,7 @@ class OrderStatus(StrEnum):
     """
 
     PAID = 'text-primary'
-    """Paid, but not completed order."""
+    """Paid, but not COMPLETED order."""
 
     COMPLETED = 'text-success'
     """Completed order."""
@@ -126,17 +126,44 @@ class Currency(StrEnum):
 
 
 @verify(UNIQUE)
-class TransactionStatus(Enum):
+class TransactionStatus(StrEnum):
     """Transaction statuses enumeration."""
 
-    pending = 0
+    PENDING = 'transaction-status-waiting'
     """Pending transaction."""
 
-    completed = 1
+    COMPLETED = 'transaction-status-complete'
     """Completed transaction."""
 
-    cancelled = 2
+    CANCELLED = 'transaction-status-cancel'
     """Cancelled transaction."""
+
+    UNKNOWN = ''
+    """Unknown transaction status. Just in case, for future FunPay updates."""
+
+    @staticmethod
+    def get_by_css_class(css_class: str, /) -> 'TransactionStatus':
+        """
+        Determine the transaction type based on a given CSS class string.
+
+        Examples:
+            >>> TransactionStatus.get_by_css_class('tc-item transaction-status-complete')
+            <TransactionStatus.COMPLETED: 'transaction-status-complete'>
+
+            >>> TransactionStatus.get_by_css_class('tc-item transaction-status-waiting')
+            <TransactionStatus.PENDING: 'transaction-status-waiting'>
+
+            >>> TransactionStatus.get_by_css_class('some_another_css_class')
+            <TransactionStatus.UNKNOWN: ''>
+        """
+
+        for i in TransactionStatus:
+            if i is TransactionStatus.UNKNOWN:
+                continue
+
+            if i.value in css_class:
+                return i
+        return TransactionStatus.UNKNOWN
 
 
 @verify(UNIQUE)
