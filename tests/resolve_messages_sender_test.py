@@ -3,7 +3,6 @@ from funpayparsers.parsers.utils import resolve_messages_senders
 from funpayparsers.types import Message, UserBadge
 
 
-# todo add it to fixture
 support_badge = UserBadge(
     raw_source='',
     text='поддержка',
