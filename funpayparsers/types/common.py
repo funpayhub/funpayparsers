@@ -51,7 +51,7 @@ class UserBadge(FunPayObject):
     Known values:
         - `label-default` — FunPay auto-issue bot;
         - `label-primary` — FunPay system notifications 
-            (e.g., new order, order completed, new review, etc.);
+            (e.g., new order, order COMPLETED, new review, etc.);
         - `label-success` — support or arbitration;
         - `label-danger` - blocked user;
 
