@@ -1,7 +1,22 @@
 /.venv/
+/env/
+/venv/
+
 /.idea/
+/.vscode/
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+build/
+dist/
+*.egg-info/
+funpayparsers.egg-info/
 
 uv.lock
-dist
-/funpayparsers.egg-info/
-__pycache__/
+*.uv*
+
+*.log
+*.tmp
+*.temp
