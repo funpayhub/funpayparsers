@@ -11,7 +11,7 @@ from funpayparsers.types.common import MoneyValue
 
 
 CSS_URL_RE = re.compile(r'url\(([^()]+)\)', re.IGNORECASE)
-MONEY_VALUE_RE = re.compile(r'^([+\-]?\d+\.\d+)(.)$')
+MONEY_VALUE_RE = re.compile(r'^([+\-]?\d+(?:\.\d+)?)(.)$')
 
 
 TODAY_WORDS = ['сегодня', 'сьогодні', 'today']
@@ -182,7 +182,6 @@ def parse_money_value_string(money_value_str: str, /, *, raw_source: str | None 
     """
 
     to_process = money_value_str.strip().replace(' ', '').replace('\u2212', '-')
-
     if not (match := MONEY_VALUE_RE.fullmatch(to_process)):
         if raise_on_error:
             raise Exception(f'Unable to parse money value string \'{money_value_str}\'')

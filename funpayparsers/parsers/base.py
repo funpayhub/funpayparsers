@@ -86,7 +86,7 @@ class FunPayObjectParser(ABC, Generic[T, P]):
                 self.empty_raw_source(item)
 
     @property
-    def tree(self):
+    def tree(self) -> html.HtmlElement:
         if self._tree is not None:
             return self._tree
 
