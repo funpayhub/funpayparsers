@@ -1,9 +1,9 @@
 from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
+from funpayparsers.parsers.base import FunPayObjectParserOptions
 from funpayparsers.types.common import MoneyValue
-from funpayparsers.types.enums import Currency
 
 
-OPTIONS = MoneyValueParserOptions(empty_raw_source=True)
+OPTIONS = FunPayObjectParserOptions(empty_raw_source=True)
 
 
 transaction_preview_money_value_html = """<div class="tc-price">+ 1.42 <span class="unit">₽</span></div>"""
