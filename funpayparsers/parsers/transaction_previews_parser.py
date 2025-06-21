@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from funpayparsers.parsers.base import FunPayObjectParser, FunPayObjectParserOptions
 from funpayparsers.types.finances import TransactionPreview
 from funpayparsers.types.enums import TransactionStatus, PaymentMethod
-from funpayparsers.types.common import MoneyValue
+from funpayparsers.parsers.utils import parse_money_value_string
 
 from lxml import html
 import lxml
@@ -31,14 +31,8 @@ class TransactionPreviewsParser(FunPayObjectParser[
             desc: str = i.xpath('string(.//span[@class="tc-title"][1])')
             date: str = i.xpath('string(.//span[@class="tc-date-time"][1])').strip()
 
-            tc_price = i.xpath('.//div[@class="tc-price"][1]')[0]
-            operator, val_str, currency_char = tc_price.xpath('string(.)').split()
-
-            # FunPay uses \u2212 instead of regular '-'
-            val = float(val_str) if operator != '\u2212' else -float(val_str)
-            value = MoneyValue(raw_source=html.tostring(tc_price, encoding='unicode'),
-                               value=val,
-                               character=currency_char)
+            money_value_str = i.xpath('string(.//div[@class="tc-price"][1])')
+            value = parse_money_value_string(money_value_str)
 
             recipient = i.xpath('string(.//span[@class="tc-payment-number"][1])') or None
 

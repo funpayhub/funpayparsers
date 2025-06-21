@@ -3,10 +3,9 @@ __all__ = ('OrderPreviewsParserOptions', 'OrderPreviewsParser', )
 from dataclasses import dataclass
 
 from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayObjectParser
-from funpayparsers.parsers.utils import extract_css_url
+from funpayparsers.parsers.utils import extract_css_url, parse_money_value_string
 from funpayparsers.types.orders import OrderPreview, OrderCounterpartyInfo
 from funpayparsers.types.enums import OrderStatus
-from funpayparsers.types.common import MoneyValue
 
 from lxml import html
 
@@ -35,9 +34,8 @@ class OrderPreviewsParser(FunPayObjectParser[
             status_class = o.xpath('string(.//div[contains(@class, "tc-status")][1]/@class)')
             status = OrderStatus.get_by_css_class(status_class)
 
-            val_str = o.xpath('string(.//div[contains(@class, "tc-price")])').strip()
-            val, char = val_str.split()
-            value = MoneyValue(raw_source=val_str, value=float(val), character=char)
+            val_str = o.xpath('string(.//div[contains(@class, "tc-price")])')
+            value = parse_money_value_string(val_str)
 
             user_tag = o.xpath('.//div[contains(@class, "media-user")][1]')[0]
             photo_style = o.xpath(
