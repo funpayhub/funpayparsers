@@ -1,4 +1,4 @@
-__all__ = ('extract_css_url', 'resolve_messages_senders', 'parse_date_string')
+__all__ = ('extract_css_url', 'resolve_messages_senders', 'parse_date_string', 'parse_money_value_string')
 
 import re
 from collections.abc import Iterable
@@ -7,9 +7,11 @@ from datetime import datetime, timedelta
 from copy import deepcopy
 
 from funpayparsers.types.enums import BadgeType
+from funpayparsers.types.common import MoneyValue
 
 
 CSS_URL_RE = re.compile(r'url\(([^()]+)\)', re.IGNORECASE)
+MONEY_VALUE_RE = re.compile(r'^([+\-]?\d+\.\d+)(.)$')
 
 
 TODAY_WORDS = ['сегодня', 'сьогодні', 'today']
@@ -163,3 +165,30 @@ def resolve_messages_senders(messages: Iterable[Message], /) -> None:
             continue
 
         msg.sender_username, msg.sender_id, msg.badge = username, userid, badge
+
+
+def parse_money_value_string(money_value_str: str, /, *, raw_source: str | None = None,
+                             raise_on_error: bool = False) -> MoneyValue | None:
+    """
+    Parse money value string.
+    Possible formats:
+    + 1.23 ₽,
+    - 1.23 $,
+    1.23 €,
+    etc.
+
+    Whitespaces between sign, value and currency char are allowed.
+    String will be stripped before parsing.
+    """
+
+    to_process = money_value_str.strip().replace(' ', '').replace('\u2212', '-')
+
+    if not (match := MONEY_VALUE_RE.fullmatch(to_process)):
+        if raise_on_error:
+            raise Exception(f'Unable to parse money value string \'{money_value_str}\'')
+        return None
+
+    value, currency = match.groups()
+
+    return MoneyValue(raw_source=raw_source if raw_source is not None else money_value_str,
+                      value=float(value), character=currency)
