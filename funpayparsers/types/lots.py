@@ -64,7 +64,7 @@ class LotPreview(FunPayObject):
     seller: LotSeller
     """Information about the seller of the lot."""
 
-    other_data: dict[str, str]
+    other_data: dict[str, str | int]
     """
     Additional data related to the lot, such as server ID, side ID, etc., 
         if applicable.

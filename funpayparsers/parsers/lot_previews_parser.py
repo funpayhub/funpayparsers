@@ -7,6 +7,7 @@ from funpayparsers.types.lots import LotPreview, LotSeller
 from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
 from dataclasses import dataclass
+import re
 from lxml import html
 
 
@@ -29,8 +30,12 @@ class LotPreviewsParser(FunPayObjectParser[list[LotPreview], LotPreviewsParserOp
             lot_id_str = lot_tag.get('href').split('id=')[1]
             desc: str | None = lot_tag.xpath('string(.//div[@class="tc-desc-text"][1])').strip() or None
 
-            amount_str: str = lot_tag.xpath('string(.//div[contains(@class, "tc-amount")][1])').strip().replace(' ', '')
-            amount = int(amount_str) if amount_str.isnumeric() else None
+            amount_tag = lot_tag.xpath('.//div[contains(@class, "tc-amount")][1]')
+            if amount_tag:
+                amount_str = amount_tag[0].get('data-s') or amount_tag[0].xpath('string(.)').strip().replace(' ', '')
+                amount = int(amount_str) if amount_str.isnumeric() else None
+            else:
+                amount = None
 
             price_tag = lot_tag.xpath('.//div[@class="tc-price"][1]')[0]
             price_parser = MoneyValueParser(html.tostring(price_tag, encoding='unicode'),
@@ -90,7 +95,11 @@ class LotPreviewsParser(FunPayObjectParser[list[LotPreview], LotPreviewsParserOp
         else:
             reviews_amount_txt = user_tag.xpath('string(.//div[@class="media-user-reviews"][1])')
 
-        reviews_amount = int(reviews_amount_txt) if reviews_amount_txt.isnumeric() else 0  # todo: parse review string
+        if reviews_amount_txt.isnumeric():
+            reviews_amount = int(reviews_amount_txt)
+        else:
+            reviews_amount = re.findall(r'\d+', reviews_amount_txt)
+            reviews_amount = int(reviews_amount[0]) if reviews_amount else 0
 
         result = LotSeller(
             raw_source=html.tostring(user_tag, encoding='unicode'),

@@ -79,6 +79,71 @@ common_lot_obj = LotPreview(
 )
 
 
+currency_lot_html = """
+<a href="https://funpay.com/chips/offer?id=15090731-20-20-97-0" class="tc-item" data-server="97">
+  <div class="tc-server hidden-xxs">Эллиан (F2P)</div>
+  <div class="tc-user">
+    <div class="tc-visible-inside visible-xxs">
+      <div class="tc-server-inside">Эллиан (F2P)</div>
+    </div>
+    <div class="media media-user offline style-circle">
+      <div class="media-left">
+        <div class="avatar-photo pseudo-a" tabindex="0" data-href="https://funpay.com/users/54321/" style="background-image: url(path/to/avatar);"></div>
+      </div>
+      <div class="media-body">
+        <div class="media-user-name">
+          <span class="pseudo-a" tabindex="0" data-href="https://funpay.com/users/54321/">SellerUsername</span>
+        </div>
+        <div class="media-user-reviews">2 отзыва</div>
+        <div class="media-user-info">на сайте 2 недели</div>
+      </div>
+    </div>
+  </div>
+  <div class="tc-amount" data-s="2000000">2 000 000 <span class="unit">кк</span>
+  </div>
+  <div class="tc-price" data-s="0">
+    <div>0.132 <span class="unit">₽</span>
+    </div>
+  </div>
+</a>
+"""
+
+currency_lot_obj = LotPreview(
+    raw_source='',
+    id='15090731-20-20-97-0',
+    auto_issue=False,
+    is_pinned=False,
+    desc=None,
+    amount=2000000,
+    price=MoneyValue(
+        raw_source='',
+        value=0.132,
+        character='₽'
+    ),
+    seller=LotSeller(
+        raw_source='',
+        id=54321,
+        username='SellerUsername',
+        online=False,
+        avatar_url='path/to/avatar',
+        register_date_text='на сайте 2 недели',
+        rating=0,
+        reviews_amount=2
+    ),
+    other_data={
+        'server': 97,
+    },
+    other_data_names={
+        'server': 'Эллиан (F2P)'
+    }
+)
+
+
 def test_common_lot_parsing():
     parser = LotPreviewsParser(common_lot_html, options=OPTIONS)
     assert parser.parse() == [common_lot_obj]
+
+
+def test_currency_lot_parsing():
+    parser = LotPreviewsParser(currency_lot_html, options=OPTIONS)
+    assert parser.parse() == [currency_lot_obj]
