@@ -1,8 +1,14 @@
 __all__ = ()
 
+from copy import deepcopy
+
 from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayObjectParser
 from funpayparsers.types.lots import LotPreview, LotSeller
+from funpayparsers.parsers.utils import extract_css_url
+from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
+from typing import Any
 from dataclasses import dataclass
+from lxml import html
 
 
 @dataclass(frozen=True)
@@ -17,66 +23,74 @@ class LotPreviewsParser(FunPayObjectParser[list[LotPreview], LotPreviewsParserOp
     def _parse(self):
         result = []
         skip_data = ['data-online', 'data-auto']
+        processed_users = {}
 
         for lot_tag in self._tree.xpath('//a[contains(@class, "tc-item")]'):
-            additional_data = {}
+            lot_id_str = lot_tag.get('href').split('id=')[1]
+            desc: str | None = lot_tag.xpath('string(.//div[@class="tc-desc-text"][1])').strip() or None
+
+            amount_str: str = lot_tag.xpath('string(.//div[contains(@class, "tc-amount")][1])').strip().replace(' ', '')
+            amount = int(amount_str) if amount_str.isnumeric() else None
 
             price_tag = lot_tag.xpath('.//div[@class="tc-price"][1]')[0]
-            user_tag = lot_tag.xpath('.//div[@class="tc-user"][1]')[0]
+            price_parser = MoneyValueParser(html.tostring(price_tag, encoding='unicode'),
+                                            options=MoneyValueParserOptions(
+                                                parsing_type=MoneyValueParsingType.FROM_LOT_PREVIEW,
+                                                parse_value_from_attribute=False if 'chips' in lot_tag.get('href') else True,
+                                            ) & self.options)
+            price = price_parser.parse()
 
-            username_tag = user_tag.xpath('.//div[@class="media-user-name"][1]/span[1]')[0]
-            avatar_tag_style = user_tag.xpath('string(.//div[contains(@class, "avatar-photo")][1]/@style)')
+            seller = self._parse_user_tag(lot_tag, processed_users)
 
-            desc: str | None = lot_tag.xpath('string(.//div[@class="tc-desc-text"][1])').strip() or None
-            auto_delivery = bool(lot_tag.get('data-auto'))
-            online = bool(lot_tag.get('data-online'))
-
-            lot_id = lot_tag.get('href').split('id=')[1]
-            lot_id = int(lot_id) if lot_id.isnumeric() else lot_id
-
-            price = float(price_tag.get('data-s'))
-            currency_char = price_tag.xpath('string(.//span[@class="unit"][1])')
-            price_dict = MoneyValueDict(value=price, currency_char=currency_char)
-
-            username = username_tag.text
-            user_id = int(username_tag.get('data-href').split('/')[-2])
-
-            stars_amount = int(lot_tag.xpath('count(.//i[@class="fas"])'))
-            if stars_amount:
-                reviews_amount_txt = lot_tag.xpath('string(.//span[@class="rating-mini-count"][1])')
-            else:
-                reviews_amount_txt = user_tag.xpath('string(.//div[@class="media-user-reviews"][1])')
-
-            reviews_amount = int(reviews_amount_txt) if reviews_amount_txt.isnumeric() else 0
-            registration_info = user_tag.xpath('string(.//div[@class="media-user-info"][1])')
-            avatar_path = cast(str, parse_avatar_link(avatar_tag_style))
-
+            additional_data = {}
             for key, data in lot_tag.attrib.items():
                 if not key.startswith('data-') or key in skip_data:
                     continue
-                additional_data[key] = int(data) if data.isnumeric() else data
+                additional_data[key.replace('data-', '')] = int(data) if data.isnumeric() else data
 
-            user_info = LotUserInfoDict(
-                raw_source=html.tostring(user_tag, encoding='unicode'),
-                id=user_id,
-                nickname=username,
-                reviews_amount=reviews_amount,
-                rating=stars_amount,
-                registration_date_tip=registration_info,
-                photo=avatar_path,
-                online=online
-            )
-
-            lot_obj = LotShortcutDict(
+            result.append(LotPreview(
                 raw_source=html.tostring(lot_tag, encoding='unicode'),
-                id=lot_id,
+                id=int(lot_id_str) if lot_id_str.isnumeric() else lot_id_str,
+                auto_issue=bool(lot_tag.get('data-auto')),
+                is_pinned=bool(lot_tag.get('data-user')),
                 desc=desc,
-                seller=user_info,
-                price=price_dict,
-                auto_delivery=auto_delivery,
-                data=additional_data
-            )
+                amount=amount,
+                price=price,
+                seller=seller,
+                other_data=additional_data,
+                other_data_names=...
+            ))
 
-            result.append(lot_obj)
+        return result
 
-        return LotShortcutsDict(raw_source=self._source, lots=result)
+    def _parse_user_tag(self, lot_tag, processed_users) -> LotSeller:
+        user_tag = lot_tag.xpath('.//div[@class="tc-user"][1]')[0]
+        username_tag = user_tag.xpath('.//div[@class="media-user-name"][1]/span[1]')[0]
+        user_id = int(username_tag.get('data-href').split('/')[-2])
+
+        if user_id in processed_users:
+            return deepcopy(processed_users[user_id])
+
+        avatar_tag_style = user_tag.xpath('string(.//div[contains(@class, "avatar-photo")][1]/@style)')
+
+        stars_amount = int(user_tag.xpath('count(.//i[@class="fas"])'))
+        if stars_amount:
+            reviews_amount_txt = user_tag.xpath('string(.//span[@class="rating-mini-count"][1])')
+        else:
+            reviews_amount_txt = user_tag.xpath('string(.//div[@class="media-user-reviews"][1])')
+
+        reviews_amount = int(reviews_amount_txt) if reviews_amount_txt.isnumeric() else 0  # todo: parse review string
+
+        result = LotSeller(
+            raw_source=html.tostring(user_tag, encoding='unicode'),
+            id=user_id if user_id is not None else int(username_tag.get('data-href').split('/')[-2]),
+            username=username_tag.text.strip(),
+            online=bool(lot_tag.get('data-online')),
+            avatar_url=extract_css_url(avatar_tag_style),
+            register_date_text=user_tag.xpath('string(.//div[@class="media-user-info"][1])'),
+            rating=stars_amount,
+            reviews_amount=reviews_amount
+        )
+
+        processed_users[user_id] = result
+        return result

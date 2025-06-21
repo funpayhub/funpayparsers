@@ -30,7 +30,7 @@ class LotSeller(FunPayObject):
     register_date_text: str
     """The seller's registration date (as a formatted string)."""
 
-    rating: Literal[0, 1, 2, 3, 4, 5]
+    rating: int
     """The seller's rating (number of stars)."""
 
     reviews_amount: int
@@ -51,12 +51,6 @@ class LotPreview(FunPayObject):
 
     is_pinned: bool
     """Whether this lot is pinned to the top of the list."""
-
-    server_id: int | None
-    """The ID of the server associated with the lot, if applicable."""
-
-    server_name: str | None
-    """The name of the server associated with the lot, if applicable."""
 
     desc: str | None
     """The description of the lot, if provided."""
