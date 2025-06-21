@@ -167,7 +167,8 @@ def resolve_messages_senders(messages: Iterable[Message], /) -> None:
         msg.sender_username, msg.sender_id, msg.badge = username, userid, badge
 
 
-def parse_money_value_string(money_value_str: str, /, *, raw_source: str | None = None) -> MoneyValue | None:
+def parse_money_value_string(money_value_str: str, /, *, raw_source: str | None = None,
+                             raise_on_error: bool = False) -> MoneyValue | None:
     """
     Parse money value string.
     Possible formats:
@@ -183,6 +184,8 @@ def parse_money_value_string(money_value_str: str, /, *, raw_source: str | None 
     to_process = money_value_str.strip().replace(' ', '').replace('\u2212', '-')
 
     if not (match := MONEY_VALUE_RE.fullmatch(to_process)):
+        if raise_on_error:
+            raise Exception(f'Unable to parse money value string \'{money_value_str}\'')
         return None
 
     value, currency = match.groups()
