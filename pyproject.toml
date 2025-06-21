@@ -6,7 +6,7 @@ version = "0.1.0dev1"
 readme = "README.md"
 license = "MIT"
 
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 dependencies = [
     "selectolax>=0.3.31",
 ]
@@ -54,80 +54,18 @@ docs = [
 requires = ["setuptools >= 77.0.3"]
 build-backend = "setuptools.build_meta"
 
+
 [tool.ruff]
 line-length = 88
 
-exclude = [
-    "tests/",
-    "test_*.py",
-]
-
 [tool.ruff.format]
 quote-style = "single"
+line-ending = "lf"
 
 [tool.ruff.lint]
-select = [
-    "F",
-    "E",
-    "W",
-    "I",
-    "N",
-    "D",
-    "YTT",
-    "ANN",
-    "B",
-    "A",
-    "COM",
-    "C4",
-    "DTZ",
-    "ISC",
-    "ICN",
-    "INP",
-    "PIE",
-    "PT",
-    "RET",
-    "SIM",
-    "TID",
-    "ARG",
-    "PLC",
-    "PLE",
-    "PLR",
-    "PLW",
-    "RUF",
-]
-ignore = [
-    "F401",
-    "D105",
-    "D107",
-    "D203",
-    "D212",
-    "UP006",
-    "UP007",
-    "D400",
-    "D406",
-    "D407",
-    "PLC1901",
-    "UP035",
-    "D100",
-    "D205",
-    "D104",
-    "RUF001",
-    "D200",
-    "D101", # временно в игноре, это докстроки
-    "D102", # временно в игноре, это докстроки
-    "D103", # временно в игноре, это докстроки
-    "W291",
-]
-unfixable = ["F401", "F841"]
+select = ["I"]
 
-[tool.ruff.lint.per-file-ignores]
-"**/__init__.py" = ["F403"]
-
-[tool.isort]
-sections = ["STDLIB", "THIRDPARTY", "LOCALFOLDER"]
-lines-between-types = 1
-multi_line_output = 3
-
-
-[tool.ruff.lint.pyupgrade]
-keep-runtime-typing = true
+[tool.ruff.lint.isort]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+length-sort = true
+lines-after-imports = 2
