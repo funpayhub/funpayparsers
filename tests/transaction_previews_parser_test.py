@@ -74,7 +74,7 @@ cancelled_withdrawal_transaction_obj = TransactionPreview(
     status=TransactionStatus.CANCELLED,
     amount=MoneyValue(
         raw_source='',
-        value=1234.56,
+        value=-1234.56,
         character='₽'
     ),
     payment_method=PaymentMethod.CARD_RUB,
