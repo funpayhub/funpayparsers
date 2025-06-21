@@ -6,7 +6,7 @@ version = "0.1.0dev1"
 readme = "README.md"
 license = "MIT"
 
-requires-python = ">=3.13"
+requires-python = ">=3.9"
 dependencies = [
     "selectolax>=0.3.31",
 ]
@@ -57,17 +57,38 @@ build-backend = "setuptools.build_meta"
 
 [tool.ruff]
 line-length = 88
-fix = true
+exclude = [
+    ".git",
+    "build",
+    "dist",
+    "venv",
+    ".venv",
+    "docs",
+    "tests",
+    "*.egg-info"
+]
+
 
 [tool.ruff.format]
 quote-style = "single"
 line-ending = "lf"
 indent-style = "space"
-exclude = ["docs/*"]
 
 
 [tool.ruff.lint]
-select = ["I", "N"]
+select = [
+    "I",
+    "N",
+    "COM",
+    "C4",
+    "E",
+    "F",
+    "T20",
+    "RET",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F403"]
 
 [tool.ruff.lint.isort]
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
@@ -76,3 +97,4 @@ force-to-top = ["typing", "dataclasses"]
 length-sort = true
 lines-between-types = 0
 lines-after-imports = 2
+split-on-trailing-comma = true
