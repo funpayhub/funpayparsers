@@ -61,8 +61,8 @@ class LotPreview(FunPayObject):
     price: MoneyValue
     """The price of the lot."""
 
-    seller: LotSeller
-    """Information about the seller of the lot."""
+    seller: LotSeller | None
+    """Information about the lot seller, if applicable."""
 
     other_data: dict[str, str | int]
     """

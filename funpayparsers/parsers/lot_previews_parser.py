@@ -78,8 +78,12 @@ class LotPreviewsParser(FunPayObjectParser[list[LotPreview], LotPreviewsParserOp
         return result
 
     @staticmethod
-    def _parse_user_tag(lot_tag, processed_users) -> LotSeller:
-        user_tag = lot_tag.xpath('.//div[@class="tc-user"][1]')[0]
+    def _parse_user_tag(lot_tag, processed_users) -> LotSeller | None:
+        user_tag = lot_tag.xpath('.//div[@class="tc-user"][1]')
+        if not user_tag:
+            return None
+
+        user_tag = user_tag[0]
         username_tag = user_tag.xpath('.//div[@class="media-user-name"][1]/span[1]')[0]
         user_id = int(username_tag.get('data-href').split('/')[-2])
 
