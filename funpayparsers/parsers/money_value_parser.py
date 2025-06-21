@@ -8,11 +8,11 @@ from enum import Enum
 
 
 class MoneyValueParsingType(Enum):
-    FROM_ORDER_PREVIEW = 0
-    FROM_TRANSACTION_PREVIEW = 1
-    FROM_LOT_PREVIEW = 2
-    FROM_LOT = 3
-    FROM_STRING = 4
+    FROM_STRING = 0
+    FROM_ORDER_PREVIEW = 1
+    FROM_TRANSACTION_PREVIEW = 2
+    FROM_LOT_PREVIEW = 3
+
 
 
 @dataclass(frozen=True)
@@ -29,7 +29,6 @@ class MoneyValueParser(FunPayObjectParser[MoneyValue, MoneyValueParserOptions]):
             MoneyValueParsingType.FROM_ORDER_PREVIEW: self._parse_order_preview_type,
             MoneyValueParsingType.FROM_TRANSACTION_PREVIEW: self._parse_transaction_preview_type,
             MoneyValueParsingType.FROM_LOT_PREVIEW: self._parse_lot_preview_type,
-            MoneyValueParsingType.FROM_LOT: self._parse_lot_type,
             MoneyValueParsingType.FROM_STRING: self._parse_string_type,
         }
 
@@ -40,9 +39,6 @@ class MoneyValueParser(FunPayObjectParser[MoneyValue, MoneyValueParserOptions]):
         ...
 
     def _parse_lot_preview_type(self):
-        ...
-
-    def _parse_lot_type(self):
         ...
 
     def _parse_string_type(self):
