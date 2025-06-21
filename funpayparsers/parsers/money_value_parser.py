@@ -18,6 +18,17 @@ class MoneyValueParsingType(Enum):
 @dataclass(frozen=True)
 class MoneyValueParserOptions(FunPayObjectParserOptions):
     parsing_type: MoneyValueParsingType = MoneyValueParsingType.FROM_STRING
+    parse_value_from_attribute: bool = True
+    """
+    Take numeric value from node attribute or not.
+    Uses when parsing from lot preview.
+    This parameter is necessary because standard lots have an exact price in the data-s attribute, 
+    while currency lots have a minimum purchase amount in the data-s attribute.
+    
+    If parsing standard lot, set it to True.
+    If parsing currency lot, set it to False.
+    Defaults to True.
+    """
 
 
 class MoneyValueParser(FunPayObjectParser[MoneyValue, MoneyValueParserOptions]):
