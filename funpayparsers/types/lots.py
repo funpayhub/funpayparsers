@@ -30,7 +30,7 @@ class LotSeller(FunPayObject):
     register_date_text: str
     """The seller's registration date (as a formatted string)."""
 
-    rating: Literal[0, 1, 2, 3, 4, 5]
+    rating: int
     """The seller's rating (number of stars)."""
 
     reviews_amount: int
@@ -52,12 +52,6 @@ class LotPreview(FunPayObject):
     is_pinned: bool
     """Whether this lot is pinned to the top of the list."""
 
-    server_id: int | None
-    """The ID of the server associated with the lot, if applicable."""
-
-    server_name: str | None
-    """The name of the server associated with the lot, if applicable."""
-
     desc: str | None
     """The description of the lot, if provided."""
 
@@ -70,7 +64,7 @@ class LotPreview(FunPayObject):
     seller: LotSeller
     """Information about the seller of the lot."""
 
-    other_data: dict[str, str]
+    other_data: dict[str, str | int]
     """
     Additional data related to the lot, such as server ID, side ID, etc., 
         if applicable.
@@ -81,3 +75,10 @@ class LotPreview(FunPayObject):
     Human-readable names corresponding to entries in `other_data`, if applicable.
     Not all entries, that are exists in other_data can be found here.
     """
+
+    def __str__(self):
+        return (f'<LotPreview (id: {self.id}) '
+                f'[{"pinned, " if self.is_pinned else ""}{"auto issue" if self.auto_issue else ""}]>] '
+                f'{(self.desc + " ") if self.desc is not None else ""}'
+                f'{(str(self.amount) + "pcs., ") if self.amount is not None else ""}'
+                f'{(str(self.price) + "/pcs. ") if self.price else ""}>')
