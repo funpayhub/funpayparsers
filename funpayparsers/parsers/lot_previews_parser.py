@@ -22,13 +22,13 @@ class LotPreviewsParser(FunPayObjectParser[list[LotPreview], LotPreviewsParserOp
 
     def _parse(self):
         result = []
-        skip_data = ['data-online', 'data-auto']
-        skip_match_data = ['user', 'online', 'auto']
+        skip_data = ['data-online', 'data-auto']  # don't add these fields to LotPreview.other_data
+        skip_match_data = ['user', 'online', 'auto']  # don't look for human-readable names for this data fields
         processed_users = {}
 
         for lot_tag in self.tree.xpath('//a[contains(@class, "tc-item")]'):
             lot_id_str = lot_tag.get('href').split('id=')[1]
-            desc: str | None = lot_tag.xpath('string(.//div[@class="tc-desc-text"][1])').strip() or None
+            desc = lot_tag.xpath('string(.//div[@class="tc-desc-text"][1])').strip() or None
 
             amount_tag = lot_tag.xpath('.//div[contains(@class, "tc-amount")][1]')
             if amount_tag:
@@ -38,20 +38,19 @@ class LotPreviewsParser(FunPayObjectParser[list[LotPreview], LotPreviewsParserOp
                 amount = None
 
             price_tag = lot_tag.xpath('.//div[@class="tc-price"][1]')[0]
-            price_parser = MoneyValueParser(html.tostring(price_tag, encoding='unicode'),
-                                            options=MoneyValueParserOptions(
-                                                parsing_type=MoneyValueParsingType.FROM_LOT_PREVIEW,
-                                                parse_value_from_attribute=False if 'chips' in lot_tag.get('href') else True,
-                                            ) & self.options)
-            price = price_parser.parse()
+            price = MoneyValueParser(html.tostring(price_tag, encoding='unicode'),
+                                     options=MoneyValueParserOptions(
+                                         parsing_type=MoneyValueParsingType.FROM_LOT_PREVIEW,
+                                         parse_value_from_attribute=False if 'chips' in lot_tag.get('href') else True,
+                                     ) & self.options).parse()
 
             seller = self._parse_user_tag(lot_tag, processed_users)
 
-            additional_data = {}
-            for key, data in lot_tag.attrib.items():
-                if not key.startswith('data-') or key in skip_data:
-                    continue
-                additional_data[key.replace('data-', '')] = int(data) if data.isnumeric() else data
+            additional_data = {
+                key.replace('data-', ''): int(data) if data.isnumeric() else data
+                for key, data in lot_tag.attrib.items()
+                if key.startswith('data-') and key not in skip_data
+            }
 
             names = {}
             for data_key in additional_data:
