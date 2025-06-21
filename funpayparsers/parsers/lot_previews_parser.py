@@ -22,9 +22,10 @@ class LotPreviewsParser(FunPayObjectParser[list[LotPreview], LotPreviewsParserOp
     def _parse(self):
         result = []
         skip_data = ['data-online', 'data-auto']
+        skip_match_data = ['user', 'online', 'auto']
         processed_users = {}
 
-        for lot_tag in self._tree.xpath('//a[contains(@class, "tc-item")]'):
+        for lot_tag in self.tree.xpath('//a[contains(@class, "tc-item")]'):
             lot_id_str = lot_tag.get('href').split('id=')[1]
             desc: str | None = lot_tag.xpath('string(.//div[@class="tc-desc-text"][1])').strip() or None
 
@@ -47,6 +48,16 @@ class LotPreviewsParser(FunPayObjectParser[list[LotPreview], LotPreviewsParserOp
                     continue
                 additional_data[key.replace('data-', '')] = int(data) if data.isnumeric() else data
 
+            names = {}
+            for data_key in additional_data:
+                if data_key in skip_match_data:
+                    continue
+                div = lot_tag.xpath(f'.//div[contains(@class, "tc-{data_key}")]')
+                if not div:
+                    continue
+                div = div[0]
+                names[data_key] = div.xpath('string(.)')
+
             result.append(LotPreview(
                 raw_source=html.tostring(lot_tag, encoding='unicode'),
                 id=int(lot_id_str) if lot_id_str.isnumeric() else lot_id_str,
@@ -57,7 +68,7 @@ class LotPreviewsParser(FunPayObjectParser[list[LotPreview], LotPreviewsParserOp
                 price=price,
                 seller=seller,
                 other_data=additional_data,
-                other_data_names=...
+                other_data_names=names
             ))
 
         return result

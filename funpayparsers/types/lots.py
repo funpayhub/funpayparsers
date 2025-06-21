@@ -75,3 +75,10 @@ class LotPreview(FunPayObject):
     Human-readable names corresponding to entries in `other_data`, if applicable.
     Not all entries, that are exists in other_data can be found here.
     """
+
+    def __str__(self):
+        return (f'<LotPreview (id: {self.id}) '
+                f'[{"pinned, " if self.is_pinned else ""}{"auto issue" if self.auto_issue else ""}]>] '
+                f'{(self.desc + " ") if self.desc is not None else ""}'
+                f'{(str(self.amount) + "pcs., ") if self.amount is not None else ""}'
+                f'{(str(self.price) + "/pcs. ") if self.price else ""}>')
