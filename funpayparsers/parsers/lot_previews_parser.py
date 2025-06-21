@@ -1,4 +1,4 @@
-__all__ = ()
+__all__ = ('LotPreviewsParser', 'LotPreviewsParserOptions')
 
 from copy import deepcopy
 
@@ -6,7 +6,6 @@ from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayObjectPa
 from funpayparsers.types.lots import LotPreview, LotSeller
 from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
-from typing import Any
 from dataclasses import dataclass
 from lxml import html
 
@@ -63,7 +62,8 @@ class LotPreviewsParser(FunPayObjectParser[list[LotPreview], LotPreviewsParserOp
 
         return result
 
-    def _parse_user_tag(self, lot_tag, processed_users) -> LotSeller:
+    @staticmethod
+    def _parse_user_tag(lot_tag, processed_users) -> LotSeller:
         user_tag = lot_tag.xpath('.//div[@class="tc-user"][1]')[0]
         username_tag = user_tag.xpath('.//div[@class="media-user-name"][1]/span[1]')[0]
         user_id = int(username_tag.get('data-href').split('/')[-2])
