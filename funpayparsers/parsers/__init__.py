@@ -4,4 +4,3 @@ from .messages_parser import *
 from .badge_parser import *
 from .order_previews_parser import *
 from .transaction_previews_parser import *
-from .money_value_parser import *
