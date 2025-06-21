@@ -1,4 +1,4 @@
-__all__ = ('MoneyValueParser', 'MoneyValueParserOptions')
+__all__ = ('MoneyValueParser', 'MoneyValueParserOptions', 'MoneyValueParsingType')
 
 from lxml import html
 from dataclasses import dataclass
