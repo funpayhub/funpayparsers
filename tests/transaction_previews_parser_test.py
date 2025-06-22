@@ -1,7 +1,7 @@
 from funpayparsers.parsers.transaction_previews_parser import (TransactionPreviewsParser,
                                                                TransactionPreviewsParserOptions)
 from funpayparsers.types import PaymentMethod, TransactionStatus
-from funpayparsers.types.finances import TransactionPreview
+from funpayparsers.types.finances import TransactionPreview, TransactionPreviewsChain
 from funpayparsers.types.common import MoneyValue
 
 
@@ -24,22 +24,36 @@ complete_order_transaction_html = """
     <i class="fa fa-chevron-right"></i>
   </div>
 </div>
+
+<form method="post" class="dyn-table-form" action="https://funpay.com/en/users/transactions">
+    <input type="hidden" name="user_id" value="12345">
+    <input type="hidden" name="continue" value="101010">
+    <input type="hidden" name="filter" value="">
+</form>
 """
 
 
-complete_order_transaction_obj = TransactionPreview(
+complete_order_transaction_obj = TransactionPreviewsChain(
     raw_source='',
-    id=12345,
-    date_text='20 января 2024, 23:11',
-    desc='Заказ #ABCDEFGH',
-    status=TransactionStatus.COMPLETED,
-    amount=MoneyValue(
-        raw_source='',
-        value=1.23,
-        character='₽'
-    ),
-    payment_method=None,
-    withdrawal_number=None
+    transactions=[
+        TransactionPreview(
+            raw_source='',
+            id=12345,
+            date_text='20 января 2024, 23:11',
+            desc='Заказ #ABCDEFGH',
+            status=TransactionStatus.COMPLETED,
+            amount=MoneyValue(
+                raw_source='',
+                value=1.23,
+                character='₽'
+            ),
+            payment_method=None,
+            withdrawal_number=None
+        )
+    ],
+    user_id=12345,
+    filter="",
+    next_transaction_id=101010
 )
 
 
@@ -65,28 +79,35 @@ cancelled_withdrawal_transaction_html = """
 </div>
 """
 
-
-cancelled_withdrawal_transaction_obj = TransactionPreview(
+cancelled_withdrawal_transaction_obj = TransactionPreviewsChain(
     raw_source='',
-    id=12345,
-    date_text='20 января 2024, 23:11',
-    desc='Вывод денег #54321',
-    status=TransactionStatus.CANCELLED,
-    amount=MoneyValue(
-        raw_source='',
-        value=-1234.56,
-        character='₽'
-    ),
-    payment_method=PaymentMethod.CARD_RUB,
-    withdrawal_number='123456••••••7890'
+    transactions=[
+        TransactionPreview(
+            raw_source='',
+            id=12345,
+            date_text='20 января 2024, 23:11',
+            desc='Вывод денег #54321',
+            status=TransactionStatus.CANCELLED,
+            amount=MoneyValue(
+                raw_source='',
+                value=-1234.56,
+                character='₽'
+            ),
+            payment_method=PaymentMethod.CARD_RUB,
+            withdrawal_number='123456••••••7890'
+        )
+    ],
+    user_id=None,
+    filter=None,
+    next_transaction_id=None
 )
 
 
 def test_complete_order_transaction_parsing():
     parser = TransactionPreviewsParser(complete_order_transaction_html, options=OPTIONS)
-    assert parser.parse() == [complete_order_transaction_obj]
+    assert parser.parse() == complete_order_transaction_obj
 
 
 def test_cancelled_withdrawal_transaction_parsing():
     parser = TransactionPreviewsParser(cancelled_withdrawal_transaction_html, options=OPTIONS)
-    assert parser.parse() == [cancelled_withdrawal_transaction_obj]
+    assert parser.parse() == cancelled_withdrawal_transaction_obj
