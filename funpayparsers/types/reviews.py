@@ -55,3 +55,11 @@ class Review(FunPayObject):
 
     reply: str | None
     """Sellers reply to this review."""
+
+
+@dataclass
+class ReviewsChain(FunPayObject):  # todo: add docs
+    reviews: list[Review]
+    user_id: int | None
+    filter: str | None
+    next_value: str | None

@@ -70,3 +70,9 @@ class OrderPreview(FunPayObject):
     def __str__(self):
         return (f'<{self.amount} {self.status.name} order {self.id} '
                 f'dated {self.date_text}: {self.desc}. ({self.category_text})>')
+
+
+@dataclass
+class OrderPreviewsChain(FunPayObject):  # todo: add docs
+    orders: list[OrderPreview]
+    next_order_id: str | None
