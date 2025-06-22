@@ -41,3 +41,11 @@ class TransactionPreview(FunPayObject):
 class Transaction(FunPayObject):
     status: TransactionStatus
     data: dict[str, str]
+
+
+@dataclass
+class TransactionPreviewsChain(FunPayObject):
+    transactions: list[TransactionPreview]
+    user_id: int | None
+    filter: str | None
+    next_transaction_id: int | None

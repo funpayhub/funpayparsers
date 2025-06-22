@@ -4,7 +4,7 @@ __all__ = (
 )
 
 from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayObjectParser
-from funpayparsers.types.review import Review
+from funpayparsers.types.reviews import Review
 from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
 from funpayparsers.types.common import MoneyValue
 from dataclasses import dataclass
