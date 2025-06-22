@@ -35,23 +35,23 @@ class Review(FunPayObject):
     order_total: MoneyValue | None
     """Order total amount (price) associated with this review."""
 
-    order_category: str | None
+    category_str: str | None
     """Order category name associated with this review."""
 
     sender_username: str | None
     """Order sender username."""
 
     sender_id: int | None
-    """Order sender ID."""
+    """Order sender ID, if provided."""
 
     sender_avatar_url: str | None
-    """Order sender avatar URL."""
+    """Order sender avatar URL, if available."""
 
     order_id: str | None
-    """Order ID associated with this review."""
+    """Order ID associated with this review, if provided."""
 
     order_time_string: str | None
-    """Order time string associated with this review."""
+    """Order time string associated with this review, if provided."""
 
-    response: str | None
-    """Sellers response to this review."""
+    reply: str | None
+    """Sellers reply to this review."""
