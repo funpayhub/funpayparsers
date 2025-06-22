@@ -1,5 +1,6 @@
 __all__ = ('TransactionPreview',
-           'Transaction',)
+           'Transaction',
+           'TransactionPreviewsChain')
 
 
 from dataclasses import dataclass

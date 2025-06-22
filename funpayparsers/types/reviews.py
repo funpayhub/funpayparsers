@@ -1,4 +1,4 @@
-__all__ = ('Review',)
+__all__ = ('Review', 'ReviewsChain')
 
 
 from dataclasses import dataclass
