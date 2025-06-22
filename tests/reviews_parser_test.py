@@ -47,13 +47,13 @@ public_review_obj = Review(
     text='ReviewText',
     order_total=MoneyValue(
         raw_source='',
-        value=100,
+        value=100.0,
         character='₽'
     ),
     order_category='Game',
     sender_username=None,
     sender_id=None,
-    sender_avatar_url=None,
+    sender_avatar_url='/img/layout/avatar.png',
     order_id=None,
     order_time_string='2 месяца назад',
     response='ReviewReply'
@@ -96,7 +96,7 @@ my_public_review_html = """
     <div class="review-item-row">
       <div class="h5 mb5">Ответ продавца</div>
       <div class="review-item-answer review-compiled-reply">
-        <div>ReviewReply️</div>
+        <div>ReviewReply</div>
       </div>
     </div>
   </div>
@@ -109,7 +109,7 @@ my_public_review_obj = Review(
     text='ReviewText',
     order_total=MoneyValue(
         raw_source='',
-        value=50,
+        value=50.0,
         character='₽'
     ),
     order_category='Game',
@@ -152,7 +152,7 @@ order_page_review_html = """
     <div class="review-item-row" data-row="reply" data-author="12345">
       <div class="h5 mb5">Ответ продавца</div>
       <div class="review-item-answer review-compiled-reply">
-        <div>ReviewReply️</div>
+        <div>ReviewReply</div>
         <div class="review-controls">
           <button class="btn btn-primary btn-sm action" data-action="edit">Редактировать</button>
           <button class="btn btn-danger btn-sm action" data-action="delete">Удалить</button>
@@ -160,7 +160,7 @@ order_page_review_html = """
       </div>
       <div class="review-item-answer-form review-editor-reply hidden">
         <div class="form-group">
-          <textarea class="form-control" name="text" cols="30" rows="6">ReviewReply️️</textarea>
+          <textarea class="form-control" name="text" cols="30" rows="6">ReviewReply</textarea>
           <div class="help-form">Ваш ответ будет виден всем после публикации</div>
         </div>
         <div class="form-group">
@@ -179,7 +179,7 @@ order_page_review_obj = Review(
     text='ReviewText',
     order_total=MoneyValue(
         raw_source='',
-        value=500,
+        value=500.0,
         character='$'
     ),
     order_category='Game',
