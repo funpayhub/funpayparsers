@@ -1,5 +1,5 @@
 from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParserOptions
-from funpayparsers.types.review import Review
+from funpayparsers.types.reviews import Review
 from funpayparsers.types.common import MoneyValue
 
 
