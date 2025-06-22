@@ -1,5 +1,9 @@
+from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParserOptions
 from funpayparsers.types.review import Review
 from funpayparsers.types.common import MoneyValue
+
+
+OPTIONS = ReviewsParserOptions(empty_raw_source=True)
 
 
 public_review_html = """
@@ -186,3 +190,18 @@ order_page_review_obj = Review(
     order_time_string='2 месяца назад',
     response='ReviewReply'
 )
+
+
+def test_public_reviews_parsing():
+    parser = ReviewsParser(public_review_html, options=OPTIONS)
+    assert parser.parse() == [public_review_obj]
+
+
+def test_my_public_reviews_parsing():
+    parser = ReviewsParser(my_public_review_html, options=OPTIONS)
+    assert parser.parse() == [my_public_review_obj]
+
+
+def test_order_page_review_parsing():
+    parser = ReviewsParser(order_page_review_html, options=OPTIONS)
+    assert parser.parse() == [order_page_review_obj]
