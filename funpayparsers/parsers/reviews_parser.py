@@ -37,25 +37,24 @@ class ReviewsParser(FunPayObjectParser[
         return result
 
     def _parse_common_review(self, review_div):
-        inner_review_div = review_div.xpath('.//div[contains(@class, "review-item")][1]')[0]
-        date_str, text, game, value = self._parse_review_meta(inner_review_div)
-        rating = inner_review_div.xpath('.//div['
-                                        'contains(@class, "rating1") or '
-                                        'contains(@class, "rating2") or '
-                                        'contains(@class, "rating3") or '
-                                        'contains(@class, "rating4") or '
-                                        'contains(@class, "rating5")][1]')[0]
+        date_str, text, game, value = self._parse_review_meta(review_div)
+        rating = review_div.xpath('.//div['
+                                  'contains(@class, "rating1") or '
+                                  'contains(@class, "rating2") or '
+                                  'contains(@class, "rating3") or '
+                                  'contains(@class, "rating4") or '
+                                  'contains(@class, "rating5")][1]')[0]
         rating = int(rating.get('class')[-1])
 
-        order_id = inner_review_div.xpath('.//div[contains(@class, "review-item-order")][1]')
-        order_id = None if not order_id else order_id[0].xpath('string(.)').strip().split()[1][1:]
+        order_id_div = review_div.xpath('.//div[contains(@class, "review-item-order")][1]')
+        order_id = None if not order_id_div else order_id_div[0].xpath('string(.)').strip().split()[1][1:]
 
-        user_tag = inner_review_div.xpath('.//div[contains(@class, "review-item-user")]')[0]
+        user_tag = review_div.xpath('.//div[contains(@class, "review-item-user")]')[0]
         avatar_url = user_tag.xpath('.//img')[0].get('src')
         username = user_tag.xpath('string(.//div[contains(@class, "media-user-name")])').strip() or None
         user_id = int(user_tag.xpath('.//a')[0].get('href').split('/')[-2]) if username else None
 
-        reply = self._parse_reply(inner_review_div)
+        reply = self._parse_reply(review_div)
 
         return Review(
             raw_source=html.tostring(review_div, encoding='unicode'),
@@ -72,15 +71,14 @@ class ReviewsParser(FunPayObjectParser[
         )
 
     def _parse_order_page_review(self, order_id: str, rating: str, review_div) -> Review:
-        inner_review_div = review_div.xpath('.//div[contains(@class, "review-item")][1]')[0]
         author_id = int(
-            inner_review_div.xpath('.//div[contains(@class, "review-item-row") and @data-row="review"]')[0]
+            review_div.xpath('.//div[contains(@class, "review-item-row") and @data-row="review"]')[0]
             .get('data-author')
         )
 
         if rating:  # if review exists
             rating = int(rating)
-            date_str, text, game, value = self._parse_review_meta(inner_review_div)
+            date_str, text, game, value = self._parse_review_meta(review_div)
 
             user_tag = review_div.xpath('.//div[contains(@class, "review-item-user")]')[0]
             avatar_url = user_tag.xpath('.//img')[0].get('src')
@@ -88,8 +86,7 @@ class ReviewsParser(FunPayObjectParser[
         else:
             rating = text = value = game = avatar_url = date_str = None
 
-        reply = self._parse_reply(inner_review_div)
-
+        reply = self._parse_reply(review_div)
 
         return Review(
             raw_source=html.tostring(review_div, encoding='unicode'),
