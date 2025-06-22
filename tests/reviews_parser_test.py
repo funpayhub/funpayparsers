@@ -50,13 +50,13 @@ public_review_obj = Review(
         value=100.0,
         character='₽'
     ),
-    order_category='Game',
+    category_str='Game',
     sender_username=None,
     sender_id=None,
     sender_avatar_url='/img/layout/avatar.png',
     order_id=None,
     order_time_string='2 месяца назад',
-    response='ReviewReply'
+    reply='ReviewReply'
 )
 
 
@@ -112,13 +112,13 @@ my_public_review_obj = Review(
         value=50.0,
         character='₽'
     ),
-    order_category='Game',
+    category_str='Game',
     sender_username='SenderUername',
     sender_id=54321,
     sender_avatar_url='/img/layout/avatar.png',
     order_id='ABCDEFGH',
     order_time_string='20 января в 12:58, 3 месяца назад',
-    response='ReviewReply'
+    reply='ReviewReply'
 )
 
 
@@ -182,13 +182,13 @@ order_page_review_obj = Review(
         value=500.0,
         character='$'
     ),
-    order_category='Game',
+    category_str='Game',
     sender_username=None,
     sender_id=54321,
     sender_avatar_url='/img/layout/avatar.png',
     order_id='ABCDEFGH',
     order_time_string='2 месяца назад',
-    response='ReviewReply'
+    reply='ReviewReply'
 )
 
 

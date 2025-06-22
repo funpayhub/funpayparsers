@@ -59,15 +59,15 @@ class ReviewsParser(FunPayObjectParser[
         return Review(
             raw_source=html.tostring(review_div, encoding='unicode'),
             rating=rating,
-            text=text,
+            text=text.strip(),
             order_total=value,
-            order_category=game,
+            category_str=game,
             sender_username=username,
             sender_id=user_id,
             sender_avatar_url=avatar_url,
             order_id=order_id,
             order_time_string=date_str,
-            response=reply
+            reply=reply
         )
 
     def _parse_order_page_review(self, order_id: str, rating: str, review_div) -> Review:
@@ -91,15 +91,15 @@ class ReviewsParser(FunPayObjectParser[
         return Review(
             raw_source=html.tostring(review_div, encoding='unicode'),
             rating=rating,
-            text=text,
+            text=text.strip(),
             order_total=value,
-            order_category=game,
+            category_str=game,
             sender_username=self.options.context.get('sender_username'),
             sender_id=author_id,
             sender_avatar_url=avatar_url,
             order_id=order_id,
             order_time_string=date_str,
-            response=reply
+            reply=reply
         )
 
     def _parse_review_meta(self, review_div) -> tuple[str, str, str, MoneyValue]:
@@ -107,7 +107,8 @@ class ReviewsParser(FunPayObjectParser[
         text = review_div.xpath('string(.//div[contains(@class, "review-item-text")])')[1:-1]
 
         review_details_str = review_div.xpath('string(.//div[contains(@class, "review-item-detail")][1])')
-        game, value = review_details_str.split(',')
+        split = review_details_str.split(', ')
+        game, value = ', '.join(split[:-1]), split[-1]
         value = MoneyValueParser(value.strip(), options=MoneyValueParserOptions(
             parsing_type=MoneyValueParsingType.FROM_STRING
         ) & self.options).parse()

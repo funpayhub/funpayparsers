@@ -35,7 +35,7 @@ class Review(FunPayObject):
     order_total: MoneyValue | None
     """Order total amount (price) associated with this review."""
 
-    order_category: str | None
+    category_str: str | None
     """Order category name associated with this review."""
 
     sender_username: str | None
@@ -53,5 +53,5 @@ class Review(FunPayObject):
     order_time_string: str | None
     """Order time string associated with this review, if provided."""
 
-    response: str | None
-    """Sellers response to this review."""
+    reply: str | None
+    """Sellers reply to this review."""
