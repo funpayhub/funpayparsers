@@ -48,7 +48,7 @@ class ReviewsParser(FunPayObjectParser[ReviewsChain, ReviewsParserOptions]):
             reviews=result,
             user_id=int(user_id[0].get('value')) if user_id else None,
             filter=filter_[0].get('value') if filter_ else None,
-            next_value=int(next_id[0].get('value')) if next_id else None
+            next_value=next_id[0].get('value') if next_id else None
         )
 
     def _parse_common_review(self, review_div):

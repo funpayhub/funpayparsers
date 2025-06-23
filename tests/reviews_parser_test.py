@@ -1,5 +1,5 @@
 from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParserOptions
-from funpayparsers.types.reviews import Review
+from funpayparsers.types.reviews import Review, ReviewsChain
 from funpayparsers.types.common import MoneyValue
 
 
@@ -39,24 +39,35 @@ public_review_html = """
     </div>
   </div>
 </div>
+<input type="hidden" name="user_id" value="12345">
+<input type="hidden" name="continue" value="=nextid">
+<input type="hidden" name="filter" value="">
 """
 
-public_review_obj = Review(
+public_review_obj = ReviewsChain(
     raw_source='',
-    rating=5,
-    text='ReviewText',
-    order_total=MoneyValue(
-        raw_source='',
-        value=100.0,
-        character='₽'
-    ),
-    category_str='Game',
-    sender_username=None,
-    sender_id=None,
-    sender_avatar_url='/img/layout/avatar.png',
-    order_id=None,
-    order_time_string='2 месяца назад',
-    reply='ReviewReply'
+    reviews=[
+        Review(
+            raw_source='',
+            rating=5,
+            text='ReviewText',
+            order_total=MoneyValue(
+                raw_source='',
+                value=100.0,
+                character='₽'
+            ),
+            category_str='Game',
+            sender_username=None,
+            sender_id=None,
+            sender_avatar_url='/img/layout/avatar.png',
+            order_id=None,
+            order_time_string='2 месяца назад',
+            reply='ReviewReply'
+        )
+    ],
+    user_id=12345,
+    filter="",
+    next_value="=nextid"
 )
 
 
@@ -103,22 +114,29 @@ my_public_review_html = """
 </div>
 """
 
-my_public_review_obj = Review(
+my_public_review_obj = ReviewsChain(
     raw_source='',
-    rating=3,
-    text='ReviewText',
-    order_total=MoneyValue(
-        raw_source='',
-        value=50.0,
-        character='₽'
-    ),
-    category_str='Game',
-    sender_username='SenderUername',
-    sender_id=54321,
-    sender_avatar_url='/img/layout/avatar.png',
-    order_id='ABCDEFGH',
-    order_time_string='20 января в 12:58, 3 месяца назад',
-    reply='ReviewReply'
+    reviews=[
+        Review(
+            raw_source='',
+            rating=3,
+            text='ReviewText',
+            order_total=MoneyValue(
+                raw_source='',
+                value=50.0,
+                character='₽'),
+            category_str='Game',
+            sender_username='SenderUername',
+            sender_id=54321,
+            sender_avatar_url='/img/layout/avatar.png',
+            order_id='ABCDEFGH',
+            order_time_string='20 января в 12:58, 3 месяца назад',
+            reply='ReviewReply'
+        )
+    ],
+    user_id=None,
+    filter=None,
+    next_value=None
 )
 
 
@@ -172,36 +190,43 @@ order_page_review_html = """
 </div>
 """
 
-
-order_page_review_obj = Review(
+order_page_review_obj = ReviewsChain(
     raw_source='',
-    rating=1,
-    text='ReviewText',
-    order_total=MoneyValue(
-        raw_source='',
-        value=500.0,
-        character='$'
-    ),
-    category_str='Game',
-    sender_username=None,
-    sender_id=54321,
-    sender_avatar_url='/img/layout/avatar.png',
-    order_id='ABCDEFGH',
-    order_time_string='2 месяца назад',
-    reply='ReviewReply'
+    reviews=[
+        Review(
+            raw_source='',
+            rating=1,
+            text='ReviewText',
+            order_total=MoneyValue(
+                raw_source='',
+                value=500.0,
+                character='$'
+            ),
+            category_str='Game',
+            sender_username=None,
+            sender_id=54321,
+            sender_avatar_url='/img/layout/avatar.png',
+            order_id='ABCDEFGH',
+            order_time_string='2 месяца назад',
+            reply='ReviewReply'
+        )
+    ],
+    user_id=None,
+    filter=None,
+    next_value=None
 )
 
 
 def test_public_reviews_parsing():
     parser = ReviewsParser(public_review_html, options=OPTIONS)
-    assert parser.parse() == [public_review_obj]
+    assert parser.parse() == public_review_obj
 
 
 def test_my_public_reviews_parsing():
     parser = ReviewsParser(my_public_review_html, options=OPTIONS)
-    assert parser.parse() == [my_public_review_obj]
+    assert parser.parse() == my_public_review_obj
 
 
 def test_order_page_review_parsing():
     parser = ReviewsParser(order_page_review_html, options=OPTIONS)
-    assert parser.parse() == [order_page_review_obj]
+    assert parser.parse() == order_page_review_obj
