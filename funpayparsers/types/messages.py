@@ -1,4 +1,4 @@
-__all__ = ('Message', 'MessagesChain')
+__all__ = ('Message', )
 
 from dataclasses import dataclass
 
