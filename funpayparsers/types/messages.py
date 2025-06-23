@@ -79,9 +79,3 @@ class Message(FunPayObject):
                 f"[{self.badge.text if self.badge is not None else 'NoBadge'}] "
                 f"({self.sender_id}) dated {self.send_date_text}: "
                 f"{self.text if self.text is not None else self.image_url}>")
-
-
-@dataclass
-class MessagesChain(FunPayObject):  # todo: add docs
-    messages: list[Message]
-    previous_message_id: int | None
