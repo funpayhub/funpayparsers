@@ -4,7 +4,7 @@ __all__ = (
 )
 
 from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayObjectParser
-from funpayparsers.types.reviews import Review
+from funpayparsers.types.reviews import Review, ReviewsChain
 from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
 from funpayparsers.types.common import MoneyValue
 from dataclasses import dataclass
@@ -16,10 +16,7 @@ class ReviewsParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class ReviewsParser(FunPayObjectParser[
-                        list[Review],
-                        ReviewsParserOptions
-                    ]):
+class ReviewsParser(FunPayObjectParser[ReviewsChain, ReviewsParserOptions]):
 
     __options_cls__ = ReviewsParserOptions
 
@@ -30,11 +27,29 @@ class ReviewsParser(FunPayObjectParser[
             order_id, rating = review_div.get('data-order'), review_div.get('data-rating')
 
             if order_id is not None:
-                return [self._parse_order_page_review(order_id, rating, review_div)]
+                return ReviewsChain(raw_source=self.raw_source,
+                                    reviews=[self._parse_order_page_review(
+                                        order_id,
+                                        rating,
+                                        review_div
+                                    )],
+                                    user_id=None,
+                                    filter=None,
+                                    next_value=None)
 
             result.append(self._parse_common_review(review_div))
 
-        return result
+        user_id = self.tree.xpath('//input[@type="hidden" and @name="user_id"][1]')
+        filter_ = self.tree.xpath('//input[@type="hidden" and @name="filter"][1]')
+        next_id = self.tree.xpath('//input[@type="hidden" and @name="continue"][1]')
+
+        return ReviewsChain(
+            raw_source=self.raw_source,
+            reviews=result,
+            user_id=int(user_id[0].get('value')) if user_id else None,
+            filter=filter_[0].get('value') if filter_ else None,
+            next_value=int(next_id[0].get('value')) if next_id else None
+        )
 
     def _parse_common_review(self, review_div):
         date_str, text, game, value = self._parse_review_meta(review_div)

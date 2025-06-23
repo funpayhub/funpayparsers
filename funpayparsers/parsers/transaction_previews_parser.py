@@ -57,14 +57,10 @@ class TransactionPreviewsParser(FunPayObjectParser[
         filter_ = self.tree.xpath('//input[@type="hidden" and @name="filter"][1]')
         next_id = self.tree.xpath('//input[@type="hidden" and @name="continue"][1]')
 
-        user_id = int(user_id[0].get('value')) if user_id else None
-        filter_ = filter_[0].get('value') if filter_ else None
-        next_id = int(next_id[0].get('value')) if next_id else None
-
         return TransactionPreviewsChain(
             raw_source=self.raw_source,
             transactions=result,
-            user_id=user_id,
-            filter=filter_,
-            next_transaction_id=next_id
+            user_id = int(user_id[0].get('value')) if user_id else None,
+            filter = filter_[0].get('value') if filter_ else None,
+            next_transaction_id= int(next_id[0].get('value')) if next_id else None
         )
