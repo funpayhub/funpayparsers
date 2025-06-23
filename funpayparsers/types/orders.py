@@ -1,4 +1,4 @@
-__all__ = ('OrderCounterpartyInfo', 'OrderPreview')
+__all__ = ('OrderCounterpartyInfo', 'OrderPreview', 'OrderPreviewsChain')
 
 
 from dataclasses import dataclass
