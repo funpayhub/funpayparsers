@@ -1,7 +1,6 @@
 __all__ = ('LotPreview', 'LotSeller')
 
-from dataclasses import dataclass
-from typing import Literal
+from dataclasses import dataclass, field
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.common import MoneyValue
@@ -82,3 +81,16 @@ class LotPreview(FunPayObject):
                 f'{(self.desc + " ") if self.desc is not None else ""}'
                 f'{(str(self.amount) + "pcs., ") if self.amount is not None else ""}'
                 f'{(str(self.price) + "/pcs. ") if self.price else ""}>')
+
+
+@dataclass
+class LotFields(FunPayObject):
+    """
+    Represents lot fields.
+    """
+
+    csrf_token: str
+    """User CSRF token."""
+
+    other_fields: dict[str, str | int] = field(default_factory=dict)
+    """Other lot fields."""
