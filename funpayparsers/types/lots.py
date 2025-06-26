@@ -1,4 +1,4 @@
-__all__ = ('LotPreview', 'LotSeller')
+__all__ = ('LotPreview', 'LotSeller', 'LotFields')
 
 from dataclasses import dataclass, field
 
