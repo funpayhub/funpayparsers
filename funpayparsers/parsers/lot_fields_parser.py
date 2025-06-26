@@ -25,6 +25,6 @@ class LotFieldsParser(FunPayObjectParser[LotFields, LotFieldsParserOptions]):
 
         return LotFields(
             raw_source=html.tostring(form, encoding='unicode'),
-            csrf_token=form['csrf_token'],
-            other_fields={k: v for k, v in fields.items() if k in _EXCLUDE},
+            csrf_token=fields['csrf_token'],
+            other_fields={k: v for k, v in fields.items() if k not in _EXCLUDE},
         )

@@ -214,18 +214,22 @@ def serialize_form(source: str | html.HtmlElement) -> dict[str, str]:
     for field in fields:
         name = field.get('name')
         value = field.get('value', '')
-        if value:
-            result[name] = value
-            continue
 
         if field.tag == 'textarea':
             value = field.text or ''
+
         elif field.tag == 'select':
             value = field.xpath('string(./option[@selected][1]/@value)') or ''
+
         elif field.tag == 'input':
             input_type = field.get('type', '').lower()
-            if input_type in {'checkbox', 'radio'}:
+            if input_type == 'checkbox':
                 value = 'on' if field.get('checked') is not None else ''
+            elif input_type == 'radio':
+                if result.get(name):
+                    continue
+                value = value if field.get('checked') is not None else ''
 
-        result[name] = value
+        if value is not None:
+            result[name] = value
     return result
