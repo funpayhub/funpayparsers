@@ -1,10 +1,15 @@
-__all__ = ('extract_css_url', 'resolve_messages_senders', 'parse_date_string', 'parse_money_value_string')
+__all__ = ('extract_css_url',
+           'resolve_messages_senders',
+           'parse_date_string',
+           'parse_money_value_string',
+           'serialize_form')
 
 import re
 from collections.abc import Iterable
 from funpayparsers.types.messages import Message
 from datetime import datetime, timedelta
 from copy import deepcopy
+from lxml import html
 
 from funpayparsers.types.enums import BadgeType
 from funpayparsers.types.common import MoneyValue
@@ -191,3 +196,40 @@ def parse_money_value_string(money_value_str: str, /, *, raw_source: str | None 
 
     return MoneyValue(raw_source=raw_source if raw_source is not None else money_value_str,
                       value=float(value), character=currency)
+
+
+def serialize_form(source: str | html.HtmlElement) -> dict[str, str]:
+    result = {}
+    if isinstance(source, str):
+        if not source:
+            return {}
+        source = html.fromstring(source)
+
+    form = source.xpath(f'//form[1]')
+    if not form:
+        return {}
+    form = form[0]
+
+    fields = form.xpath(f'.//*[@name and normalize-space(@name) and not(@disabled)]')
+    for field in fields:
+        name = field.get('name')
+        value = field.get('value', '')
+
+        if field.tag == 'textarea':
+            value = field.text or ''
+
+        elif field.tag == 'select':
+            value = field.xpath('string(./option[@selected][1]/@value)') or ''
+
+        elif field.tag == 'input':
+            input_type = field.get('type', '').lower()
+            if input_type == 'checkbox':
+                value = 'on' if field.get('checked') is not None else ''
+            elif input_type == 'radio':
+                if result.get(name):
+                    continue
+                value = value if field.get('checked') is not None else ''
+
+        if value is not None:
+            result[name] = value
+    return result
