@@ -4,7 +4,7 @@ __all__ = (
 )
 
 from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayObjectParser
-from funpayparsers.types.reviews import Review, ReviewsChain
+from funpayparsers.types.reviews import Review, ReviewsBatch
 from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
 from funpayparsers.types.common import MoneyValue
 from dataclasses import dataclass
@@ -16,7 +16,7 @@ class ReviewsParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class ReviewsParser(FunPayObjectParser[ReviewsChain, ReviewsParserOptions]):
+class ReviewsParser(FunPayObjectParser[ReviewsBatch, ReviewsParserOptions]):
 
     __options_cls__ = ReviewsParserOptions
 
@@ -27,7 +27,7 @@ class ReviewsParser(FunPayObjectParser[ReviewsChain, ReviewsParserOptions]):
             order_id, rating = review_div.get('data-order'), review_div.get('data-rating')
 
             if order_id is not None:
-                return ReviewsChain(raw_source=self.raw_source,
+                return ReviewsBatch(raw_source=self.raw_source,
                                     reviews=[self._parse_order_page_review(
                                         order_id,
                                         rating,
@@ -35,7 +35,7 @@ class ReviewsParser(FunPayObjectParser[ReviewsChain, ReviewsParserOptions]):
                                     )],
                                     user_id=None,
                                     filter=None,
-                                    next_value=None)
+                                    next_review_id=None)
 
             result.append(self._parse_common_review(review_div))
 
@@ -43,12 +43,12 @@ class ReviewsParser(FunPayObjectParser[ReviewsChain, ReviewsParserOptions]):
         filter_ = self.tree.xpath('//input[@type="hidden" and @name="filter"][1]')
         next_id = self.tree.xpath('//input[@type="hidden" and @name="continue"][1]')
 
-        return ReviewsChain(
+        return ReviewsBatch(
             raw_source=self.raw_source,
             reviews=result,
             user_id=int(user_id[0].get('value')) if user_id else None,
             filter=filter_[0].get('value') if filter_ else None,
-            next_value=next_id[0].get('value') if next_id else None
+            next_review_id=next_id[0].get('value') if next_id else None
         )
 
     def _parse_common_review(self, review_div):
@@ -81,7 +81,7 @@ class ReviewsParser(FunPayObjectParser[ReviewsChain, ReviewsParserOptions]):
             sender_id=user_id,
             sender_avatar_url=avatar_url,
             order_id=order_id,
-            order_time_string=date_str,
+            time_ago_str=date_str,
             reply=reply
         )
 
@@ -113,7 +113,7 @@ class ReviewsParser(FunPayObjectParser[ReviewsChain, ReviewsParserOptions]):
             sender_id=author_id,
             sender_avatar_url=avatar_url,
             order_id=order_id,
-            order_time_string=date_str,
+            time_ago_str=date_str,
             reply=reply
         )
 
