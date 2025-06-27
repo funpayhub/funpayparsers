@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayObjectParser
 from funpayparsers.parsers.utils import extract_css_url
-from funpayparsers.types.orders import OrderPreview, OrderCounterpartyInfo, OrderPreviewsChain
+from funpayparsers.types.orders import OrderPreview, OrderCounterpartyInfo, OrderPreviewsBatch
 from funpayparsers.types.enums import OrderStatus
 from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
 
@@ -58,14 +58,14 @@ class OrderPreviewsParser(FunPayObjectParser[
                 desc=o.xpath('string(.//div[@class="order-desc"][1]/div[1])'),
                 category_text=o.xpath('string(.//div[@class="text-muted"][1])'),
                 status=OrderStatus.get_by_css_class(status_class),
-                amount=value,
+                total=value,
                 counterparty=counterparty
             )
             result.append(order_obj)
 
         next_id = self.tree.xpath('//input[@type="hidden" and @name="continue"][1]')
 
-        return OrderPreviewsChain(
+        return OrderPreviewsBatch(
             raw_source=self.raw_source,
             orders=result,
             next_order_id=next_id[0].get('value') if next_id else None

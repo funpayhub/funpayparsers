@@ -1,7 +1,7 @@
 from funpayparsers.parsers.transaction_previews_parser import (TransactionPreviewsParser,
                                                                TransactionPreviewsParserOptions)
 from funpayparsers.types import PaymentMethod, TransactionStatus
-from funpayparsers.types.finances import TransactionPreview, TransactionPreviewsChain
+from funpayparsers.types.finances import TransactionPreview, TransactionPreviewsBatch
 from funpayparsers.types.common import MoneyValue
 
 
@@ -33,7 +33,7 @@ complete_order_transaction_html = """
 """
 
 
-complete_order_transaction_obj = TransactionPreviewsChain(
+complete_order_transaction_obj = TransactionPreviewsBatch(
     raw_source='',
     transactions=[
         TransactionPreview(
@@ -79,7 +79,7 @@ cancelled_withdrawal_transaction_html = """
 </div>
 """
 
-cancelled_withdrawal_transaction_obj = TransactionPreviewsChain(
+cancelled_withdrawal_transaction_obj = TransactionPreviewsBatch(
     raw_source='',
     transactions=[
         TransactionPreview(
