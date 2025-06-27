@@ -1,5 +1,5 @@
 from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParserOptions
-from funpayparsers.types.reviews import Review, ReviewsChain
+from funpayparsers.types.reviews import Review, ReviewsBatch
 from funpayparsers.types.common import MoneyValue
 
 
@@ -44,7 +44,7 @@ public_review_html = """
 <input type="hidden" name="filter" value="">
 """
 
-public_review_obj = ReviewsChain(
+public_review_obj = ReviewsBatch(
     raw_source='',
     reviews=[
         Review(
@@ -61,13 +61,13 @@ public_review_obj = ReviewsChain(
             sender_id=None,
             sender_avatar_url='/img/layout/avatar.png',
             order_id=None,
-            order_time_string='2 месяца назад',
+            time_ago_str='2 месяца назад',
             reply='ReviewReply'
         )
     ],
     user_id=12345,
     filter="",
-    next_value="=nextid"
+    next_review_id="=nextid"
 )
 
 
@@ -114,7 +114,7 @@ my_public_review_html = """
 </div>
 """
 
-my_public_review_obj = ReviewsChain(
+my_public_review_obj = ReviewsBatch(
     raw_source='',
     reviews=[
         Review(
@@ -130,13 +130,13 @@ my_public_review_obj = ReviewsChain(
             sender_id=54321,
             sender_avatar_url='/img/layout/avatar.png',
             order_id='ABCDEFGH',
-            order_time_string='20 января в 12:58, 3 месяца назад',
+            time_ago_str='20 января в 12:58, 3 месяца назад',
             reply='ReviewReply'
         )
     ],
     user_id=None,
     filter=None,
-    next_value=None
+    next_review_id=None
 )
 
 
@@ -190,7 +190,7 @@ order_page_review_html = """
 </div>
 """
 
-order_page_review_obj = ReviewsChain(
+order_page_review_obj = ReviewsBatch(
     raw_source='',
     reviews=[
         Review(
@@ -207,13 +207,13 @@ order_page_review_obj = ReviewsChain(
             sender_id=54321,
             sender_avatar_url='/img/layout/avatar.png',
             order_id='ABCDEFGH',
-            order_time_string='2 месяца назад',
+            time_ago_str='2 месяца назад',
             reply='ReviewReply'
         )
     ],
     user_id=None,
     filter=None,
-    next_value=None
+    next_review_id=None
 )
 
 

@@ -2,7 +2,7 @@ __all__ = ('TransactionPreviewsParser', 'TransactionPreviewsParserOptions')
 
 from dataclasses import dataclass
 from funpayparsers.parsers.base import FunPayObjectParser, FunPayObjectParserOptions
-from funpayparsers.types.finances import TransactionPreview, TransactionPreviewsChain
+from funpayparsers.types.finances import TransactionPreview, TransactionPreviewsBatch
 from funpayparsers.types.enums import TransactionStatus, PaymentMethod
 from funpayparsers.parsers.money_value_parser import MoneyValueParserOptions, MoneyValueParsingType, MoneyValueParser
 
@@ -15,7 +15,7 @@ class TransactionPreviewsParserOptions(FunPayObjectParserOptions):
 
 
 class TransactionPreviewsParser(FunPayObjectParser[
-    TransactionPreviewsChain,
+    TransactionPreviewsBatch,
     TransactionPreviewsParserOptions
 ]):
 
@@ -57,7 +57,7 @@ class TransactionPreviewsParser(FunPayObjectParser[
         filter_ = self.tree.xpath('//input[@type="hidden" and @name="filter"][1]')
         next_id = self.tree.xpath('//input[@type="hidden" and @name="continue"][1]')
 
-        return TransactionPreviewsChain(
+        return TransactionPreviewsBatch(
             raw_source=self.raw_source,
             transactions=result,
             user_id = int(user_id[0].get('value')) if user_id else None,

@@ -1,4 +1,4 @@
-__all__ = ('OrderCounterpartyInfo', 'OrderPreview', 'OrderPreviewsChain')
+__all__ = ('OrderCounterpartyInfo', 'OrderPreview', 'OrderPreviewsBatch')
 
 
 from dataclasses import dataclass
@@ -43,7 +43,6 @@ class OrderCounterpartyInfo(FunPayObject):
 class OrderPreview(FunPayObject):
     """
     Represents an order preview.
-    Order previews can be found on sells or purchases pages.
     """
 
     id: str
@@ -61,18 +60,33 @@ class OrderPreview(FunPayObject):
     status: OrderStatus
     """Order status."""
 
-    amount: MoneyValue
-    """Order amount."""
+    total: MoneyValue
+    """Order total."""
 
     counterparty: OrderCounterpartyInfo
     """Associated counterparty info."""
 
     def __str__(self):
-        return (f'<{self.amount} {self.status.name} order {self.id} '
+        return (f'<{self.total} {self.status.name} order {self.id} '
                 f'dated {self.date_text}: {self.desc}. ({self.category_text})>')
 
 
 @dataclass
-class OrderPreviewsChain(FunPayObject):  # todo: add docs
+class OrderPreviewsBatch(FunPayObject):
+    """
+    Represents a single batch of order previews returned by FunPay.
+
+    This batch contains a portion of all available order previews (typically 100),
+    along with metadata required to fetch the next batch.
+    """
+
     orders: list[OrderPreview]
+    """List of order previews included in this batch."""
+
     next_order_id: str | None
+    """
+    ID of the next order to use as a cursor for pagination.
+
+    If present, this value should be included in the next request to fetch
+    the following batch of order previews. If `None`, there are no more orders to load.
+    """
