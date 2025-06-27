@@ -26,7 +26,7 @@ class Review(FunPayObject):
            while the visibility flag is located outside the review’s main div.
            Therefore, visibility is handled in the dataclass representing
            the private order page.
-"""
+   """
 
     rating: int | None
     """Review rating (stars amount)."""
