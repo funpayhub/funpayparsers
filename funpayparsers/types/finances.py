@@ -1,6 +1,6 @@
 __all__ = ('TransactionPreview',
            'Transaction',
-           'TransactionPreviewsChain')
+           'TransactionPreviewsBatch')
 
 
 from dataclasses import dataclass
@@ -45,8 +45,38 @@ class Transaction(FunPayObject):
 
 
 @dataclass
-class TransactionPreviewsChain(FunPayObject):
+class TransactionPreviewsBatch(FunPayObject):
+    """
+    Represents a single batch of transaction previews returned by FunPay.
+
+    This batch contains a portion of all available transaction previews (typically 25),
+    along with metadata required to fetch the next batch.
+    """
+
     transactions: list[TransactionPreview]
+    """List of transaction previews included in this batch."""
+
     user_id: int | None
+    """
+    ID of the user to whom all transactions in this batch belong.
+    """
+
     filter: str | None
+    """
+    The current filter applied to the review list.
+
+    Known values:
+    - '' (empty string): no filter applied
+    - 'payment': payment transactions only
+    - 'withdraw': withdrawal transactions only
+    - 'order': order transactions only
+    - 'other': other transactions only
+    """
+
     next_transaction_id: int | None
+    """
+    ID of the next transaction to use as a cursor for pagination.
+
+    If present, this value should be included in the next request to fetch
+    the following batch of transaction previews. If `None`, there are no more transactions to load.
+    """

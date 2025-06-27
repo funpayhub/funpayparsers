@@ -75,7 +75,7 @@ class Review(FunPayObject):
 @dataclass
 class ReviewsBatch(FunPayObject):
     """
-    Represents a single batch of reviews returned by the FunPay.
+    Represents a single batch of reviews returned by FunPay.
 
     This batch contains a portion of all available reviews (typically 25),
     along with metadata required to fetch the next batch.

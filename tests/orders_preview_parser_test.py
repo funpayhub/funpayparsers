@@ -1,6 +1,6 @@
 from funpayparsers.parsers.order_previews_parser import (OrderPreviewsParser,
                                                          OrderPreviewsParserOptions)
-from funpayparsers.types.orders import OrderPreview, OrderCounterpartyInfo, OrderPreviewsChain
+from funpayparsers.types.orders import OrderPreview, OrderCounterpartyInfo, OrderPreviewsBatch
 from funpayparsers.types.enums import OrderStatus
 from funpayparsers.types.common import MoneyValue
 
@@ -38,7 +38,7 @@ refunded_order_html = """
 <input type="hidden" name="continue" value="ABCDEFGI">
 """
 
-refunded_order_obj = OrderPreviewsChain(
+refunded_order_obj = OrderPreviewsBatch(
     raw_source='',
     orders=[
         OrderPreview(
@@ -48,7 +48,7 @@ refunded_order_obj = OrderPreviewsChain(
             desc='Order Description',
             category_text='Category, Subcategory',
             status=OrderStatus.REFUNDED,
-            amount=MoneyValue(
+            total=MoneyValue(
                 raw_source='',
                 value=25.12,
                 character='₽'
