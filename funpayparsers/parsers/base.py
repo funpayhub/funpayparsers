@@ -12,9 +12,6 @@ import json
 from funpayparsers.types.base import FunPayObject
 
 
-UNSET = object()
-
-
 @dataclass(frozen=True)
 class FunPayObjectParserOptions:
     """
