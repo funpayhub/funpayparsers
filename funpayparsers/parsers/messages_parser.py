@@ -1,7 +1,6 @@
 __all__ = ('MessagesParserOptions', 'MessagesParser')
 
-from dataclasses import dataclass, field
-import json
+from dataclasses import dataclass
 
 from lxml import html
 
@@ -10,42 +9,16 @@ from funpayparsers.types.messages import Message
 from funpayparsers.types.common import UserBadge
 from funpayparsers.parsers.utils import resolve_messages_senders
 from funpayparsers.parsers.badge_parser import UserBadgeParserOptions, UserBadgeParser
-from enum import Enum
-
-
-class MessagesParsingType(Enum):
-    FROM_HTML = 0
-    FROM_JSON = 1
 
 
 @dataclass(frozen=True)
 class MessagesParserOptions(FunPayObjectParserOptions):
     sort_by_id: bool = True
     resolve_senders: bool = True
-    from_json: bool = False
-    parsing_type: MessagesParsingType = MessagesParsingType.FROM_HTML
 
 
 class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions]):
     def _parse(self):
-        if self.options.parsing_type == MessagesParsingType.FROM_HTML:
-            messages = self._parse_html()
-        else:
-            messages = self._parse_json()
-
-        if self.options.sort_by_id or self.options.resolve_senders:
-            messages.sort(key=lambda m: m.id)
-
-        if self.options.resolve_senders:
-            resolve_messages_senders(messages)
-        return messages
-
-    def _parse_json(self) -> list[Message]:
-        messages = json.loads(self.raw_source) if isinstance(self.raw_source, str) else self.raw_source
-        html_ = '\n'.join(i['html'] for i in messages)
-        return MessagesParser(html_, self.options, parsing_type=MessagesParsingType.FROM_HTML).parse()
-
-    def _parse_html(self) -> list[Message]:
         messages = []
         for msg_div in self.tree.xpath('//div[contains(@class, "chat-msg-item")]'):
             userid, username, date, badge = None, None, None, None
@@ -80,6 +53,12 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions
                 text=text,
                 image_url=image_url,
             ))
+
+        if self.options.sort_by_id or self.options.resolve_senders:
+            messages.sort(key=lambda m: m.id)
+
+        if self.options.resolve_senders:
+            resolve_messages_senders(messages)
         return messages
 
     def _parse_message_header(self, msg_tag: html.HtmlElement) -> tuple[int, str, str, UserBadge | None]:
