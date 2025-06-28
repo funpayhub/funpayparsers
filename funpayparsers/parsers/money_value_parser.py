@@ -1,7 +1,7 @@
 __all__ = ('MoneyValueParser', 'MoneyValueParserOptions', 'MoneyValueParsingType')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayObjectParser
+from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
 from funpayparsers.types.common import MoneyValue
 from funpayparsers.parsers.utils import parse_money_value_string
 from enum import Enum
@@ -31,11 +31,8 @@ class MoneyValueParserOptions(FunPayObjectParserOptions):
     """
 
 
-class MoneyValueParser(FunPayObjectParser[MoneyValue, MoneyValueParserOptions]):
-    # todo: note about "tc-price" div in doc-string.
-
-    __options_cls__ = MoneyValueParserOptions
-
+class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParserOptions]):
+    # todo: note about "tc-price" div in doc-string. (you should pass only tc-price div as raw_source)
     def _parse(self):
         types = {
             MoneyValueParsingType.FROM_ORDER_PREVIEW: self._parse_order_preview_type,
