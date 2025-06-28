@@ -1,7 +1,7 @@
 __all__ = ('LotFieldsParser', 'LotFieldsParserOptions')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
 from funpayparsers.parsers.utils import serialize_form
 from funpayparsers.types.lots import LotFields
 from lxml import html
@@ -15,10 +15,7 @@ class LotFieldsParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class LotFieldsParser(FunPayObjectParser[LotFields, LotFieldsParserOptions]):
-
-    __options_cls__ = LotFieldsParserOptions
-
+class LotFieldsParser(FunPayHTMLObjectParser[LotFields, LotFieldsParserOptions]):
     def _parse(self):
         form = self.tree.xpath('//form[1]')[0]
         fields = serialize_form(form)

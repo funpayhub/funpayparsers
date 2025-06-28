@@ -1,7 +1,7 @@
 __all__ = ('UserBadgeParser', 'UserBadgeParserOptions')
 
 
-from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayObjectParser
+from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
 from funpayparsers.types.common import UserBadge
 from dataclasses import dataclass
 from lxml import html
@@ -12,10 +12,7 @@ class UserBadgeParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class UserBadgeParser(FunPayObjectParser[UserBadge, UserBadgeParserOptions]):
-
-    __options_cls__ = UserBadgeParserOptions
-
+class UserBadgeParser(FunPayHTMLObjectParser[UserBadge, UserBadgeParserOptions]):
     def _parse(self):
         badge_div = self.tree.xpath('//span[contains(@class, "label")]')[0]
         return UserBadge(
