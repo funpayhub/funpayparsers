@@ -1,6 +1,10 @@
 __all__ = ('OrderCounters',
            'ChatBookmarks',
            'ChatCounter',
+           'CurrentlyViewingPageHTML',
+           'CurrentlyViewingPage',
+           'NodeInfo',
+           'ChatNode',
            'ActionResponse',
            'UpdateObject',
            'Updates')
