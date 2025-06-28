@@ -27,8 +27,6 @@ class MessagesParserOptions(FunPayObjectParserOptions):
 
 
 class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions]):
-    __options_cls__ = MessagesParserOptions
-
     def _parse(self):
         if self.options.parsing_type == MessagesParsingType.FROM_HTML:
             messages = self._parse_html()

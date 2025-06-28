@@ -17,9 +17,6 @@ class ReviewsParserOptions(FunPayObjectParserOptions):
 
 
 class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParserOptions]):
-
-    __options_cls__ = ReviewsParserOptions
-
     def _parse(self):
         result = []
 

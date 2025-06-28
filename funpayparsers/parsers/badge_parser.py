@@ -13,9 +13,6 @@ class UserBadgeParserOptions(FunPayObjectParserOptions):
 
 
 class UserBadgeParser(FunPayHTMLObjectParser[UserBadge, UserBadgeParserOptions]):
-
-    __options_cls__ = UserBadgeParserOptions
-
     def _parse(self):
         badge_div = self.tree.xpath('//span[contains(@class, "label")]')[0]
         return UserBadge(

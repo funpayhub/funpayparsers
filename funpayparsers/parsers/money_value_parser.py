@@ -32,10 +32,7 @@ class MoneyValueParserOptions(FunPayObjectParserOptions):
 
 
 class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParserOptions]):
-    # todo: note about "tc-price" div in doc-string.
-
-    __options_cls__ = MoneyValueParserOptions
-
+    # todo: note about "tc-price" div in doc-string. (you should pass only tc-price div as raw_source)
     def _parse(self):
         types = {
             MoneyValueParsingType.FROM_ORDER_PREVIEW: self._parse_order_preview_type,

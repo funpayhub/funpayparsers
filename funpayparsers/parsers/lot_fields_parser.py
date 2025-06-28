@@ -16,9 +16,6 @@ class LotFieldsParserOptions(FunPayObjectParserOptions):
 
 
 class LotFieldsParser(FunPayHTMLObjectParser[LotFields, LotFieldsParserOptions]):
-
-    __options_cls__ = LotFieldsParserOptions
-
     def _parse(self):
         form = self.tree.xpath('//form[1]')[0]
         fields = serialize_form(form)

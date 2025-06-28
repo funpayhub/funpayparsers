@@ -17,9 +17,6 @@ class LotPreviewsParserOptions(FunPayObjectParserOptions):
 
 
 class LotPreviewsParser(FunPayHTMLObjectParser[list[LotPreview], LotPreviewsParserOptions]):
-
-    __options_cls__ = FunPayObjectParserOptions
-
     def _parse(self):
         result = []
         skip_data = ['data-online', 'data-auto']  # don't add these fields to LotPreview.other_data

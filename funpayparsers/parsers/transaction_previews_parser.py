@@ -18,9 +18,6 @@ class TransactionPreviewsParser(FunPayHTMLObjectParser[
     TransactionPreviewsBatch,
     TransactionPreviewsParserOptions
 ]):
-
-    __options_cls__ = TransactionPreviewsParserOptions
-
     def _parse(self):
         result = []
         for i in self.tree.xpath('//div[contains(@class, "tc-item")]'):

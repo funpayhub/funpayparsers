@@ -24,8 +24,6 @@ class PrivateChatPreviewParser(
     TODO: more informative doc-string.
     """
 
-    __options_cls__ = PrivateChatPreviewParserOptions
-
     def _parse(self):
         previews = []
         for p in self.tree.xpath('//a[@class="contact-item"]'):
