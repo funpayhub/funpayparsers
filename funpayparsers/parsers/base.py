@@ -12,6 +12,9 @@ import json
 from funpayparsers.types.base import FunPayObject
 
 
+UNSET = object()
+
+
 @dataclass(frozen=True)
 class FunPayObjectParserOptions:
     """
@@ -74,14 +77,14 @@ class FunPayObjectParser(ABC, Generic[R, O]):
 
     def empty_raw_source(self,
                          obj: FunPayObject | Sequence[Any] | Mapping[Any, Any]) -> None:
-        if hasattr(type(obj), '__dataclass_fields__'):
+        if hasattr(type(obj), '__dataclass_fields__') and isinstance(obj, FunPayObject):
             if hasattr(obj, 'raw_source'):
                 setattr(obj, 'raw_source', '')
 
             for f in fields(obj):
                 self.empty_raw_source(getattr(obj, f.name))
 
-        elif isinstance(obj, Sequence):
+        elif isinstance(obj, (list, tuple)):
             for item in obj:
                 self.empty_raw_source(item)
 
