@@ -1,4 +1,4 @@
-__all__ = ('FunPayObjectParser', 'FunPayObjectParserOptions')
+__all__ = ('FunPayHTMLObjectParser', 'FunPayObjectParserOptions')
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, replace, fields, asdict, field
@@ -125,7 +125,7 @@ class FunPayHTMLObjectParser(FunPayObjectParser[T, P], ABC):
         return self._raw_source
 
 
-class FunPayJSONObjectParser(FunPayObjectParser[T, P], ABC):
+class FunPayJSONObjectParser(FunPayHTMLObjectParser[T, P], ABC):
     def __init__(self, raw_source: str | dict | list, options: P | None = None, **overrides):
         super().__init__(raw_source=raw_source,
                          options=options,

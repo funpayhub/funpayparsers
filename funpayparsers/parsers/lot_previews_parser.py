@@ -2,7 +2,7 @@ __all__ = ('LotPreviewsParser', 'LotPreviewsParserOptions')
 
 from copy import deepcopy
 
-from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayObjectParser
+from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
 from funpayparsers.types.lots import LotPreview, LotSeller
 from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
@@ -16,7 +16,7 @@ class LotPreviewsParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class LotPreviewsParser(FunPayObjectParser[list[LotPreview], LotPreviewsParserOptions]):
+class LotPreviewsParser(FunPayHTMLObjectParser[list[LotPreview], LotPreviewsParserOptions]):
 
     __options_cls__ = FunPayObjectParserOptions
 

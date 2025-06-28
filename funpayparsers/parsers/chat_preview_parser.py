@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from lxml import html
 
-from funpayparsers.parsers.base import FunPayObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
 from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.types.chat import PrivateChatPreview
 
@@ -15,7 +15,7 @@ class PrivateChatPreviewParserOptions(FunPayObjectParserOptions):
 
 
 class PrivateChatPreviewParser(
-    FunPayObjectParser[
+    FunPayHTMLObjectParser[
         list[PrivateChatPreview],
         PrivateChatPreviewParserOptions,
     ]):

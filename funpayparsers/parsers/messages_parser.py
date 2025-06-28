@@ -5,7 +5,7 @@ import json
 
 from lxml import html
 
-from funpayparsers.parsers.base import FunPayObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
 from funpayparsers.types.messages import Message
 from funpayparsers.types.common import UserBadge
 from funpayparsers.parsers.utils import resolve_messages_senders
@@ -26,7 +26,7 @@ class MessagesParserOptions(FunPayObjectParserOptions):
     parsing_type: MessagesParsingType = MessagesParsingType.FROM_HTML
 
 
-class MessagesParser(FunPayObjectParser[list[Message], MessagesParserOptions]):
+class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions]):
     __options_cls__ = MessagesParserOptions
 
     def _parse(self):
