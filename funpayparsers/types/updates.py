@@ -10,10 +10,13 @@ from typing import Generic, Literal, TypeVar
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.chat import PrivateChatPreview
+from funpayparsers.types.messages import Message
 
-UpdateType = TypeVar('UpdateType')
+
+UpdateData = TypeVar('UpdateData')
 
 
+# ------ Simple objects ------
 @dataclass
 class OrderCounters(FunPayObject):
     """
@@ -37,11 +40,9 @@ class ChatBookmarks(FunPayObject):
 
     message: int
     """
-    Last unread message ID. (?)
+    ID of the latest unread message.
+    If there are new messages in multiple chats, this field contains the ID of the most recent message among all of them.
     """
-    # todo: check what exactly this field represents.
-    # todo: looks like, if u will get several messages in 1 update, message will be a
-    # list of int. Check it.
 
     order: list[int]
     """Order of chat previews (list of chats IDs)."""
@@ -60,12 +61,39 @@ class ChatCounter(FunPayObject):
     """Unread chats amount."""
 
     message: int
-    """Last unread message ID."""
-    # todo: check what exactly this field represents.
-    # todo: looks like, if u will get several messages in 1 update, message will be a
-    # list of int. Check it.
+    """
+    ID of the latest unread message.
+    If there are new messages in multiple chats, this field contains the ID of the most recent message among all of them.
+    """
 
 
+# ------ C-P-U ------
+@dataclass
+class CurrentlyViewingPageHTML(FunPayObject):
+    desktop: str
+    mobile: str
+
+
+@dataclass
+class CurrentlyViewingPage(FunPayObject):
+    html: CurrentlyViewingPageHTML
+
+
+# ------ Nodes ------
+@dataclass
+class NodeInfo(FunPayObject):
+    id: int
+    name: str
+    silent: bool
+
+
+class ChatNode(FunPayObject):
+    node: NodeInfo
+    messages: list[Message]
+    has_history: bool
+
+
+# ------ Response to action ------
 @dataclass
 class ActionResponse(FunPayObject):
     """
@@ -77,7 +105,7 @@ class ActionResponse(FunPayObject):
 
 
 @dataclass
-class UpdateObject(FunPayObject, Generic[UpdateType]):
+class UpdateObject(FunPayObject, Generic[UpdateData]):
     """
     Represents a single update data from updates object.
     """
@@ -93,7 +121,7 @@ class UpdateObject(FunPayObject, Generic[UpdateType]):
     tag: str
     """Update tag."""
 
-    data: UpdateType
+    data: UpdateData
     """Update data."""
 
 
@@ -106,12 +134,7 @@ class Updates(FunPayObject):
     order_counters: UpdateObject[OrderCounters] | None
     chat_counter: UpdateObject[ChatCounter] | None
     chat_bookmarks: UpdateObject[ChatBookmarks] | None
-    cpu: None  # todo: implement a class, that represents a c-p-u data.
-    objects: list[None]
+    cpu: CurrentlyViewingPage | None
+    nodes: dict[int | str, NodeInfo] | None
+    unknown_objects: list[dict] | None
     response: ActionResponse | Literal[False]
-
-
-#  todo: NodeObject, NodeMessageObject, ChatNodeData
-#  todo: see requesting chat history.
-#  todo: docstrings for Updates object.
-#  todo: dont inherit from FunPayObject? Too many raw_source fields for nested dc's.
