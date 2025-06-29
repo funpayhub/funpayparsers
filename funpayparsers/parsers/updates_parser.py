@@ -1,4 +1,4 @@
-__all__ = ()
+__all__ = ('UpdatesParser', 'UpdatesParserOptions')
 
 from funpayparsers.parsers.base import FunPayJSONObjectParser, FunPayObjectParserOptions
 from funpayparsers.types.updates import (OrderCounters,
@@ -138,7 +138,7 @@ class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
 
     __update_fields__ = {
         UpdateType.ORDER_COUNTERS: 'order_counters',
-        UpdateType.CHAT_COUNTER: 'chat_counters',
+        UpdateType.CHAT_COUNTER: 'chat_counter',
         UpdateType.CHAT_BOOKMARKS: 'chat_bookmarks',
         UpdateType.CPU: 'cpu',
     }
