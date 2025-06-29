@@ -15,6 +15,7 @@ from typing import Generic, Literal, TypeVar
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.chat import PrivateChatPreview
 from funpayparsers.types.messages import Message
+from funpayparsers.types.enums import UpdateType
 
 
 UpdateData = TypeVar('UpdateData')
@@ -28,9 +29,9 @@ class OrderCounters(FunPayObject):
     """
 
     purchases: int
-    """Active purchases amount."""
+    """Active purchases amount (`buyer` field)."""
     sales: int
-    """Active sales amount."""
+    """Active sales amount (`seller` field)."""
 
 
 @dataclass
@@ -91,6 +92,7 @@ class NodeInfo(FunPayObject):
     silent: bool
 
 
+@dataclass
 class ChatNode(FunPayObject):
     node: NodeInfo
     messages: list[Message]
@@ -114,9 +116,7 @@ class UpdateObject(FunPayObject, Generic[UpdateData]):
     Represents a single update data from updates object.
     """
 
-    type: Literal[
-        'order_counters', 'chat_counter', 'chat_bookmarks', 'c-p-u', 'chat_node',
-    ]
+    type: UpdateType
     """Update type."""
 
     id: int | str  # todo: wtf is this? tag = id
@@ -138,7 +138,7 @@ class Updates(FunPayObject):
     order_counters: UpdateObject[OrderCounters] | None
     chat_counter: UpdateObject[ChatCounter] | None
     chat_bookmarks: UpdateObject[ChatBookmarks] | None
-    cpu: CurrentlyViewingPage | None
-    nodes: dict[int | str, NodeInfo] | None
+    cpu: UpdateObject[CurrentlyViewingPage] | None
+    nodes: dict[int | str, UpdateObject[NodeInfo]] | None
     unknown_objects: list[dict] | None
-    response: ActionResponse | Literal[False]
+    response: ActionResponse | None
