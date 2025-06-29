@@ -1,7 +1,7 @@
 __all__ = ('UpdatesParser', 'UpdatesParserOptions')
 
 from funpayparsers.parsers.base import FunPayJSONObjectParser, FunPayObjectParserOptions
-from funpayparsers.types.updates import (OrderCounters,
+from funpayparsers.types.updates import (OrdersCounters,
                                          ChatBookmarks,
                                          ChatCounter,
                                          NodeInfo,
@@ -25,9 +25,9 @@ class UpdatesParserOptions(FunPayObjectParserOptions):
 
 class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
     def _parse(self):
-        result = Updates(
+        updates_obj = Updates(
             raw_source=str(self.raw_source),
-            order_counters=None,
+            orders_counters=None,
             chat_counter=None,
             chat_bookmarks=None,
             cpu=None,
@@ -38,11 +38,11 @@ class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
 
         action_response = self.data.get('response')
         if action_response:
-            result.response = self._parse_action_response(action_response)
+            updates_obj.response = self._parse_action_response(action_response)
 
         objects = self.data.get('objects')
         if not objects:
-            return result
+            return updates_obj
 
         unknown_objects = []
         nodes = {}
@@ -54,14 +54,14 @@ class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
                 nodes[result.data.node.name] = result
                 nodes[result.data.node.id] = result
             else:
-                setattr(result, self.__update_fields__[result.type], result)
+                setattr(updates_obj, self.__update_fields__[result.type], result)
 
-        result.unknown_objects = unknown_objects or result.unknown_objects
-        result.nodes = nodes or result.nodes
-        return result
+        updates_obj.unknown_objects = unknown_objects or updates_obj.unknown_objects
+        updates_obj.nodes = nodes or updates_obj.nodes
+        return updates_obj
 
-    def _parse_order_counters(self, obj: dict) -> OrderCounters:
-        return OrderCounters(
+    def _parse_orders_counters(self, obj: dict) -> OrdersCounters:
+        return OrdersCounters(
             raw_source=str(obj),
             purchases=int(obj.get('buyer')) if obj.get('seller') else 0,
             sales=int(obj.get('seller')) if obj.get('seller') else 0
@@ -123,18 +123,19 @@ class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
         if update_type not in self.__parsing_methods__:
             return None
 
-        obj = self.__parsing_methods__[update_type](update_dict['data'])
+        method = self.__parsing_methods__[update_type]
+        obj = method(self, update_dict['data'])
 
         return UpdateObject(
             raw_source=str(update_dict),
             type=update_type,
-            id=int(update_dict['id']) if update_dict['id'].isnumeric() else update_dict['id'],
+            id=update_dict['id'],
             tag=update_dict['tag'],
             data=obj
         )
 
     __parsing_methods__ = {
-        UpdateType.ORDER_COUNTERS: _parse_order_counters,
+        UpdateType.ORDERS_COUNTERS: _parse_orders_counters,
         UpdateType.CHAT_COUNTER: _parse_chat_counter,
         UpdateType.CHAT_BOOKMARKS: _parse_chat_bookmarks,
         UpdateType.CHAT_NODE: _parse_node,
@@ -142,7 +143,7 @@ class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
     }
 
     __update_fields__ = {
-        UpdateType.ORDER_COUNTERS: 'order_counters',
+        UpdateType.ORDERS_COUNTERS: 'orders_counters',
         UpdateType.CHAT_COUNTER: 'chat_counter',
         UpdateType.CHAT_BOOKMARKS: 'chat_bookmarks',
         UpdateType.CPU: 'cpu',

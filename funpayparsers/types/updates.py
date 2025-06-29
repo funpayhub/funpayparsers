@@ -1,4 +1,4 @@
-__all__ = ('OrderCounters',
+__all__ = ('OrdersCounters',
            'ChatBookmarks',
            'ChatCounter',
            'NodeInfo',
@@ -22,7 +22,7 @@ UpdateData = TypeVar('UpdateData')
 
 # ------ Simple objects ------
 @dataclass
-class OrderCounters(FunPayObject):
+class OrdersCounters(FunPayObject):
     """
     Represents an order counters data from updates object.
     """
@@ -129,7 +129,7 @@ class Updates(FunPayObject):
     Represents an updates object, returned by runner.
     """
 
-    order_counters: UpdateObject[OrderCounters] | None
+    orders_counters: UpdateObject[OrdersCounters] | None
     chat_counter: UpdateObject[ChatCounter] | None
     chat_bookmarks: UpdateObject[ChatBookmarks] | None
     cpu: UpdateObject[CurrentlyViewingOfferInfo] | None

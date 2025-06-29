@@ -18,7 +18,7 @@ from functools import cache
 
 @verify(UNIQUE)
 class UpdateType(StrEnum):
-    ORDER_COUNTERS = 'order_counters'
+    ORDERS_COUNTERS = 'orders_counters'
     CHAT_COUNTER = 'chat_counter'
     CHAT_BOOKMARKS = 'chat_bookmarks'
     CHAT_NODE = 'chat_node'
