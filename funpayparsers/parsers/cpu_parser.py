@@ -2,7 +2,7 @@ __all__ = ('CurrentlyViewingOfferInfoParserOptions', 'CurrentlyViewingOfferInfoP
 
 
 from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
-from funpayparsers.types.common import CurrentlyViewingOfferInfo
+from funpayparsers.types.updates import CurrentlyViewingOfferInfo
 from dataclasses import dataclass
 
 

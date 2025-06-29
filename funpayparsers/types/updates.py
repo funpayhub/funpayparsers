@@ -2,19 +2,19 @@ __all__ = ('OrderCounters',
            'ChatBookmarks',
            'ChatCounter',
            'NodeInfo',
+           'CurrentlyViewingOfferInfo',
            'ChatNode',
            'ActionResponse',
            'UpdateObject',
            'Updates')
 
 from dataclasses import dataclass
-from typing import Generic, Literal, TypeVar
+from typing import Generic, TypeVar
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.chat import PrivateChatPreview
 from funpayparsers.types.messages import Message
 from funpayparsers.types.enums import UpdateType
-from funpayparsers.types.common import CurrentlyViewingOfferInfo
 
 
 UpdateData = TypeVar('UpdateData')
@@ -69,6 +69,13 @@ class ChatCounter(FunPayObject):
     ID of the latest unread message.
     If there are new messages in multiple chats, this field contains the ID of the most recent message among all of them.
     """
+
+
+# ------ C-P-U ------
+@dataclass
+class CurrentlyViewingOfferInfo(FunPayObject):
+    id: int | str
+    name: str
 
 
 # ------ Nodes ------

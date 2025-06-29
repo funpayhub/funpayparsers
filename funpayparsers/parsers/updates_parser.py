@@ -5,6 +5,7 @@ from funpayparsers.types.updates import (OrderCounters,
                                          ChatBookmarks,
                                          ChatCounter,
                                          NodeInfo,
+                                         CurrentlyViewingOfferInfo,
                                          ChatNode,
                                          ActionResponse,
                                          UpdateObject,
@@ -12,7 +13,6 @@ from funpayparsers.types.updates import (OrderCounters,
 from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParserOptions
 from funpayparsers.parsers.chat_preview_parser import PrivateChatPreviewParser, PrivateChatPreviewParserOptions
 from funpayparsers.parsers.cpu_parser import CurrentlyViewingOfferInfoParser, CurrentlyViewingOfferInfoParserOptions
-from funpayparsers.types.common import CurrentlyViewingOfferInfo
 from funpayparsers.types.enums import UpdateType
 from dataclasses import dataclass
 

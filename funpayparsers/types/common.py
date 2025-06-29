@@ -1,4 +1,4 @@
-__all__ = ('MoneyValue', 'UserBadge', 'CurrentlyViewingOfferInfo')
+__all__ = ('MoneyValue', 'UserBadge')
 
 from dataclasses import dataclass
 
@@ -62,8 +62,3 @@ class UserBadge(FunPayObject):
         """Badge type."""
 
         return BadgeType.get_by_css_class(self.css_class)
-
-@dataclass
-class CurrentlyViewingOfferInfo(FunPayObject):
-    id: int | str
-    name: str
