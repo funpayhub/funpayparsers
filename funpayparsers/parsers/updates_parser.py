@@ -31,7 +31,7 @@ class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
             chat_counter=None,
             chat_bookmarks=None,
             cpu=None,
-            nodes={},
+            nodes=[],
             unknown_objects=[],
             response=None
         )
@@ -51,8 +51,7 @@ class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
             if result is None:
                 unknown_objects.append(obj)
             elif result.type is UpdateType.CHAT_NODE:
-                nodes[result.data.node.name] = result
-                nodes[result.data.node.id] = result
+                updates_obj.nodes.append(result)
             else:
                 setattr(updates_obj, self.__update_fields__[result.type], result)
 
