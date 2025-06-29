@@ -4,8 +4,6 @@ from funpayparsers.parsers.base import FunPayJSONObjectParser, FunPayObjectParse
 from funpayparsers.types.updates import (OrderCounters,
                                          ChatBookmarks,
                                          ChatCounter,
-                                         CurrentlyViewingPageHTML,
-                                         CurrentlyViewingPage,
                                          NodeInfo,
                                          ChatNode,
                                          ActionResponse,
@@ -13,6 +11,8 @@ from funpayparsers.types.updates import (OrderCounters,
                                          Updates)
 from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParserOptions
 from funpayparsers.parsers.chat_preview_parser import PrivateChatPreviewParser, PrivateChatPreviewParserOptions
+from funpayparsers.parsers.cpu_parser import CurrentlyViewingOfferInfoParser, CurrentlyViewingOfferInfoParserOptions
+from funpayparsers.types.common import CurrentlyViewingOfferInfo
 from funpayparsers.types.enums import UpdateType
 from dataclasses import dataclass
 
@@ -20,6 +20,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class UpdatesParserOptions(FunPayObjectParserOptions):
     ...
+
 
 
 class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
@@ -83,8 +84,12 @@ class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
             chat_previews=previews
         )
 
-    def _parse_cpu(self, obj: dict) -> CurrentlyViewingPage:
-        ...
+    def _parse_cpu(self, obj: dict) -> CurrentlyViewingOfferInfo:
+        html_ = obj['html']['desktop']
+        return CurrentlyViewingOfferInfoParser(
+            html_,
+            options=CurrentlyViewingOfferInfoParserOptions() & self.options
+        ).parse()
 
     def _parse_node(self, obj: dict) -> ChatNode:
         node_obj = obj['node']

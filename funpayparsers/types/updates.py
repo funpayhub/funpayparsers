@@ -1,8 +1,6 @@
 __all__ = ('OrderCounters',
            'ChatBookmarks',
            'ChatCounter',
-           'CurrentlyViewingPageHTML',
-           'CurrentlyViewingPage',
            'NodeInfo',
            'ChatNode',
            'ActionResponse',
@@ -16,6 +14,7 @@ from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.chat import PrivateChatPreview
 from funpayparsers.types.messages import Message
 from funpayparsers.types.enums import UpdateType
+from funpayparsers.types.common import CurrentlyViewingOfferInfo
 
 
 UpdateData = TypeVar('UpdateData')
@@ -72,18 +71,6 @@ class ChatCounter(FunPayObject):
     """
 
 
-# ------ C-P-U ------
-@dataclass
-class CurrentlyViewingPageHTML(FunPayObject):
-    desktop: str
-    mobile: str
-
-
-@dataclass
-class CurrentlyViewingPage(FunPayObject):
-    html: CurrentlyViewingPageHTML
-
-
 # ------ Nodes ------
 @dataclass
 class NodeInfo(FunPayObject):
@@ -138,7 +125,7 @@ class Updates(FunPayObject):
     order_counters: UpdateObject[OrderCounters] | None
     chat_counter: UpdateObject[ChatCounter] | None
     chat_bookmarks: UpdateObject[ChatBookmarks] | None
-    cpu: UpdateObject[CurrentlyViewingPage] | None
+    cpu: UpdateObject[CurrentlyViewingOfferInfo] | None
     nodes: dict[int | str, UpdateObject[NodeInfo]] | None
     unknown_objects: list[dict] | None
     response: ActionResponse | None
