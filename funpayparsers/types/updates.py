@@ -1,20 +1,20 @@
-__all__ = ('OrderCounters',
+__all__ = ('OrdersCounters',
            'ChatBookmarks',
            'ChatCounter',
-           'CurrentlyViewingPageHTML',
-           'CurrentlyViewingPage',
            'NodeInfo',
+           'CurrentlyViewingOfferInfo',
            'ChatNode',
            'ActionResponse',
            'UpdateObject',
            'Updates')
 
 from dataclasses import dataclass
-from typing import Generic, Literal, TypeVar
+from typing import Generic, TypeVar
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.chat import PrivateChatPreview
 from funpayparsers.types.messages import Message
+from funpayparsers.types.enums import UpdateType
 
 
 UpdateData = TypeVar('UpdateData')
@@ -22,15 +22,15 @@ UpdateData = TypeVar('UpdateData')
 
 # ------ Simple objects ------
 @dataclass
-class OrderCounters(FunPayObject):
+class OrdersCounters(FunPayObject):
     """
     Represents an order counters data from updates object.
     """
 
     purchases: int
-    """Active purchases amount."""
+    """Active purchases amount (`buyer` field)."""
     sales: int
-    """Active sales amount."""
+    """Active sales amount (`seller` field)."""
 
 
 @dataclass
@@ -73,14 +73,9 @@ class ChatCounter(FunPayObject):
 
 # ------ C-P-U ------
 @dataclass
-class CurrentlyViewingPageHTML(FunPayObject):
-    desktop: str
-    mobile: str
-
-
-@dataclass
-class CurrentlyViewingPage(FunPayObject):
-    html: CurrentlyViewingPageHTML
+class CurrentlyViewingOfferInfo(FunPayObject):
+    id: int | str
+    name: str
 
 
 # ------ Nodes ------
@@ -91,6 +86,7 @@ class NodeInfo(FunPayObject):
     silent: bool
 
 
+@dataclass
 class ChatNode(FunPayObject):
     node: NodeInfo
     messages: list[Message]
@@ -114,9 +110,7 @@ class UpdateObject(FunPayObject, Generic[UpdateData]):
     Represents a single update data from updates object.
     """
 
-    type: Literal[
-        'order_counters', 'chat_counter', 'chat_bookmarks', 'c-p-u', 'chat_node',
-    ]
+    type: UpdateType
     """Update type."""
 
     id: int | str  # todo: wtf is this? tag = id
@@ -135,10 +129,10 @@ class Updates(FunPayObject):
     Represents an updates object, returned by runner.
     """
 
-    order_counters: UpdateObject[OrderCounters] | None
+    orders_counters: UpdateObject[OrdersCounters] | None
     chat_counter: UpdateObject[ChatCounter] | None
     chat_bookmarks: UpdateObject[ChatBookmarks] | None
-    cpu: CurrentlyViewingPage | None
-    nodes: dict[int | str, NodeInfo] | None
+    cpu: UpdateObject[CurrentlyViewingOfferInfo] | None
+    nodes: list[UpdateObject[NodeInfo]] | None
     unknown_objects: list[dict] | None
-    response: ActionResponse | Literal[False]
+    response: ActionResponse | None

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = (
     'Currency',
     'OrderStatus',
@@ -5,12 +7,32 @@ __all__ = (
     'SubcategoryType',
     'TransactionStatus',
     'BadgeType',
+    'UpdateType',
 )
 
 
 from enum import UNIQUE, Enum, StrEnum, verify
 from types import MappingProxyType
 from functools import cache
+
+
+@verify(UNIQUE)
+class UpdateType(StrEnum):
+    ORDERS_COUNTERS = 'orders_counters'
+    CHAT_COUNTER = 'chat_counter'
+    CHAT_BOOKMARKS = 'chat_bookmarks'
+    CHAT_NODE = 'chat_node'
+    CPU = 'c-p-u'
+
+    @staticmethod
+    def get_by_type_str(type_str: str, /) -> UpdateType | None:
+        """
+        Determine an update type by its type string.
+        """
+        for i in UpdateType:
+            if i.value == type_str:
+                return i
+        return None
 
 
 @verify(UNIQUE)
