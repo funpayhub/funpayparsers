@@ -88,19 +88,6 @@ class OrderStatus(StrEnum):
     def get_by_css_class(css_class: str, /) -> 'OrderStatus':
         """
         Determine the order status based on a given CSS class string.
-
-        Examples:
-            >>> OrderStatus.get_by_css_class('text-primary some_another_css_class')
-            <OrderStatus.PAID: 'text-primary'>
-
-            >>> OrderStatus.get_by_css_class('some_another_css_class text-warning')
-            <OrderStatus.REFUNDED: 'text-warning'>
-
-            >>> OrderStatus.get_by_css_class('some_another_css_class text-success')
-            <OrderStatus.COMPLETED: 'text-success'>
-
-            >>> OrderStatus.get_by_css_class('some_another_css_class')
-            <OrderStatus.UNKNOWN: ''>
         """
         for i in OrderStatus:
             if i is OrderStatus.UNKNOWN:
@@ -126,10 +113,6 @@ class Currency(StrEnum):
     def get_by_character(character: str, /) -> 'Currency':
         """
         Determine the currency based on a given currency string.
-
-        Example:
-            >>> Currency.get_by_character('$')
-            <Currency.USD: '$'>
         """
         for i in Currency:
             if i is Currency.UNKNOWN:
@@ -159,16 +142,6 @@ class TransactionStatus(StrEnum):
     def get_by_css_class(css_class: str, /) -> 'TransactionStatus':
         """
         Determine the transaction type based on a given CSS class string.
-
-        Examples:
-            >>> TransactionStatus.get_by_css_class('tc-item transaction-status-complete')
-            <TransactionStatus.COMPLETED: 'transaction-status-complete'>
-
-            >>> TransactionStatus.get_by_css_class('tc-item transaction-status-waiting')
-            <TransactionStatus.PENDING: 'transaction-status-waiting'>
-
-            >>> TransactionStatus.get_by_css_class('some_another_css_class')
-            <TransactionStatus.UNKNOWN: ''>
         """
 
         for i in TransactionStatus:
@@ -200,16 +173,6 @@ class BadgeType(StrEnum):
     def get_by_css_class(css_class: str, /) -> 'BadgeType':
         """
         Determine the badge type based on a given CSS class string.
-
-        Examples:
-            >>> BadgeType.get_by_css_class('label-danger some_another_css_class')
-            <BadgeType.BANNED: 'label-danger'>
-
-            >>> BadgeType.get_by_css_class('some_another_css_class label-primary')
-            <BadgeType.NOTIFICATIONS: 'label-primary'>
-
-            >>> BadgeType.get_by_css_class('some_another_css_class')
-            <BadgeType.UNKNOWN: ''>
         """
         for i in BadgeType:
             if i is BadgeType.UNKNOWN:
@@ -226,7 +189,8 @@ class PaymentMethod(Enum):
     Enumeration of payment methods (withdrawal / deposit types).
 
     Based on:
-        - Sprites: https://funpay.com/16/img/layout/sprites.min.png (resized to 405px in auto mode)
+        - Sprites: https://funpay.com/16/img/layout/sprites.min.png
+        (resized to 405px in auto mode)
         - CSS: https://funpay.com/687/css/main.css
     """
 
@@ -331,13 +295,6 @@ class PaymentMethod(Enum):
     def get_by_css_class(css_class: str) -> 'PaymentMethod':
         """
         Determine the payment method based on a given CSS class string.
-
-        Examples:
-            >>> PaymentMethod.get_by_css_class('some text payment-method-1')
-            <PaymentMethod.QIWI: ('payment-method-1', 'payment-method-qiwi')>
-
-            >>> PaymentMethod.get_by_css_class('some_another_css_class')
-            <PaymentMethod.UNKNOWN: ('',)>
         """
         match = _PAYMENT_METHOD_CLS_RE.search(css_class)
         if not match:
