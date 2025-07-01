@@ -14,6 +14,7 @@ __all__ = (
 from enum import UNIQUE, Enum, StrEnum, verify
 from types import MappingProxyType
 from functools import cache
+import re
 
 
 @verify(UNIQUE)
@@ -126,18 +127,9 @@ class Currency(StrEnum):
         """
         Determine the currency based on a given currency string.
 
-        Examples:
+        Example:
             >>> Currency.get_by_character('$')
             <Currency.USD: '$'>
-
-            >>> Currency.get_by_character('₽')
-            <Currency.RUB: '₽'>
-
-            >>> Currency.get_by_character('€')
-            <Currency.EUR: '€'>
-
-            >>> Currency.get_by_character('Amongus')
-            <Currency.UNKNOWN: ''>
         """
         for i in Currency:
             if i is Currency.UNKNOWN:
@@ -228,6 +220,7 @@ class BadgeType(StrEnum):
         return BadgeType.UNKNOWN
 
 
+_PAYMENT_METHOD_CLS_RE = re.compile(r'payment-method-[a-zA-Z0-9_]+')
 class PaymentMethod(Enum):
     """
     Enumeration of payment methods (withdrawal / deposit types).
@@ -325,7 +318,7 @@ class PaymentMethod(Enum):
     UNKNOWN = ('',)
     """Unknown payment method."""
 
-    # MIR = 26, ('UNKNOWN', ), (345, Y) =(
+    # MIR = 26, ('UNKNOWN', ), (345, Y)  =(
 
     @staticmethod
     @cache
@@ -346,13 +339,12 @@ class PaymentMethod(Enum):
             >>> PaymentMethod.get_by_css_class('some_another_css_class')
             <PaymentMethod.UNKNOWN: ('',)>
         """
+        match = _PAYMENT_METHOD_CLS_RE.search(css_class)
+        if not match:
+            return PaymentMethod.UNKNOWN
+
+        css_class = match.string[match.start():match.end()]
         classes = PaymentMethod.css_classes_as_dict()
-        for cls in classes:
-            if classes[cls] is PaymentMethod.UNKNOWN:
-                continue
 
-            if cls in css_class:
-                return classes[cls]
-
-        return PaymentMethod.UNKNOWN
+        return classes.get(css_class) or PaymentMethod.UNKNOWN
 
