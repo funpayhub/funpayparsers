@@ -13,10 +13,20 @@ class FunPayObject:
     """
 
     raw_source: str
+    """
+    Raw source of an object.
+    Typically a HTML string, but in rare cases can be a JSON string.
+    """
 
     def as_dict(self) -> dict[str, Any]:
+        """
+        Returns a dict representations of an instance.
+        """
         return asdict(self)
 
     @classmethod
     def from_dict(cls: Type[SelfT], data: dict[str, Any]) -> SelfT:
+        """
+        Creates instance from a dict.
+        """
         return cls(**data)
