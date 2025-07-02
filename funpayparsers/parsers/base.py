@@ -11,7 +11,7 @@ from lxml import html
 import json
 
 from funpayparsers.types.base import FunPayObject
-from selectolax.parser import HTMLParser, Node
+from selectolax.lexbor import LexborHTMLParser
 
 
 @dataclass(frozen=True)
@@ -171,11 +171,11 @@ class FunPayHTML2ObjectParser(FunPayObjectParser[R, O], ABC):
         self._tree = None
 
     @property
-    def tree(self) -> HTMLParser:
+    def tree(self) -> LexborHTMLParser:
         if self._tree is not None:
             return self._tree
 
-        self._tree = HTMLParser(self.raw_source)
+        self._tree = LexborHTMLParser(self.raw_source)
         return self._tree
 
     @property
