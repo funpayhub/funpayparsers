@@ -10,6 +10,7 @@ from lxml import html
 import json
 
 from funpayparsers.types.base import FunPayObject
+from selectolax.parser import HTMLParser, Node
 
 
 @dataclass(frozen=True)
@@ -150,6 +151,30 @@ class FunPayHTMLObjectParser(FunPayObjectParser[R, O], ABC):
             return self._tree
 
         self._tree = html.fromstring(self.raw_source)
+        return self._tree
+
+    @property
+    def raw_source(self) -> str:
+        return self._raw_source
+
+
+class FunPayHTML2ObjectParser(FunPayObjectParser[R, O], ABC):
+    def __init__(self, raw_source: str, options: O | None = None, **overrides):
+        """
+        :param raw_source: raw source of an object (HTML / JSON string)
+        """
+        super().__init__(raw_source=raw_source,
+                         options=options,
+                         **overrides)
+
+        self._tree = None
+
+    @property
+    def tree(self) -> HTMLParser:
+        if self._tree is not None:
+            return self._tree
+
+        self._tree = HTMLParser(self.raw_source)
         return self._tree
 
     @property
