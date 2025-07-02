@@ -1,4 +1,5 @@
-__all__ = ('FunPayObjectParser', 'FunPayObjectParserOptions', 'FunPayHTMLObjectParser', 'FunPayJSONObjectParser')
+__all__ = ('FunPayObjectParser', 'FunPayObjectParserOptions', 'FunPayHTMLObjectParser',
+           'FunPayHTMLObjectParser', 'FunPayJSONObjectParser')
 
 from abc import ABC, abstractmethod
 from typing import get_args, get_origin

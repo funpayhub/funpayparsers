@@ -1,7 +1,7 @@
 __all__ = ('MoneyValueParser', 'MoneyValueParserOptions', 'MoneyValueParsingType')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
+from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTML2ObjectParser
 from funpayparsers.types.common import MoneyValue
 from funpayparsers.parsers.utils import parse_money_value_string
 from enum import Enum
@@ -31,7 +31,7 @@ class MoneyValueParserOptions(FunPayObjectParserOptions):
     """
 
 
-class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParserOptions]):
+class MoneyValueParser(FunPayHTML2ObjectParser[MoneyValue, MoneyValueParserOptions]):
     # todo: note about "tc-price" div in doc-string. (you should pass only tc-price div as raw_source)
     def _parse(self):
         types = {
@@ -43,22 +43,19 @@ class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParserOption
         return types[self.options.parsing_type]()
 
     def _parse_order_preview_type(self) -> MoneyValue:
-        div = self.tree.xpath('//div[contains(@class, "tc-price")]')[0]
-        string = div.xpath('string(.)')
-        return parse_money_value_string(string, raw_source=self.raw_source, raise_on_error=True)
+        val_str = self.tree.css('div.tc-price')[0].text(deep=True, strip=True)
+        return parse_money_value_string(val_str, raw_source=self.raw_source, raise_on_error=True)
 
     def _parse_transaction_preview_type(self) -> MoneyValue:
-        div = self.tree.xpath('//div[contains(@class, "tc-price")]')[0]
-        string = div.xpath('string(.)')
-        return parse_money_value_string(string, raw_source=self.raw_source, raise_on_error=True)
+        val_str = self.tree.css('div.tc-price')[0].text(deep=True, strip=True)
+        return parse_money_value_string(val_str, raw_source=self.raw_source, raise_on_error=True)
 
     def _parse_lot_preview_type(self) -> MoneyValue:
-        div = self.tree.xpath('//div[contains(@class, "tc-price")]')[0]
-        inner_div = div.xpath('.//div')[0]
-        string = inner_div.xpath('string(.)')
-        value = parse_money_value_string(string, raw_source=self.raw_source, raise_on_error=True)
+        div = self.tree.css('div.tc-price')[0]
+        val_str = div.css('div')[0].text(strip=True)
+        value = parse_money_value_string(val_str, raw_source=self.raw_source, raise_on_error=True)
         if self.options.parse_value_from_attribute:
-            value.value = float(div.get('data-s'))
+            value.value = float(div.attributes.get('data-s'))
         return value
 
     def _parse_string_type(self) -> MoneyValue:
