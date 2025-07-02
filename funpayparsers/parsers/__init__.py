@@ -10,3 +10,5 @@ from .money_value_parser import *
 from .lot_fields_parser import *
 from .updates_parser import *
 from .cpu_parser import *
+from .categories_parser import *
+from .updates_parser import *
