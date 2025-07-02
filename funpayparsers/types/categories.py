@@ -11,12 +11,22 @@ class Category(FunPayObject):
     """
     Represents a category from FunPay main page.
     """
+    id: int
+    """Category ID."""
 
     name: str
     """Category name."""
 
     subcategories: list['Subcategory']
     """List of subcategories."""
+
+    location: str | None = None
+
+    @property
+    def full_name(self) -> str:
+        if self.location is None:
+            return self.name
+        return f'{self.name} ({self.location})'
 
 
 @dataclass
