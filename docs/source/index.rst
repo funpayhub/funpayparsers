@@ -1,14 +1,37 @@
-.. FunPay Parsers documentation master file, created by
-   sphinx-quickstart on Tue Jul  1 22:57:54 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+FunPay Parsers
+==============
 
-FunPay Parsers documentation
-============================
+FunPay Parsers - это набор парсеров для популярной торговой площадки `FunPay <https://funpay.com>`_.
+Они позволят вам без лишних проблем преобразовать полученный HTML/JSON в удобные и структурированные датаклассы для
+дальнейшего использования в вашей программе.
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+.. grid:: 1 2 2 3
+
+    .. grid-item::
+
+        .. card::
+
+            :fas:`bolt;pst-color-primary` TestTitle
+            ^^^
+            Test
+
+    .. grid-item::
+
+        .. card::
+
+            :fas:`percent;pst-color-primary` TestTitle
+            ^^^
+            Test2
+
+    .. grid-item::
+
+        .. card::
+
+            :fas:`code;pst-color-primary` TestTitle
+            ^^^
+            Test3
+
+
 
 .. toctree::
    :maxdepth: 2
