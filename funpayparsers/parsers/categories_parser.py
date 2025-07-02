@@ -2,10 +2,10 @@ __all__ = ('CategoriesParser', 'CategoriesParserOptions')
 
 from dataclasses import dataclass
 
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTML2ObjectParser, FunPayObjectParserOptions
 from funpayparsers.types.categories import Category, Subcategory
 from funpayparsers.types.enums import SubcategoryType
-from lxml import html
+from selectolax.lexbor import LexborNode
 
 
 @dataclass(frozen=True)
@@ -13,60 +13,43 @@ class CategoriesParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParserOptions]):
+class CategoriesParser(FunPayHTML2ObjectParser[list[Category], CategoriesParserOptions]):
+    """
+    Class for parsing categories and subcategories.
+    Possible locations:
+        - FunPay main page.
+    """
     def _parse(self):
         result = []
 
-        for global_cat in self.tree.xpath('//div[contains(@class,"promo-game-item")]'):
-            categories = global_cat.xpath('.//div[contains(@class, "game-title")]')
-            if len(categories) > 1:
-                result.extend(self._parse_multiple_categories(categories, global_cat))
-                continue
+        for global_cat in self.tree.css('div.promo-game-item'):
+            categories = global_cat.css('div.game-title')
+            # Some categories have "clones" with different locations (RU, US/EU, etc.)
+            # FunPay treats them as different categories, but on main page they are in the same div.
+            for cat in categories:
+                id_ = int(cat.attrs['data-id'])
+                location = global_cat.css(f'button[data-id="{id_}"]')
+                location = location[0].text(strip=True) if location else None
 
-            cat = categories[0]
-            id_ = int(cat.get('data-id'))
-            name = cat.xpath('string(.//a[1])')
-            subcategories = self._parse_subcategories(global_cat, id_)
-            result.append(Category(
-                raw_source=html.tostring(global_cat),
-                id=id_,
-                name=name,
-                location=None,
-                subcategories=subcategories,
-            ))
+                result.append(Category(
+                    raw_source=global_cat.html,
+                    id=id_,
+                    name=cat.css('a')[0].text(strip=True),
+                    location=location,
+                    subcategories=self._parse_subcategories(global_cat, id_),
+                ))
         return result
 
-    def _parse_multiple_categories(self,
-                                   categories: list[html.HtmlElement],
-                                   global_cat: html.HtmlElement):
-        result = []
-        for cat in categories:
-            id_ = int(cat.get('data-id'))
-            name = cat.xpath('string(.//a[1])')
-            location = global_cat.xpath(f'string(.//button[@data-id="{id_}"][1])')
-            subcategories = self._parse_subcategories(global_cat, id_)
-            result.append(Category(
-                raw_source=html.tostring(global_cat, encoding='unicode'),
-                id=id_,
-                name=name,
-                location=location,
-                subcategories=subcategories,
-            ))
-        return result
-
-    def _parse_subcategories(self, global_cat: html.HtmlElement,
+    def _parse_subcategories(self, global_cat: LexborNode,
                              data_id: int | str) -> list[Subcategory]:
         result = []
-        div = global_cat.xpath(f'.//ul[contains(@class, "list-inline") and @data-id="{data_id}"]')[0]
-        for link in div.xpath('.//a'):
-            id_ = int(link.get('href').split('/')[-2])
-            name = link.xpath('string(.)').strip()
-
+        div = global_cat.css(f'ul.list-inline[data-id="{data_id}"]')[0]
+        for link in div.css('a'):
             result.append(Subcategory(
-                raw_source=html.tostring(link, encoding='unicode'),
-                id=id_,
-                name=name,
-                type=SubcategoryType.get_by_url(link.get('href'))
+                raw_source=link.html,
+                id=int(link.attrs['href'].split('/')[-2]),
+                name=link.text(strip=True),
+                type=SubcategoryType.get_by_url(link.attrs['href'])
             ))
 
         return result
