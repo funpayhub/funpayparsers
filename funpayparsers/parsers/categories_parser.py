@@ -59,8 +59,7 @@ class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParserOp
         result = []
         div = global_cat.xpath(f'.//ul[contains(@class, "list-inline") and @data-id="{data_id}"]')[0]
         for link in div.xpath('.//a'):
-            id_ = link.get('href').split('/')[-2]
-            id_ = int(id_) if id_.isnumeric() else id_
+            id_ = int(link.get('href').split('/')[-2])
             name = link.xpath('string(.)').strip()
 
             result.append(Subcategory(
