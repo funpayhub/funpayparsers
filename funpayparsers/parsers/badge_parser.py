@@ -15,7 +15,7 @@ class UserBadgeParser(FunPayHTML2ObjectParser[UserBadge, UserBadgeParserOptions]
     """
     Class for parsing user badges.
     Possible locations:
-        - On sellers pages (near username).
+        - On sellers pages (near username) (https://funpay.com/<userid>/).
         - In chats (near messages).
     """
     def _parse(self):

@@ -20,8 +20,8 @@ class OfferPreviewsParser(FunPayHTML2ObjectParser[list[OfferPreview], OfferPrevi
     """
     Class for parsing public offer previews.
     Possible locations:
-        - Sellers pages.
-        - Subcategories offer list pages.
+        - On sellers pages (https://funpay.com/<userid>/).
+        - On subcategories offer list pages (https://funpay.com/<lots/chips>/<subcategory_id>).
     """
     def _parse(self):
         result = []
