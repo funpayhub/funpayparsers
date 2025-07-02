@@ -1,9 +1,9 @@
-__all__ = ('LotFieldsParser', 'LotFieldsParserOptions')
+__all__ = ('OfferFieldsParser', 'OfferFieldsParserOptions')
 
 from dataclasses import dataclass
 from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
 from funpayparsers.parsers.utils import serialize_form
-from funpayparsers.types.lots import LotFields
+from funpayparsers.types.offers import OfferFields
 from lxml import html
 
 
@@ -11,16 +11,16 @@ _EXCLUDE = ['csrf_token']
 
 
 @dataclass(frozen=True)
-class LotFieldsParserOptions(FunPayObjectParserOptions):
+class OfferFieldsParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class LotFieldsParser(FunPayHTMLObjectParser[LotFields, LotFieldsParserOptions]):
+class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParserOptions]):
     def _parse(self):
         form = self.tree.xpath('//form[1]')[0]
         fields = serialize_form(form)
 
-        return LotFields(
+        return OfferFields(
             raw_source=html.tostring(form, encoding='unicode'),
             csrf_token=fields['csrf_token'],
             other_fields={k: v for k, v in fields.items() if k not in _EXCLUDE},

@@ -12,7 +12,7 @@ class MoneyValue(FunPayObject):
     Represents a monetary value with an associated currency.
 
     This class is used to store money-related information, such as:
-    - the price of a lot,
+    - the price of an offer,
     - the total of an order,
     - the user balance,
     - etc.

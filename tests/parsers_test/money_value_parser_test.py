@@ -58,13 +58,13 @@ def test_order_preview_money_value_parsing():
 
 
 def test_standard_lot_preview_money_value_parsing():
-    options = MoneyValueParserOptions(parsing_type=MoneyValueParsingType.FROM_LOT_PREVIEW)
+    options = MoneyValueParserOptions(parsing_type=MoneyValueParsingType.FROM_OFFER_PREVIEW)
     parser = MoneyValueParser(lot_preview_money_value_html, options=options & OPTIONS)
     assert parser.parse() == standard_lot_preview_money_value_obj
 
 
 def test_currency_lot_preview_money_value_parsing():
-    options = MoneyValueParserOptions(parsing_type=MoneyValueParsingType.FROM_LOT_PREVIEW,
+    options = MoneyValueParserOptions(parsing_type=MoneyValueParsingType.FROM_OFFER_PREVIEW,
                                       parse_value_from_attribute=False)
     parser = MoneyValueParser(lot_preview_money_value_html, options=options & OPTIONS)
     assert parser.parse() == currency_lot_preview_money_value_obj

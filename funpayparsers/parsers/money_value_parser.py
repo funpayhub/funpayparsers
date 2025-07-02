@@ -11,7 +11,7 @@ class MoneyValueParsingType(Enum):
     FROM_STRING = 0
     FROM_ORDER_PREVIEW = 1
     FROM_TRANSACTION_PREVIEW = 2
-    FROM_LOT_PREVIEW = 3
+    FROM_OFFER_PREVIEW = 3
 
 
 
@@ -21,12 +21,12 @@ class MoneyValueParserOptions(FunPayObjectParserOptions):
     parse_value_from_attribute: bool = True
     """
     Take numeric value from node attribute or not.
-    Uses when parsing from lot preview.
-    This parameter is necessary because standard lots have an exact price in the data-s attribute, 
-    while currency lots have a minimum purchase amount in the data-s attribute.
+    Uses when parsing from offer preview.
+    This parameter is necessary because standard offers have an exact price in the data-s attribute, 
+    while currency offers have a minimum purchase amount in the data-s attribute.
     
-    If parsing standard lot, set it to True.
-    If parsing currency lot, set it to False.
+    If parsing standard offer, set it to True.
+    If parsing currency offer, set it to False.
     Defaults to True.
     """
 
@@ -37,7 +37,7 @@ class MoneyValueParser(FunPayHTML2ObjectParser[MoneyValue, MoneyValueParserOptio
         types = {
             MoneyValueParsingType.FROM_ORDER_PREVIEW: self._parse_order_preview_type,
             MoneyValueParsingType.FROM_TRANSACTION_PREVIEW: self._parse_transaction_preview_type,
-            MoneyValueParsingType.FROM_LOT_PREVIEW: self._parse_lot_preview_type,
+            MoneyValueParsingType.FROM_OFFER_PREVIEW: self._parse_offer_preview_type,
             MoneyValueParsingType.FROM_STRING: self._parse_string_type,
         }
         return types[self.options.parsing_type]()
@@ -50,7 +50,7 @@ class MoneyValueParser(FunPayHTML2ObjectParser[MoneyValue, MoneyValueParserOptio
         val_str = self.tree.css('div.tc-price')[0].text(deep=True, strip=True)
         return parse_money_value_string(val_str, raw_source=self.raw_source, raise_on_error=True)
 
-    def _parse_lot_preview_type(self) -> MoneyValue:
+    def _parse_offer_preview_type(self) -> MoneyValue:
         div = self.tree.css('div.tc-price')[0]
         val_str = div.css('div')[0].text(strip=True)
         value = parse_money_value_string(val_str, raw_source=self.raw_source, raise_on_error=True)
