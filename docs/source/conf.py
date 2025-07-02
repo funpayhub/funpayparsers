@@ -12,13 +12,19 @@ extensions = []
 templates_path = ['_templates']
 exclude_patterns = []
 
-language = 'en'
+language = 'ru'
 
 
 # Theme
 html_theme = 'pydata_sphinx_theme'
 
 html_theme_options = {
+    'logo': {
+        'text': 'FunPay Parsers',
+        'image_light': '_static/logo.png',
+        'image_dark': '_static/logo.png',
+    },
+
     'icon_links': [
         {
             'name': 'Telegram',
