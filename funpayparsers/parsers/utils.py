@@ -9,7 +9,7 @@ from collections.abc import Iterable
 from funpayparsers.types.messages import Message
 from datetime import datetime, timedelta
 from copy import deepcopy
-from lxml import html
+from selectolax.lexbor import LexborHTMLParser, LexborNode
 
 from funpayparsers.types.enums import BadgeType
 from funpayparsers.types.common import MoneyValue
@@ -198,37 +198,38 @@ def parse_money_value_string(money_value_str: str, /, *, raw_source: str | None 
                       value=float(value), character=currency)
 
 
-def serialize_form(source: str | html.HtmlElement) -> dict[str, str]:
+def serialize_form(source: str | LexborNode) -> dict[str, str]:
     result = {}
     if isinstance(source, str):
         if not source:
             return {}
-        source = html.fromstring(source)
+        source = LexborHTMLParser(source)
 
-    form = source.xpath(f'//form[1]')
+    form = source.css(f'form')
     if not form:
         return {}
     form = form[0]
 
-    fields = form.xpath(f'.//*[@name and normalize-space(@name) and not(@disabled)]')
+    fields = form.css(f'*[name]:not([disabled])')
     for field in fields:
-        name = field.get('name')
-        value = field.get('value', '')
+        name = field.attrs.get('name')
+        value = field.attrs.get('value', '')
 
         if field.tag == 'textarea':
-            value = field.text or ''
+            value = field.text() or ''
 
         elif field.tag == 'select':
-            value = field.xpath('string(./option[@selected][1]/@value)') or ''
+            value = field.css('option[selected]')
+            value = value[0].attrs.get('value', '') if value else ''
 
         elif field.tag == 'input':
-            input_type = field.get('type', '').lower()
+            input_type = field.attrs.get('type', '').lower()
             if input_type == 'checkbox':
-                value = 'on' if field.get('checked') is not None else ''
+                value = 'on' if 'checked' in field.attrs else ''
             elif input_type == 'radio':
                 if result.get(name):
                     continue
-                value = value if field.get('checked') is not None else ''
+                value = value if 'checked' in field.attrs else ''
 
         if value is not None:
             result[name] = value
