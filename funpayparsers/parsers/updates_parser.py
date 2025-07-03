@@ -9,7 +9,7 @@ from funpayparsers.types.updates import (OrdersCounters,
                                          ChatNode,
                                          ActionResponse,
                                          UpdateObject,
-                                         Updates)
+                                         UpdatesPack)
 from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParserOptions
 from funpayparsers.parsers.chat_preview_parser import PrivateChatPreviewParser, PrivateChatPreviewParserOptions
 from funpayparsers.parsers.cpu_parser import CurrentlyViewingOfferInfoParser, CurrentlyViewingOfferInfoParserOptions
@@ -23,14 +23,14 @@ class UpdatesParserOptions(FunPayObjectParserOptions):
 
 
 
-class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
+class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParserOptions]):
     """
     Class for parsing updates.
     Possible locations:
         - In runners response.
     """
     def _parse(self):
-        updates_obj = Updates(
+        updates_obj = UpdatesPack(
             raw_source=str(self.raw_source),
             orders_counters=None,
             chat_counter=None,

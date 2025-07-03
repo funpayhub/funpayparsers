@@ -6,7 +6,7 @@ __all__ = ('OrdersCounters',
            'ChatNode',
            'ActionResponse',
            'UpdateObject',
-           'Updates')
+           'UpdatesPack')
 
 from dataclasses import dataclass
 from typing import Generic, TypeVar
@@ -104,6 +104,7 @@ class ActionResponse(FunPayObject):
     """Error text, if an error occurred while processing a request."""
 
 
+# ------ Update obj ------
 @dataclass
 class UpdateObject(FunPayObject, Generic[UpdateData]):
     """
@@ -124,7 +125,7 @@ class UpdateObject(FunPayObject, Generic[UpdateData]):
 
 
 @dataclass
-class Updates(FunPayObject):
+class UpdatesPack(FunPayObject):
     """
     Represents an updates object, returned by runner.
     """
