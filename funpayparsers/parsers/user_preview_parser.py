@@ -1,3 +1,6 @@
+__all__ = ('UserPreviewParser', 'UserPreviewParserOptions')
+
+
 from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
 from funpayparsers.types.common import UserPreview
 from funpayparsers.parsers.utils import extract_css_url
