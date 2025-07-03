@@ -1,7 +1,13 @@
+from __future__ import annotations
+
 __all__ = ('PrivateChatPreview', )
 
 from funpayparsers.types.base import FunPayObject
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from funpayparsers.types.updates import CurrentlyViewingOfferInfo
+    from funpayparsers.types import Message
 
 
 @dataclass
@@ -42,4 +48,36 @@ class PrivateChatPreview(FunPayObject):
     - `HH:MM` if the message was sent today.
     - `Yesterday` (depends on the page language) if the message was sent yesterday.
     - `DD.MM` if the message was sent the day before yesterday or earlier.
+    """
+
+
+@dataclass
+class Chat:
+    interlocutor: ...
+    is_notifications_enabled: bool
+    is_blocked: bool
+    history: list[Message]
+
+
+@dataclass
+class PrivateChatInfo(FunPayObject):
+    """
+    Represents a private chat info.
+    Located near private chat.
+    """
+
+    registration_date_text: str
+    """Interlocutors registration date."""
+
+    language: str | None
+    """
+    Interlocutors language.
+    
+    Warning:
+        Not `None` only if interlocutors language is english.
+    """
+
+    currently_viewing_offer: CurrentlyViewingOfferInfo | None
+    """
+    Info about the offer currently being viewed by the interlocutor.
     """

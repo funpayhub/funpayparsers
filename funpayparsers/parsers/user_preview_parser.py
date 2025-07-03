@@ -15,7 +15,7 @@ class UserPreviewParserOptions(FunPayObjectParserOptions):
 
 class UserPreviewParser(FunPayHTMLObjectParser[UserPreview, UserPreviewParserOptions]):
     """
-    Class for parsing private chat previews.
+    Class for parsing user previews.
     Possible locations:
         - In private chat header (https://funpay.com/en/chat/?node=<chat_id>)
         - On sales page (https://funpay.com/en/orders/trade)
