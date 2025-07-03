@@ -4,7 +4,7 @@ from .common import *
 from .common_page_elements import *
 from .enums import *
 from .finances import *
-from .lots import *
+from .offers import *
 from .messages import *
 from .orders import *
 from .categories import *

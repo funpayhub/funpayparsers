@@ -4,7 +4,6 @@ __all__ = ('UserBadgeParser', 'UserBadgeParserOptions')
 from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
 from funpayparsers.types.common import UserBadge
 from dataclasses import dataclass
-from lxml import html
 
 
 @dataclass(frozen=True)
@@ -13,10 +12,16 @@ class UserBadgeParserOptions(FunPayObjectParserOptions):
 
 
 class UserBadgeParser(FunPayHTMLObjectParser[UserBadge, UserBadgeParserOptions]):
+    """
+    Class for parsing user badges.
+    Possible locations:
+        - On sellers pages (near username) (https://funpay.com/<userid>/).
+        - In chats (near messages).
+    """
     def _parse(self):
-        badge_div = self.tree.xpath('//span[contains(@class, "label")]')[0]
+        badge_span = self.tree.css('span.label')[0]
         return UserBadge(
-            raw_source=html.tostring(badge_div, encoding="unicode"),
-            text=badge_div.text,
-            css_class=badge_div.get("class")
+            raw_source=badge_span.html,
+            text=badge_span.text(strip=True),
+            css_class=badge_span.attributes["class"]
         )

@@ -1,4 +1,4 @@
-__all__ = ('LotPreview', 'LotSeller', 'LotFields')
+__all__ = ('OfferPreview', 'OfferSeller', 'OfferFields')
 
 from dataclasses import dataclass, field
 
@@ -7,11 +7,9 @@ from funpayparsers.types.common import MoneyValue
 
 
 @dataclass
-class LotSeller(FunPayObject):
+class OfferSeller(FunPayObject):
     """
-    Represents the seller of a lot.
-
-    Used in lot previews.
+    Represents the seller of an offer.
     """
 
     id: int
@@ -37,35 +35,35 @@ class LotSeller(FunPayObject):
 
 
 @dataclass
-class LotPreview(FunPayObject):
+class OfferPreview(FunPayObject):
     """
-    Represents a lot preview.
+    Represents an offer preview.
     """
 
     id: int | str
-    """Unique lot ID."""
+    """Unique offer ID."""
 
     auto_issue: bool
-    """Whether auto-issue is enabled for this lot."""
+    """Whether auto-issue is enabled for this offer."""
 
     is_pinned: bool
-    """Whether this lot is pinned to the top of the list."""
+    """Whether this offer is pinned to the top of the list."""
 
     desc: str | None
-    """The description of the lot, if provided."""
+    """The description of the offer, if provided."""
 
     amount: int | None
-    """The quantity of goods available in this lot, if specified."""
+    """The quantity of goods available in this offer, if specified."""
 
     price: MoneyValue
-    """The price of the lot."""
+    """The price of the offer."""
 
-    seller: LotSeller | None
-    """Information about the lot seller, if applicable."""
+    seller: OfferSeller | None
+    """Information about the offer seller, if applicable."""
 
     other_data: dict[str, str | int]
     """
-    Additional data related to the lot, such as server ID, side ID, etc., 
+    Additional data related to the offer, such as server ID, side ID, etc., 
         if applicable.
     """
 
@@ -78,13 +76,13 @@ class LotPreview(FunPayObject):
 
 
 @dataclass
-class LotFields(FunPayObject):
+class OfferFields(FunPayObject):
     """
-    Represents lot fields.
+    Represents the offer fields.
     """
 
     csrf_token: str
     """User CSRF token."""
 
     other_fields: dict[str, str | int] = field(default_factory=dict)
-    """Other lot fields."""
+    """Other offer fields."""

@@ -1,15 +1,15 @@
-__all__ = ('FunPayObjectParser', 'FunPayObjectParserOptions', 'FunPayHTMLObjectParser', 'FunPayJSONObjectParser')
+__all__ = ('FunPayObjectParser', 'FunPayObjectParserOptions',
+           'FunPayHTMLObjectParser', 'FunPayJSONObjectParser')
 
 from abc import ABC, abstractmethod
 from typing import get_args, get_origin
 from dataclasses import dataclass, replace, fields, asdict, field
 from typing import Generic, Type, TypeVar, Any
 from collections.abc import Sequence, Mapping
-
-from lxml import html
 import json
 
 from funpayparsers.types.base import FunPayObject
+from selectolax.lexbor import LexborHTMLParser
 
 
 @dataclass(frozen=True)
@@ -138,18 +138,15 @@ class FunPayHTMLObjectParser(FunPayObjectParser[R, O], ABC):
         """
         :param raw_source: raw source of an object (HTML / JSON string)
         """
-        super().__init__(raw_source=raw_source,
-                         options=options,
-                         **overrides)
-
+        super().__init__(raw_source=raw_source, options=options, **overrides)
         self._tree = None
 
     @property
-    def tree(self) -> html.HtmlElement:
+    def tree(self) -> LexborHTMLParser:
         if self._tree is not None:
             return self._tree
 
-        self._tree = html.fromstring(self.raw_source)
+        self._tree = LexborHTMLParser(self.raw_source)
         return self._tree
 
     @property
@@ -157,11 +154,9 @@ class FunPayHTMLObjectParser(FunPayObjectParser[R, O], ABC):
         return self._raw_source
 
 
-class FunPayJSONObjectParser(FunPayHTMLObjectParser[R, O], ABC):
+class FunPayJSONObjectParser(FunPayObjectParser[R, O], ABC):
     def __init__(self, raw_source: str | dict | list, options: O | None = None, **overrides):
-        super().__init__(raw_source=raw_source,
-                         options=options,
-                         **overrides)
+        super().__init__(raw_source=raw_source, options=options, **overrides)
         self._data = None
 
     @property

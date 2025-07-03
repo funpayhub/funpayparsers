@@ -1,9 +1,9 @@
-from funpayparsers.parsers.lot_previews_parser import LotPreviewsParser, LotPreviewsParserOptions
-from funpayparsers.types.lots import LotPreview, LotSeller
+from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParser, OfferPreviewsParserOptions
+from funpayparsers.types.offers import OfferPreview, OfferSeller
 from funpayparsers.types.common import MoneyValue
 
 
-OPTIONS = LotPreviewsParserOptions(empty_raw_source=True)
+OPTIONS = OfferPreviewsParserOptions(empty_raw_source=True)
 
 
 common_lot_html = """<a href="https://funpay.com/lots/offer?id=12345" class="tc-item offer-promo offer-promoted" 
@@ -46,7 +46,7 @@ common_lot_html = """<a href="https://funpay.com/lots/offer?id=12345" class="tc-
 </a>
 """
 
-common_lot_obj = LotPreview(
+common_lot_obj = OfferPreview(
     raw_source='',
     id=12345,
     auto_issue=True,
@@ -58,7 +58,7 @@ common_lot_obj = LotPreview(
         value=3499.796334,
         character='₽'
     ),
-    seller=LotSeller(
+    seller=OfferSeller(
         raw_source='',
         id=54321,
         username='SellerUsername',
@@ -108,7 +108,7 @@ currency_lot_html = """
 </a>
 """
 
-currency_lot_obj = LotPreview(
+currency_lot_obj = OfferPreview(
     raw_source='',
     id='15090731-20-20-97-0',
     auto_issue=False,
@@ -120,7 +120,7 @@ currency_lot_obj = LotPreview(
         value=0.132,
         character='₽'
     ),
-    seller=LotSeller(
+    seller=OfferSeller(
         raw_source='',
         id=54321,
         username='SellerUsername',
@@ -140,10 +140,10 @@ currency_lot_obj = LotPreview(
 
 
 def test_common_lot_parsing():
-    parser = LotPreviewsParser(common_lot_html, options=OPTIONS)
+    parser = OfferPreviewsParser(common_lot_html, options=OPTIONS)
     assert parser.parse() == [common_lot_obj]
 
 
 def test_currency_lot_parsing():
-    parser = LotPreviewsParser(currency_lot_html, options=OPTIONS)
+    parser = OfferPreviewsParser(currency_lot_html, options=OPTIONS)
     assert parser.parse() == [currency_lot_obj]

@@ -1,8 +1,8 @@
-from funpayparsers.parsers.lot_fields_parser import LotFieldsParser, LotFieldsParserOptions
-from funpayparsers.types.lots import LotFields
+from funpayparsers.parsers.offer_fields_parser import OfferFieldsParser, OfferFieldsParserOptions
+from funpayparsers.types.offers import OfferFields
 
 
-OPTIONS = LotFieldsParserOptions(empty_raw_source=True)
+OPTIONS = OfferFieldsParserOptions(empty_raw_source=True)
 
 
 lot_fields_html = """
@@ -108,7 +108,7 @@ lot_fields_html = """
 </form>
 """
 
-lot_fields_obj = LotFields(
+lot_fields_obj = OfferFields(
     raw_source='',
     csrf_token='CSRFTOKEN',
     other_fields={
@@ -133,5 +133,5 @@ lot_fields_obj = LotFields(
 
 
 def test_lot_fields_parser():
-    parser = LotFieldsParser(lot_fields_html, options=OPTIONS)
+    parser = OfferFieldsParser(lot_fields_html, options=OPTIONS)
     assert parser.parse() == lot_fields_obj
