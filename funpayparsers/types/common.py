@@ -1,4 +1,4 @@
-__all__ = ('MoneyValue', 'UserBadge')
+__all__ = ('MoneyValue', 'UserBadge', 'UserPreview')
 
 from dataclasses import dataclass
 
@@ -62,3 +62,28 @@ class UserBadge(FunPayObject):
         """Badge type."""
 
         return BadgeType.get_by_css_class(self.css_class)
+
+
+@dataclass
+class UserPreview(FunPayObject):
+    """
+    Represents user preview.
+    """
+
+    id: int
+    """User ID."""
+
+    username: str
+    """Username."""
+
+    online: bool
+    """True, if user is online."""
+
+    banned: bool
+    """True, if user is banned."""
+
+    status_text: str
+    """Status text (online / banned / last seen online)."""
+
+    avatar_url: str
+    """User avatar URL."""
