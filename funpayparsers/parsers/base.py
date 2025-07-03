@@ -6,8 +6,6 @@ from typing import get_args, get_origin
 from dataclasses import dataclass, replace, fields, asdict, field
 from typing import Generic, Type, TypeVar, Any
 from collections.abc import Sequence, Mapping
-
-from lxml import html
 import json
 
 from funpayparsers.types.base import FunPayObject
