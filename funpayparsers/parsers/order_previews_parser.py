@@ -2,7 +2,7 @@ __all__ = ('OrderPreviewsParserOptions', 'OrderPreviewsParser', )
 
 from dataclasses import dataclass
 
-from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTML2ObjectParser
+from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
 from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.types.orders import OrderPreview, OrderCounterpartyInfo, OrderPreviewsBatch
 from funpayparsers.types.enums import OrderStatus
@@ -14,7 +14,7 @@ class OrderPreviewsParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class OrderPreviewsParser(FunPayHTML2ObjectParser[
+class OrderPreviewsParser(FunPayHTMLObjectParser[
                               list[OrderPreview],
                               OrderPreviewsParserOptions
                           ]):

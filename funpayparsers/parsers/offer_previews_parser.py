@@ -2,7 +2,7 @@ __all__ = ('OfferPreviewsParser', 'OfferPreviewsParserOptions')
 
 from copy import deepcopy
 
-from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTML2ObjectParser
+from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
 from funpayparsers.types.offers import OfferPreview, OfferSeller
 from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
@@ -16,7 +16,7 @@ class OfferPreviewsParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class OfferPreviewsParser(FunPayHTML2ObjectParser[list[OfferPreview], OfferPreviewsParserOptions]):
+class OfferPreviewsParser(FunPayHTMLObjectParser[list[OfferPreview], OfferPreviewsParserOptions]):
     """
     Class for parsing public offer previews.
     Possible locations:

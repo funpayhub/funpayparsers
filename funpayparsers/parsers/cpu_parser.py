@@ -1,7 +1,7 @@
 __all__ = ('CurrentlyViewingOfferInfoParserOptions', 'CurrentlyViewingOfferInfoParser')
 
 
-from funpayparsers.parsers.base import FunPayHTML2ObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
 from funpayparsers.types.updates import CurrentlyViewingOfferInfo
 from dataclasses import dataclass
 
@@ -11,7 +11,7 @@ class CurrentlyViewingOfferInfoParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class CurrentlyViewingOfferInfoParser(FunPayHTML2ObjectParser[
+class CurrentlyViewingOfferInfoParser(FunPayHTMLObjectParser[
                                           CurrentlyViewingOfferInfo,
                                           CurrentlyViewingOfferInfoParserOptions
                                       ]):

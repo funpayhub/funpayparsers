@@ -1,7 +1,7 @@
 __all__ = ('UserBadgeParser', 'UserBadgeParserOptions')
 
 
-from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTML2ObjectParser
+from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
 from funpayparsers.types.common import UserBadge
 from dataclasses import dataclass
 
@@ -11,7 +11,7 @@ class UserBadgeParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class UserBadgeParser(FunPayHTML2ObjectParser[UserBadge, UserBadgeParserOptions]):
+class UserBadgeParser(FunPayHTMLObjectParser[UserBadge, UserBadgeParserOptions]):
     """
     Class for parsing user badges.
     Possible locations:

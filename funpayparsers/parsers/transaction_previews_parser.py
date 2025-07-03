@@ -1,7 +1,7 @@
 __all__ = ('TransactionPreviewsParser', 'TransactionPreviewsParserOptions')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTML2ObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
 from funpayparsers.types.finances import TransactionPreview, TransactionPreviewsBatch
 from funpayparsers.types.enums import TransactionStatus, PaymentMethod
 from funpayparsers.parsers.money_value_parser import MoneyValueParserOptions, MoneyValueParsingType, MoneyValueParser
@@ -12,7 +12,7 @@ class TransactionPreviewsParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class TransactionPreviewsParser(FunPayHTML2ObjectParser[
+class TransactionPreviewsParser(FunPayHTMLObjectParser[
     TransactionPreviewsBatch,
     TransactionPreviewsParserOptions
 ]):

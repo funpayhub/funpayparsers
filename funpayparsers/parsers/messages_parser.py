@@ -3,7 +3,7 @@ __all__ = ('MessagesParserOptions', 'MessagesParser')
 from dataclasses import dataclass
 from selectolax.lexbor import LexborNode
 
-from funpayparsers.parsers.base import FunPayHTML2ObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
 from funpayparsers.types.messages import Message
 from funpayparsers.types.common import UserBadge
 from funpayparsers.parsers.utils import resolve_messages_senders
@@ -16,7 +16,7 @@ class MessagesParserOptions(FunPayObjectParserOptions):
     resolve_senders: bool = True
 
 
-class MessagesParser(FunPayHTML2ObjectParser[list[Message], MessagesParserOptions]):
+class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions]):
     """
     Class for parsing messages.
     Possible locations:

@@ -3,7 +3,7 @@ __all__ = (
     'ReviewsParserOptions'
 )
 
-from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTML2ObjectParser
+from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
 from funpayparsers.types.reviews import Review, ReviewsBatch
 from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
 from funpayparsers.types.common import MoneyValue
@@ -16,7 +16,7 @@ class ReviewsParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class ReviewsParser(FunPayHTML2ObjectParser[ReviewsBatch, ReviewsParserOptions]):
+class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParserOptions]):
     """
     Class for parsing reviews.
     Possible locations:
