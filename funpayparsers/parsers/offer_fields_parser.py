@@ -15,6 +15,11 @@ class OfferFieldsParserOptions(FunPayObjectParserOptions):
 
 
 class OfferFieldsParser(FunPayHTML2ObjectParser[OfferFields, OfferFieldsParserOptions]):
+    """
+    Class for parsing available offer fields.
+    Possible locations:
+        - On offer edit pages (https://funpay.com/lots/offerEdit?node=<node_id>&offer=<offer_id>)
+    """
     def _parse(self):
         form = self.tree.css('form')[0]
         fields = serialize_form(form)
