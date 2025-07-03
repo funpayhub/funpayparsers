@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from funpayparsers.types.updates import CurrentlyViewingOfferInfo
-    from funpayparsers.types import Message
+    from funpayparsers.types import Message, UserPreview
 
 
 @dataclass
@@ -22,7 +22,7 @@ class PrivateChatPreview(FunPayObject):
     is_unread: bool
     """True, if chat is unread (orange chat)."""
 
-    name: str
+    username: str
     """Interlocutor username (chat name)."""
 
     avatar_url: str
@@ -53,10 +53,31 @@ class PrivateChatPreview(FunPayObject):
 
 @dataclass
 class Chat:
-    interlocutor: ...
-    is_notifications_enabled: bool
+    """
+    Represents a chat.
+    """
+    id: int
+    """Chat ID."""
+
+    name: str
+    """Chat name."""
+
+    interlocutor: UserPreview | None
+    """Interlocutor preview. Available in private chats only."""
+
+    is_notifications_enabled: bool | None
+    """Whether notifications are enabled or not. Available in private chats only."""
+
     is_blocked: bool
+    """Whether notifications are enabled or not. Available in private chats only."""
+
     history: list[Message]
+    """
+    Messages history.
+    
+    - Private chats: last 50 messages.
+    - Public chats: last 25 messages.
+    """
 
 
 @dataclass
@@ -81,3 +102,4 @@ class PrivateChatInfo(FunPayObject):
     """
     Info about the offer currently being viewed by the interlocutor.
     """
+
