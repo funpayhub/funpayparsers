@@ -40,7 +40,7 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions
                 if userid == 0:
                     text = msg_div.css('div.alert')[0].text().strip()
                 else:
-                    text = msg_div.css('div.chat-msg-text')[0].text()
+                    text = msg_div.css('div.chat-msg-text')[0].text().strip()
 
             messages.append(Message(
                 raw_source=msg_div.html,

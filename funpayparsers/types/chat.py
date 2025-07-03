@@ -52,7 +52,7 @@ class PrivateChatPreview(FunPayObject):
 
 
 @dataclass
-class Chat:
+class Chat(FunPayObject):
     """
     Represents a chat.
     """
@@ -68,7 +68,7 @@ class Chat:
     is_notifications_enabled: bool | None
     """Whether notifications are enabled or not. Available in private chats only."""
 
-    is_blocked: bool
+    is_blocked: bool | None
     """Whether notifications are enabled or not. Available in private chats only."""
 
     history: list[Message]
