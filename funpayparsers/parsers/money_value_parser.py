@@ -32,7 +32,15 @@ class MoneyValueParserOptions(FunPayObjectParserOptions):
 
 
 class MoneyValueParser(FunPayHTML2ObjectParser[MoneyValue, MoneyValueParserOptions]):
-    # todo: note about "tc-price" div in doc-string. (you should pass only tc-price div as raw_source)
+    """
+    Class for parsing money values.
+    Possible locations:
+        - On transactions page (https://funpay.com/account/balance)
+        - On sales page (https://funpay.com/orders/trade)
+        - On purchases page (https://funpay.com/orders/)
+        - On subcategory offers list page (https://funpay.com/lots/<subcategory_id>/)
+        - etc.
+    """
     def _parse(self):
         types = {
             MoneyValueParsingType.FROM_ORDER_PREVIEW: self._parse_order_preview_type,
@@ -43,16 +51,16 @@ class MoneyValueParser(FunPayHTML2ObjectParser[MoneyValue, MoneyValueParserOptio
         return types[self.options.parsing_type]()
 
     def _parse_order_preview_type(self) -> MoneyValue:
-        val_str = self.tree.css('div.tc-price')[0].text(deep=True, strip=True)
+        val_str = self.tree.css('div.tc-price')[0].text().strip()
         return parse_money_value_string(val_str, raw_source=self.raw_source, raise_on_error=True)
 
     def _parse_transaction_preview_type(self) -> MoneyValue:
-        val_str = self.tree.css('div.tc-price')[0].text(deep=True, strip=True)
+        val_str = self.tree.css('div.tc-price')[0].text().strip()
         return parse_money_value_string(val_str, raw_source=self.raw_source, raise_on_error=True)
 
     def _parse_offer_preview_type(self) -> MoneyValue:
         div = self.tree.css('div.tc-price')[0]
-        val_str = div.css('div')[0].text(strip=True)
+        val_str = div.css('div')[0].text().strip()
         value = parse_money_value_string(val_str, raw_source=self.raw_source, raise_on_error=True)
         if self.options.parse_value_from_attribute:
             value.value = float(div.attributes.get('data-s'))

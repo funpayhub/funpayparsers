@@ -2,8 +2,6 @@ __all__ = ('PrivateChatPreviewParser', 'PrivateChatPreviewParserOptions')
 
 from dataclasses import dataclass
 
-from lxml import html
-
 from funpayparsers.parsers.base import FunPayHTML2ObjectParser, FunPayObjectParserOptions
 from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.types.chat import PrivateChatPreview
