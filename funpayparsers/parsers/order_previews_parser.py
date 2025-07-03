@@ -3,9 +3,8 @@ __all__ = ('OrderPreviewsParserOptions', 'OrderPreviewsParser', )
 from dataclasses import dataclass
 
 from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
-from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.types.orders import OrderPreview, OrderPreviewsBatch
-from funpayparsers.types.common import UserPreview
+from funpayparsers.parsers.user_preview_parser import UserPreviewParser, UserPreviewParserOptions
 from funpayparsers.types.enums import OrderStatus
 from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
 
@@ -37,20 +36,10 @@ class OrderPreviewsParser(FunPayHTMLObjectParser[
                                       ) & self.options).parse()
 
             user_tag = order.css('div.media-user')[0]
-            photo_style = order.css('div.avatar-photo')[0].attrs['style']
-            print('-'*50, '\n', user_tag.html)
-            username_tag = user_tag.css('div.media-user-name > span')[0]
-            user_status_text: str = user_tag.css('div.media-user-status')[0].text(strip=True)
-
-            counterparty = UserPreview(
+            counterparty = UserPreviewParser(
                 raw_source=user_tag.html,
-                id=int(username_tag.attrs['data-href'].split('/')[-2]),
-                username=username_tag.text(strip=True),
-                online='online' in user_tag.attrs['class'],
-                avatar_url=extract_css_url(photo_style),
-                banned='banned' in user_tag.attrs['class'],
-                status_text=user_status_text
-            )
+                options=UserPreviewParserOptions() & self.options
+            ).parse()
 
             order_obj = OrderPreview(
                 raw_source=order.html,
