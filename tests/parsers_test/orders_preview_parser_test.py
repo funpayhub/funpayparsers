@@ -1,8 +1,8 @@
 from funpayparsers.parsers.order_previews_parser import (OrderPreviewsParser,
                                                          OrderPreviewsParserOptions)
-from funpayparsers.types.orders import OrderPreview, OrderCounterpartyInfo, OrderPreviewsBatch
+from funpayparsers.types.orders import OrderPreview, OrderPreviewsBatch
 from funpayparsers.types.enums import OrderStatus
-from funpayparsers.types.common import MoneyValue
+from funpayparsers.types.common import MoneyValue, UserPreview
 
 
 OPTIONS = OrderPreviewsParserOptions(empty_raw_source=True)
@@ -53,7 +53,7 @@ refunded_order_obj = OrderPreviewsBatch(
                 value=25.12,
                 character='₽'
             ),
-            counterparty=OrderCounterpartyInfo(
+            counterparty=UserPreview(
                 raw_source='',
                 id=123456,
                 username='Counterparty username',
