@@ -1,10 +1,9 @@
 __all__ = ('MessagesParserOptions', 'MessagesParser')
 
 from dataclasses import dataclass
+from selectolax.lexbor import LexborNode
 
-from lxml import html
-
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTML2ObjectParser, FunPayObjectParserOptions
 from funpayparsers.types.messages import Message
 from funpayparsers.types.common import UserBadge
 from funpayparsers.parsers.utils import resolve_messages_senders
@@ -17,34 +16,35 @@ class MessagesParserOptions(FunPayObjectParserOptions):
     resolve_senders: bool = True
 
 
-class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions]):
+class MessagesParser(FunPayHTML2ObjectParser[list[Message], MessagesParserOptions]):
+    """
+    Class for parsing messages.
+    Possible locations:
+        - On chat pages (https://funpay.com/chat/?node=<chat_id>).
+        - In runners response.
+    """
     def _parse(self):
         messages = []
-        for msg_div in self.tree.xpath('//div[contains(@class, "chat-msg-item")]'):
+        for msg_div in self.tree.css('div.chat-msg-item'):
             userid, username, date, badge = None, None, None, None
-
-            message_id = int(msg_div.get("id").split("-")[1])
-            has_header, msg_badge = "chat-msg-with-head" in msg_div.get("class"), None
-
+            has_header = "chat-msg-with-head" in msg_div.attrs["class"]
             if has_header:
                 userid, username, date, badge = self._parse_message_header(msg_div)
 
-            if image_tag := msg_div.xpath('.//a[@class="chat-img-link"]'):
-                image_url, text = image_tag[0].get("href"), None
+            if image_tag := msg_div.css('a.chat-img-link'):
+                image_url, text = image_tag[0].attrs["href"], None
             else:
                 image_url = None
 
-                # Every FunPay message is heading, so we will know sender id
+                # Every FunPay *system* message is heading, so we will know sender id
                 if userid == 0:
-                    text = msg_div.xpath(
-                        'string(.//div[contains(@class, "alert")][1])'
-                    ).strip()
+                    text = msg_div.css('div.alert')[0].text().strip()
                 else:
-                    text = msg_div.xpath('string(.//div[@class="chat-msg-text"][1])')
+                    text = msg_div.css('div.chat-msg-text')[0].text()
 
             messages.append(Message(
-                raw_source=html.tostring(msg_div, encoding="unicode"),
-                id=message_id,
+                raw_source=msg_div.html,
+                id=int(msg_div.attrs["id"].split("-")[1]),
                 is_heading=has_header,
                 sender_id=userid,
                 sender_username=username,
@@ -61,7 +61,7 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions
             resolve_messages_senders(messages)
         return messages
 
-    def _parse_message_header(self, msg_tag: html.HtmlElement) -> tuple[int, str, str, UserBadge | None]:
+    def _parse_message_header(self, msg_tag: LexborNode) -> tuple[int, str, str, UserBadge | None]:
         """
         Parses the message header to extract the author ID, author nickname,
         and an optional author/message badge.
@@ -76,18 +76,18 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions
 
         id_, name = 0, "FunPay"
 
-        if user_tag := msg_tag.xpath('.//a[@class="chat-msg-author-link"][1]'):
-            id_, name = int(user_tag[0].get("href").split("/")[-2]), user_tag[0].text
+        if user_tag := msg_tag.css('a.chat-msg-author-link'):
+            id_, name = int(user_tag[0].attrs["href"].split("/")[-2]), user_tag[0].text(strip=True)
 
-        date = msg_tag.xpath('.//div[@class="chat-msg-date"]')[0].get("title")
+        date = msg_tag.css('div.chat-msg-date')[0].attrs["title"]
 
-        if not (badge := msg_tag.xpath('.//span[contains(@class, "author-label")]')):
+        if not (badge := msg_tag.css('span.label')):
             return id_, name, date, None
 
         return (
             id_,
             name,
             date,
-            UserBadgeParser(html.tostring(badge[0], encoding="unicode"),
+            UserBadgeParser(raw_source=badge[0].html,
                             options=UserBadgeParserOptions() & self.options).parse()
         )
