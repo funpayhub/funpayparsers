@@ -105,7 +105,7 @@ class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
         )
 
         messages = MessagesParser(
-            '\n'.join(i['html'] for i in node_obj['messages']),
+            '\n'.join(i['html'] for i in obj['messages']),
             options=MessagesParserOptions() & self.options,
         ).parse()
 
@@ -113,7 +113,7 @@ class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
             raw_source=str(obj),
             node=node_info,
             messages=messages,
-            has_history=obj['has_history'],
+            has_history=obj['hasHistory'],
         )
 
     def _parse_action_response(self, obj: dict) -> ActionResponse:

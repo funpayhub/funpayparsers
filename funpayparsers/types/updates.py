@@ -133,6 +133,6 @@ class Updates(FunPayObject):
     chat_counter: UpdateObject[ChatCounter] | None
     chat_bookmarks: UpdateObject[ChatBookmarks] | None
     cpu: UpdateObject[CurrentlyViewingOfferInfo] | None
-    nodes: list[UpdateObject[NodeInfo]] | None
+    nodes: list[UpdateObject[ChatNode]] | None
     unknown_objects: list[dict] | None
     response: ActionResponse | None
