@@ -1,4 +1,6 @@
-__all__ = ('OrderCounterpartyInfo', 'OrderPreview', 'OrderPreviewsBatch')
+from __future__ import annotations
+
+__all__ = ('OrderPreview', 'OrderPreviewsBatch')
 
 
 from dataclasses import dataclass
@@ -6,34 +8,9 @@ from dataclasses import dataclass
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.common import MoneyValue
 from funpayparsers.types.enums import OrderStatus
-
-
-@dataclass
-class OrderCounterpartyInfo(FunPayObject):
-    """
-    Represents an order counterparty details.
-
-    Represents the other participant of the order
-    (buyer or seller, depending on the context).
-    """
-
-    id: int
-    """Counterparty ID."""
-
-    username: str
-    """Counterparty username."""
-
-    online: bool
-    """True, if counterparty is online."""
-
-    banned: bool
-    """True, if counterparty is banned."""
-
-    status_text: str
-    """Status text (online / banned / last seen online)."""
-
-    avatar_url: str
-    """Counterpart avatar URL."""
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from funpayparsers.types.common import UserPreview
 
 
 @dataclass
@@ -60,7 +37,7 @@ class OrderPreview(FunPayObject):
     total: MoneyValue
     """Order total."""
 
-    counterparty: OrderCounterpartyInfo
+    counterparty: UserPreview
     """Associated counterparty info."""
 
 
