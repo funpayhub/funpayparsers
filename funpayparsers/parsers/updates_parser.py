@@ -24,6 +24,11 @@ class UpdatesParserOptions(FunPayObjectParserOptions):
 
 
 class UpdatesParser(FunPayJSONObjectParser[Updates, UpdatesParserOptions]):
+    """
+    Class for parsing updates.
+    Possible locations:
+        - In runners response.
+    """
     def _parse(self):
         updates_obj = Updates(
             raw_source=str(self.raw_source),
