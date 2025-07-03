@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = ('PrivateChatPreview', )
+__all__ = ('PrivateChatPreview', 'Chat', 'PrivateChatInfo')
 
 from funpayparsers.types.base import FunPayObject
 from dataclasses import dataclass
