@@ -3,8 +3,8 @@ __all__ = ('FunPayObjectParser', 'FunPayObjectParserOptions',
 
 from abc import ABC, abstractmethod
 from typing import get_args, get_origin
-from dataclasses import dataclass, replace, fields, asdict, field
-from typing import Generic, Type, TypeVar, Any
+from dataclasses import dataclass, replace, fields, field
+from typing import Generic, Type, TypeVar, Any, cast
 from collections.abc import Sequence, Mapping
 import json
 
@@ -12,28 +12,74 @@ from funpayparsers.types.base import FunPayObject
 from selectolax.lexbor import LexborHTMLParser
 
 
+R = TypeVar('R', bound=Any)
+O = TypeVar('O', bound='FunPayObjectParserOptions')
+
+
 @dataclass(frozen=True)
 class FunPayObjectParserOptions:
     """
     Base class for all parser option dataclasses.
+
+    Option instances can be merged using the `&` or `|` operators,
+    both of which return a new instance of the current class.
+
+    - `&` merges only the explicitly specified fields from `options2`.
+    - `|` merges all fields from `options2`, including those with default values.
+
+    Examples:
+
+        >>> options1 = FunPayObjectParserOptions(empty_raw_source=True)
+        >>> options2 = FunPayObjectParserOptions(context={"key": "value"})
+        >>> options3 = options1 & options2  # Creates a new instance of options1
+        >>> options3.empty_raw_source
+        True
+        >>> options3.context
+        {'key': 'value'}
+
+        >>> options1 = FunPayObjectParserOptions(empty_raw_source=True)
+        >>> options2 = FunPayObjectParserOptions(context={"key": "value"})
+        >>> options3 = options1 | options2  # Creates a new instance of options1
+        >>> options3.empty_raw_source
+        False
+        >>> options3.context
+        {'key': 'value'}
+
+    Note:
+        - Neither operator mutates the original instances.
+        - The result is always a new instance of the left-hand operand's class (`options1`).
     """
+
     empty_raw_source: bool = False
     context: dict[Any, Any] = field(default_factory=dict)
 
-    def __and__(self, other):
-        self_fields = asdict(self)
-        other_fields = asdict(other)
+    def __merge_options__(self: O, other, non_explicit: bool = False) -> O:
+        self_fields = {i.name: getattr(self, i.name)
+                       for i in getattr(self, '__dataclass_fields__', {}).values()}
+        other_fields = {i.name: getattr(other, i.name)
+                        for i in getattr(other, '__dataclass_fields__', {}).values()}
 
+        other_explicit_fields = getattr(other, '__passed_kwargs__', {})
         for k in self_fields:
-            if k in other_fields:
+            if k in other_fields and (non_explicit or k in other_explicit_fields):
                 self_fields[k] = other_fields[k]
 
         return self.__class__(**self_fields)
 
+    def __and__(self: O, other) -> O:
+        return self.__merge_options__(other, non_explicit=False)
+
+    def __or__(self: O, other) -> O:
+        return self.__merge_options__(other, non_explicit=True)
 
 
-R = TypeVar('R', bound=Any)
-O = TypeVar('O', bound=FunPayObjectParserOptions)
+def _new(cls: Type[O], *args: Any, **kwargs: Any) -> O:
+    instance = cast(O, super(FunPayObjectParserOptions, cls).__new__(cls))
+    super(FunPayObjectParserOptions, cls).__setattr__(instance, '__passed_args__', args)
+    super(FunPayObjectParserOptions, cls).__setattr__(instance, '__passed_kwargs__', kwargs)
+    return instance
+
+setattr(FunPayObjectParserOptions, '__new__', _new)
 
 
 class FunPayObjectParser(ABC, Generic[R, O]):
