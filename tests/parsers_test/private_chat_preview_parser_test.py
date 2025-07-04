@@ -12,7 +12,7 @@ html = """
     <div class="contact-item-photo">
         <div class="avatar-photo" style="background-image: url({avatar_url});"></div>
     </div>
-    <div class="media-user-name">{name}</div>
+    <div class="media-user-name">{username}</div>
     <div class="contact-item-message">{last_message_preview}</div>
     <div class="contact-item-time">{last_message_time_text}</div>
 </a>
@@ -29,7 +29,7 @@ def chat_preview_data() -> PrivateChatPreview:
         raw_source='',
         id=random.randint(1, 999999999),
         is_unread=False,
-        name=''.join(
+        username=''.join(
             random.choice(chars) for _ in range(random.randint(5, 25))
         ),
         avatar_url='https://sfunpay.com/s/avatar/dc/nc/someavatar.jpg',
