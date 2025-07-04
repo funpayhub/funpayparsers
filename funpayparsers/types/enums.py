@@ -8,6 +8,7 @@ __all__ = (
     'TransactionStatus',
     'BadgeType',
     'UpdateType',
+    'Language'
 )
 
 
@@ -305,3 +306,12 @@ class PaymentMethod(Enum):
 
         return classes.get(css_class) or PaymentMethod.UNKNOWN
 
+
+class Language(Enum):
+    """
+    Page languages enumeration.
+    """
+    UNKNOWN = 0
+    RU = 1
+    ENG = 2
+    UK = 3

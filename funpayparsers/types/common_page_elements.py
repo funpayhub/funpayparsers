@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from typing import Literal
 
 from funpayparsers.types.base import FunPayObject
+from funpayparsers.types.common import MoneyValue
+from funpayparsers.types.enums import Currency, Language
 
 
 @dataclass
@@ -42,4 +44,36 @@ class AppData(FunPayObject):
 
 
 @dataclass
-class PageHeader(FunPayObject): ...  # todo
+class PageHeader(FunPayObject):
+    """
+    Represents the header section of a FunPay page.
+
+    All fields in this dataclass will be `None` if the response is parsed
+    from a request made without authentication cookies (i.e., as an anonymous user).
+    """
+    user_id: int | None
+    """Current user ID."""
+
+    username: str | None
+    """Current username."""
+
+    avatar_url: str | None
+    """Current user avatar URL."""
+
+    language: Language
+    """Current language."""
+
+    currency: Currency
+    """Current currency."""
+
+    purchases: int | None
+    """Number of opened purchases."""
+
+    sales: int | None
+    """Number of opened sales."""
+
+    chats: int | None
+    """Number of unread chats."""
+
+    balance: MoneyValue | None
+    """Current user balance."""
