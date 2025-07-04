@@ -13,3 +13,6 @@ from .cpu_parser import *
 from .categories_parser import *
 from .updates_parser import *
 from .user_preview_parser import *
+from .private_chat_info_parser import *
+from .chat_parser import *
+

@@ -29,7 +29,7 @@ class PrivateChatPreviewParser(
                 raw_source=chat.html,
                 id=int(chat.attrs['data-id']),
                 is_unread='unread' in chat.attrs['class'],
-                name=chat.css('div.media-user-name')[0].text(strip=True),
+                username=chat.css('div.media-user-name')[0].text(strip=True),
                 avatar_url=extract_css_url(avatar_css),
                 last_message_id=int(chat.attrs['data-node-msg']),
                 last_read_message_id=int(chat.attrs['data-user-msg']),
