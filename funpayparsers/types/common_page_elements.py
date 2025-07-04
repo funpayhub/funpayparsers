@@ -39,7 +39,7 @@ class AppData(FunPayObject):
     user_id: int
     """Users ID."""
 
-    webpush: WebPush
+    webpush: WebPush | None
     """WebPush info."""
 
 
