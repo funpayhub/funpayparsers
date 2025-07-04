@@ -85,7 +85,14 @@ class OfferFields(FunPayObject):
 
     It is **strongly recommended** to modify offer fields via class properties (e.g. `title_ru`, `active`, `images`),
     as they handle proper value formatting and conversions expected by FunPay.
-    Example:
+
+    If no property exists for a particular field, use `set_field(key, value)` to set it manually,
+    making sure to pass a value already formatted for FunPay.
+
+    Setting a field to `None` via a property or `set_field()` will automatically remove the corresponding
+    key from `fields_dict`.
+
+    Examples:
         >>> fields = OfferFields(raw_source='{}', fields_dict={})
         >>> fields.title_ru = "My Offer Name"
         >>> fields.fields_dict
@@ -93,12 +100,9 @@ class OfferFields(FunPayObject):
         >>> fields.title_ru = None
         >>> fields.fields_dict
         {}
-
-    If no property exists for a particular field, use `set_field(key, value)` to set it manually,
-    making sure to pass a value already formatted for FunPay.
-
-    Setting a field to `None` via a property or `set_field()` will automatically remove the corresponding
-    key from `fields_dict`.
+        >>> fields.active = True
+        >>> fields.fields_dict
+        {'active': 'on'}
     """
 
     fields_dict: dict[str, str | int] = field(default_factory=dict)
