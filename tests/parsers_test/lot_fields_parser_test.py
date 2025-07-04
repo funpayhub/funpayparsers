@@ -110,8 +110,8 @@ lot_fields_html = """
 
 lot_fields_obj = OfferFields(
     raw_source='',
-    csrf_token='CSRFTOKEN',
-    other_fields={
+    fields_dict={
+        'csrf_token': 'CSRFTOKEN',
         'form_created_at': '1234567890',
         'offer_id': '0',
         'node_id': '2875',
