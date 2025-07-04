@@ -2,7 +2,8 @@ __all__ = ('subcategory_data_factory',
            'single_category_html',
            'single_category_obj',
            'multiple_categories_html',
-           'multiple_categories_obj',)
+           'multiple_categories_obj',
+           'categories_data')
 
 import pytest
 from funpayparsers.types import Category, Subcategory, SubcategoryType
@@ -102,3 +103,17 @@ def multiple_categories_obj(subcategory_data_factory):
             location='Location2'
         )
     ]
+
+
+@pytest.fixture(
+    params=[
+        ('single_category_html', 'single_category_obj'),
+        ('multiple_categories_html', 'multiple_categories_obj'),
+    ],
+    ids=['single_category', 'multiple_categories']
+)
+def categories_data(request) -> tuple[str, Category]:
+    html, obj = request.param
+    html = request.getfixturevalue(html)
+    obj = request.getfixturevalue(obj)
+    return html, obj
