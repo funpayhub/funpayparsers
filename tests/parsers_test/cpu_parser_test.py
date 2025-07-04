@@ -1,12 +1,24 @@
-from funpayparsers.parsers.cpu_parser import (CurrentlyViewingOfferInfoParser,
-                                              CurrentlyViewingOfferInfoParserOptions)
+from funpayparsers.parsers.cpu_parser import CurrentlyViewingOfferInfoParser, CurrentlyViewingOfferInfoParserOptions
+from funpayparsers.types.updates import CurrentlyViewingOfferInfo
 
 
-class TestCPUParsing:
-    OPTIONS = CurrentlyViewingOfferInfoParserOptions(empty_raw_source=True)
+OPTIONS = CurrentlyViewingOfferInfoParserOptions(empty_raw_source=True)
 
-    def test_cpu_parser(self, currently_viewing_offer_info_html,
-                        currently_viewing_offer_info_obj):
-        parser = CurrentlyViewingOfferInfoParser(currently_viewing_offer_info_html,
-                                                 options=self.OPTIONS)
-        assert parser.parse() == currently_viewing_offer_info_obj
+
+cpu_html = """
+<h5>Покупатель смотрит</h5>
+<div>
+  <a href="https://funpay.com/chips/offer?id=123456-789-10-11-12">Lot desc</a>
+</div>
+"""
+
+cpu_obj = CurrentlyViewingOfferInfo(
+    raw_source='',
+    id='123456-789-10-11-12',
+    name='Lot desc',
+)
+
+
+def test_cpu_parser():
+    parser = CurrentlyViewingOfferInfoParser(cpu_html, options=OPTIONS)
+    assert parser.parse() == cpu_obj
