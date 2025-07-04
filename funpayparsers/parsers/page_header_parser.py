@@ -48,7 +48,6 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParserOption
             return self._parse_anonymous_header(header)
 
     def _parse_authorized_header(self, header: LexborNode, user_dropdown: LexborNode) -> PageHeader:
-        user_link = user_dropdown.css('a.user-link-dropdown')[0]
         purchases_div = header.css('a.menu-item-orders > span.badge')
         sales_div = header.css('a.menu-item-trade > span.badge')
         chats_div = header.css('a.menu-item-chat > span.badge')
@@ -73,8 +72,8 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParserOption
 
         return PageHeader(
             raw_source=header.html,
-            user_id=int(user_link.attrs['href'].split('/')[-2]),
-            username=user_link.css('div.user-link-name')[0].text().strip(),
+            user_id=int(header.css('a.user-link-dropdown')[0].attrs['href'].split('/')[-2]),
+            username=header.css('div.user-link-name')[0].text().strip(),
             avatar_url=header.css('img')[0].attrs['src'],
             language=language,
             currency=currency,
