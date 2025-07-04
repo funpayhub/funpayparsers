@@ -4,7 +4,8 @@ __all__ = ('user_preview_data_factory',
            'offline_user_preview_html',
            'offline_user_preview_obj',
            'banned_user_preview_html',
-           'banned_user_preview_obj',)
+           'banned_user_preview_obj',
+           'user_preview_data')
 
 import pytest
 from funpayparsers.types import UserPreview
@@ -102,3 +103,17 @@ def banned_user_preview_obj(user_preview_data_factory) -> UserPreview:
                                        online=False,
                                        banned=True)
     return obj
+
+
+@pytest.fixture(
+    params=[
+        ('online_user_preview_html', 'online_user_preview_obj'),
+        ('offline_user_preview_html', 'offline_user_preview_obj'),
+        ('banned_user_preview_html', 'banned_user_preview_obj'),
+    ],
+    ids=['online-user-preview', 'offline-user-preview', 'banned-user-preview'])
+def user_preview_data(request) -> tuple[str, UserPreview]:
+    html, obj = request.param
+    html = request.getfixturevalue(html)
+    obj = request.getfixturevalue(obj)
+    return html, obj
