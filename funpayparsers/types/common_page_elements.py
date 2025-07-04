@@ -5,7 +5,7 @@ from typing import Literal
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.common import MoneyValue
-from funpayparsers.types.enums import Currency
+from funpayparsers.types.enums import Currency, Language
 
 
 @dataclass
@@ -60,10 +60,10 @@ class PageHeader(FunPayObject):
     avatar_url: str | None
     """Current user avatar URL."""
 
-    language: ...
+    language: Language
     """Current language."""
 
-    currency: Currency | None
+    currency: Currency
     """Current currency."""
 
     purchases: int | None
