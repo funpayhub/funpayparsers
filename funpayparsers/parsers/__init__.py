@@ -15,4 +15,4 @@ from .updates_parser import *
 from .user_preview_parser import *
 from .private_chat_info_parser import *
 from .chat_parser import *
-
+from .page_header_parser import *
