@@ -313,5 +313,5 @@ class Language(Enum):
     """
     UNKNOWN = 0
     RU = 1
-    ENG = 2
+    EN = 2
     UK = 3
