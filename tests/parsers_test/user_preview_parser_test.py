@@ -3,10 +3,8 @@ from funpayparsers.types import UserPreview
 import pytest
 
 
-OPTIONS = UserPreviewParserOptions(empty_raw_source=True)
-
-
 class TestUserPreviewParsing:
+    OPTIONS = UserPreviewParserOptions(empty_raw_source=True)
 
     @pytest.mark.parametrize('html,expected',
                              [
@@ -17,4 +15,4 @@ class TestUserPreviewParsing:
     def test_user_preview_parsing(self, html, expected, request):
         html = request.getfixturevalue(html)
         expected = request.getfixturevalue(expected)
-        assert UserPreviewParser(html, OPTIONS).parse() == expected
+        assert UserPreviewParser(html, self.OPTIONS).parse() == expected
