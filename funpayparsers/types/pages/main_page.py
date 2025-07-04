@@ -16,11 +16,14 @@ class MainPage(FunPayObject):
     header: PageHeader
     """Page header."""
 
+    last_categories: list[Category]
+    """Last opened categories."""
+
     categories: list[Category]
     """List of categories."""
 
     secret_chat: Chat
     """Secret chat (ID: 2, name: 'flood')."""
 
-    AppData: AppData
+    app_data: AppData
     """AppData."""
