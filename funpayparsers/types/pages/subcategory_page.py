@@ -3,7 +3,8 @@ __all__ = ('SubcategoryPage', )
 from dataclasses import dataclass
 from funpayparsers.types.pages.base import FunPayPage
 from funpayparsers.types.offers import OfferPreview
-from funpayparsers.types.categories import Subcategory, SubcategoryType
+from funpayparsers.types.categories import Subcategory
+from funpayparsers.types.enums import SubcategoryType
 
 
 
