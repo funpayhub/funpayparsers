@@ -12,7 +12,7 @@ class AppDataParserOptions(FunPayObjectParserOptions):
     ...
 
 
-class AppDataParser(FunPayJSONObjectParser):
+class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParserOptions]):
     """
     Class for parsing AppData JSON.
     Possible locations:
