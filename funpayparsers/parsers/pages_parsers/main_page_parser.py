@@ -5,12 +5,14 @@ from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParse
 from funpayparsers.parsers.categories_parser import CategoriesParser, CategoriesParserOptions
 from funpayparsers.parsers.chat_parser import ChatParser, ChatParserOptions
 from funpayparsers.parsers.page_header_parser import PageHeaderParser, PageHeaderParserOptions
+from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParserOptions
 from funpayparsers.types.pages.main_page import MainPage
 
 
 @dataclass(frozen=True)
 class MainPageParserOptions(FunPayObjectParserOptions):
     header_parser_options: PageHeaderParserOptions = PageHeaderParserOptions()
+    app_data_parser_options: AppDataParserOptions = AppDataParserOptions()
     categories_parser_options: CategoriesParserOptions = CategoriesParserOptions()
     chat_parser_options: ChatParserOptions = ChatParserOptions()
 
@@ -37,11 +39,13 @@ class MainPageParser(FunPayHTMLObjectParser[MainPage, MainPageParserOptions]):
 
         secret_chat_div = self.tree.css('div.chat')[0]
 
+        appdata = self.tree.css('body')[0].attrs.get('data-app-data')
+
         return MainPage(
             raw_source=self.tree.html,
             header=PageHeaderParser(header_div.html, options=self.options.header_parser_options).parse(),
             last_categories=last_categories,
             categories=categories,
             secret_chat=ChatParser(secret_chat_div.html, options=self.options.chat_parser_options).parse(),
-            app_data=None  # todo: make app_data parser
+            app_data=AppDataParser(appdata, self.options.app_data_parser_options).parse()
         )
