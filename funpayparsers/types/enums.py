@@ -33,7 +33,7 @@ class UpdateType(Enum):
         """
         if type_str not in UpdateType:
             return None
-        return UpdateType[type_str]
+        return UpdateType(type_str)
 
 
 @verify(UNIQUE)
@@ -116,7 +116,7 @@ class Currency(Enum):
         """
         if character not in Currency:
             return Currency.UNKNOWN
-        return Currency[character]
+        return Currency(character)
 
 @verify(UNIQUE)
 class TransactionStatus(Enum):
@@ -315,4 +315,4 @@ class Language(Enum):
     def get_by_lang_code(self, lang_code: str, /) -> 'Language':
         if lang_code not in Language:
             return Language.UNKNOWN
-        return Language[lang_code]
+        return Language(lang_code)
