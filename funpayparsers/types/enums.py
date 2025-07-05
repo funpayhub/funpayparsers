@@ -118,6 +118,7 @@ class Currency(Enum):
             return Currency.UNKNOWN
         return Currency(character)
 
+
 @verify(UNIQUE)
 class TransactionStatus(Enum):
     """Transaction statuses enumeration."""
@@ -282,9 +283,9 @@ class PaymentMethod(Enum):
 
     @staticmethod
     @cache
-    def css_classes_as_dict() -> MappingProxyType[str, 'PaymentMethod']:
+    def css_class_to_method_map() -> MappingProxyType[str, 'PaymentMethod']:
         return MappingProxyType({
-            cls: val for val in PaymentMethod for cls in val.value
+            css_class: method for method in PaymentMethod for css_class in method.value
         })
 
     @staticmethod
@@ -297,9 +298,7 @@ class PaymentMethod(Enum):
             return PaymentMethod.UNKNOWN
 
         css_class = match.string[match.start():match.end()]
-        classes = PaymentMethod.css_classes_as_dict()
-
-        return classes.get(css_class) or PaymentMethod.UNKNOWN
+        return PaymentMethod.css_class_to_method_map().get(css_class) or PaymentMethod.UNKNOWN
 
 
 class Language(Enum):
