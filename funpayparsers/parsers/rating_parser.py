@@ -30,20 +30,20 @@ class UserRatingParser(FunPayHTMLObjectParser[UserRating, UserRatingParserOption
 
         percentage = []
         for i in range(1, 6):
-            value = re.match(r'\d+', rating_div.css(f'div.rating-full-item{i} > div.rating-progress')[0].attributes['style'])
+            value = re.search(r'\d+', rating_div.css(f'div.rating-full-item{i} > div.rating-progress > div')[0].attributes['style'])
             percentage.append(float(value.group()))
 
         reviews_text = rating_div.css('div.rating-full-count')[0].text()
-        match = re.match(r'\d+', reviews_text)
-        reviews_amount = int(match.group()) if match else 0
+        match = re.search(r'\d+', reviews_text)
+        reviews_amount = int(match.group())
 
         return UserRating(
             raw_source=rating_div.html,
             stars=stars,
-            reviews=reviews_amount,
-            five_star_reviews_percentage=percentage[0],
-            four_star_reviews_percentage=percentage[1],
+            reviews_amount=reviews_amount,
+            five_star_reviews_percentage=percentage[4],
+            four_star_reviews_percentage=percentage[3],
             three_star_reviews_percentage=percentage[2],
-            two_star_reviews_percentage=percentage[3],
-            one_star_reviews_percentage=percentage[4],
+            two_star_reviews_percentage=percentage[1],
+            one_star_reviews_percentage=percentage[0],
         )

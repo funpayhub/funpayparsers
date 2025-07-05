@@ -98,7 +98,7 @@ class UserRating(FunPayObject):
     stars: float | None
     """Stars amount (if available)."""
 
-    reviews: int
+    reviews_amount: int
     """Reviews amount."""
 
     five_star_reviews_percentage: float
