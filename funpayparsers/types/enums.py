@@ -167,7 +167,7 @@ class BadgeType(Enum):
     BANNED = 'label-danger'
     NOTIFICATIONS = 'label-primary'
     SUPPORT = 'label-success'
-    AUTOISSUE = 'label-default'
+    AUTO_DELIVERY = 'label-default'
     UNKNOWN = ''
 
     @staticmethod
