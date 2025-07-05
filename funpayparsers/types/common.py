@@ -1,4 +1,4 @@
-__all__ = ('MoneyValue', 'UserBadge', 'UserPreview')
+__all__ = ('MoneyValue', 'UserBadge', 'UserPreview', 'UserRating')
 
 from dataclasses import dataclass
 
@@ -87,3 +87,31 @@ class UserPreview(FunPayObject):
 
     avatar_url: str
     """User avatar URL."""
+
+
+@dataclass
+class UserRating(FunPayObject):
+    """
+    Represents full user rating.
+    """
+
+    stars: int
+    """Stars amount."""
+
+    reviews: int
+    """Reviews amount."""
+
+    five_star_reviews_percentage: float
+    """Five star reviews percentage."""
+
+    four_star_reviews_percentage: float
+    """Four star reviews percentage."""
+
+    three_star_reviews_percentage: float
+    """Three star reviews percentage."""
+
+    two_star_reviews_percentage: float
+    """Two star reviews percentage."""
+
+    one_star_reviews_percentage: float
+    """One star reviews percentage."""
