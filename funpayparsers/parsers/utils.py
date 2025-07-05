@@ -212,24 +212,24 @@ def serialize_form(source: str | LexborNode) -> dict[str, str]:
 
     fields = form.css(f'*[name]:not([disabled])')
     for field in fields:
-        name = field.attrs.get('name')
-        value = field.attrs.get('value', '')
+        name = field.attributes.get('name')
+        value = field.attributes.get('value', '')
 
         if field.tag == 'textarea':
             value = field.text() or ''
 
         elif field.tag == 'select':
             value = field.css('option[selected]')
-            value = value[0].attrs.get('value', '') if value else ''
+            value = value[0].attributes.get('value', '') if value else ''
 
         elif field.tag == 'input':
-            input_type = field.attrs.get('type', '').lower()
+            input_type = field.attributes.get('type', '').lower()
             if input_type == 'checkbox':
-                value = 'on' if 'checked' in field.attrs else ''
+                value = 'on' if 'checked' in field.attributes else ''
             elif input_type == 'radio':
                 if result.get(name):
                     continue
-                value = value if 'checked' in field.attrs else ''
+                value = value if 'checked' in field.attributes else ''
 
         if value is not None:
             result[name] = value

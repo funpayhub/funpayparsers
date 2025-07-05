@@ -31,7 +31,7 @@ class PrivateChatInfoParser(FunPayHTMLObjectParser[PrivateChatInfo, PrivateChatI
         blocks.pop(0)
 
         for div in blocks:
-            if div.attrs.get('data-type') == 'c-p-u':
+            if div.attributes.get('data-type') == 'c-p-u':
                 cpu = CurrentlyViewingOfferInfoParser(raw_source=div.html,
                                                       options=self.options.cpu_parser_options & self.options).parse()
                 result.currently_viewing_offer = cpu

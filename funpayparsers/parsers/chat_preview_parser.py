@@ -23,16 +23,16 @@ class PrivateChatPreviewParser(
     def _parse(self):
         previews = []
         for chat in self.tree.css('a.contact-item'):
-            avatar_css = chat.css('div.avatar-photo')[0].attrs['style']
+            avatar_css = chat.css('div.avatar-photo')[0].attributes['style']
 
             preview = PrivateChatPreview(
                 raw_source=chat.html,
-                id=int(chat.attrs['data-id']),
-                is_unread='unread' in chat.attrs['class'],
+                id=int(chat.attributes['data-id']),
+                is_unread='unread' in chat.attributes['class'],
                 username=chat.css('div.media-user-name')[0].text(strip=True),
                 avatar_url=extract_css_url(avatar_css),
-                last_message_id=int(chat.attrs['data-node-msg']),
-                last_read_message_id=int(chat.attrs['data-user-msg']),
+                last_message_id=int(chat.attributes['data-node-msg']),
+                last_read_message_id=int(chat.attributes['data-user-msg']),
                 last_message_preview=chat.css('div.contact-item-message')[0].text(),
                 last_message_time_text=chat.css('div.contact-item-time')[0].text(strip=True),
             )

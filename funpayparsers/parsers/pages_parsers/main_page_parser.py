@@ -39,7 +39,7 @@ class MainPageParser(FunPayHTMLObjectParser[MainPage, MainPageParserOptions]):
 
         secret_chat_div = self.tree.css('div.chat')[0]
 
-        appdata = self.tree.css('body')[0].attrs.get('data-app-data')
+        appdata = self.tree.css('body')[0].attributes.get('data-app-data')
 
         return MainPage(
             raw_source=self.tree.html,

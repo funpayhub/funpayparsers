@@ -27,12 +27,12 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions
         messages = []
         for msg_div in self.tree.css('div.chat-msg-item'):
             userid, username, date, badge = None, None, None, None
-            has_header = "chat-msg-with-head" in msg_div.attrs["class"]
+            has_header = "chat-msg-with-head" in msg_div.attributes["class"]
             if has_header:
                 userid, username, date, badge = self._parse_message_header(msg_div)
 
             if image_tag := msg_div.css('a.chat-img-link'):
-                image_url, text = image_tag[0].attrs["href"], None
+                image_url, text = image_tag[0].attributes["href"], None
             else:
                 image_url = None
 
@@ -44,7 +44,7 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions
 
             messages.append(Message(
                 raw_source=msg_div.html,
-                id=int(msg_div.attrs["id"].split("-")[1]),
+                id=int(msg_div.attributes["id"].split("-")[1]),
                 is_heading=has_header,
                 sender_id=userid,
                 sender_username=username,
@@ -77,9 +77,9 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions
         id_, name = 0, "FunPay"
 
         if user_tag := msg_tag.css('a.chat-msg-author-link'):
-            id_, name = int(user_tag[0].attrs["href"].split("/")[-2]), user_tag[0].text(strip=True)
+            id_, name = int(user_tag[0].attributes["href"].split("/")[-2]), user_tag[0].text(strip=True)
 
-        date = msg_tag.css('div.chat-msg-date')[0].attrs["title"]
+        date = msg_tag.css('div.chat-msg-date')[0].attributes["title"]
 
         if not (badge := msg_tag.css('span.label')):
             return id_, name, date, None

@@ -23,7 +23,7 @@ class CurrentlyViewingOfferInfoParser(FunPayHTMLObjectParser[
     """
     def _parse(self):
         link = self.tree.css('a')[0]
-        url = link.attrs['href']
+        url = link.attributes['href']
         id_ = url.split('id=')[-1]
 
         return CurrentlyViewingOfferInfo(

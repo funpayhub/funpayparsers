@@ -62,7 +62,7 @@ class OfferPreviewsParser(FunPayHTMLObjectParser[list[OfferPreview], OfferPrevie
 
             additional_data = {
                 key.replace('data-', ''): int(data) if data.isnumeric() else data
-                for key, data in offer_div.attrs.items()
+                for key, data in offer_div.attributes.items()
                 if key.startswith('data-') and key not in skip_data
             }
 
@@ -79,8 +79,8 @@ class OfferPreviewsParser(FunPayHTMLObjectParser[list[OfferPreview], OfferPrevie
             result.append(OfferPreview(
                 raw_source=offer_div.html,
                 id=int(offer_id_str) if offer_id_str.isnumeric() else offer_id_str,
-                auto_delivery=bool(offer_div.attrs.get('data-auto')),
-                is_pinned=bool(offer_div.attrs.get('data-user')),
+                auto_delivery=bool(offer_div.attributes.get('data-auto')),
+                is_pinned=bool(offer_div.attributes.get('data-user')),
                 desc=desc,
                 amount=amount,
                 price=price,

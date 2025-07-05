@@ -31,14 +31,14 @@ class TransactionPreviewsParser(FunPayHTMLObjectParser[
             recipient_div = i.css('span.tc-payment-number')
 
             payment_method = i.css('span.payment-logo')
-            payment_method = PaymentMethod.get_by_css_class(payment_method[0].attrs['class']) if payment_method else None
+            payment_method = PaymentMethod.get_by_css_class(payment_method[0].attributes['class']) if payment_method else None
 
             result.append(TransactionPreview(
                 raw_source=i.html,
-                id=int(i.attrs['data-transaction']),
+                id=int(i.attributes['data-transaction']),
                 date_text=i.css('span.tc-date-time')[0].text(strip=True),
                 desc=i.css('span.tc-title')[0].text(strip=True),
-                status=TransactionStatus.get_by_css_class(i.attrs['class']),
+                status=TransactionStatus.get_by_css_class(i.attributes['class']),
                 amount=value,
                 payment_method=payment_method,
                 withdrawal_number=recipient_div[0].text(strip=True) if recipient_div else None,
@@ -51,7 +51,7 @@ class TransactionPreviewsParser(FunPayHTMLObjectParser[
         return TransactionPreviewsBatch(
             raw_source=self.raw_source,
             transactions=result,
-            user_id = int(user_id[0].attrs.get('value')) if user_id else None,
-            filter = filter_[0].attrs.get('value') if filter_ else None,
-            next_transaction_id= int(next_id[0].attrs.get('value')) if next_id else None
+            user_id = int(user_id[0].attributes.get('value')) if user_id else None,
+            filter = filter_[0].attributes.get('value') if filter_ else None,
+            next_transaction_id= int(next_id[0].attributes.get('value')) if next_id else None
         )

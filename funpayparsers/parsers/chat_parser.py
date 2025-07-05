@@ -35,8 +35,8 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParserOptions]):
 
         return Chat(
             raw_source=chat_div.html,
-            id=int(chat_div.attrs['data-id']),
-            name=chat_div.attrs['data-name'],
+            id=int(chat_div.attributes['data-id']),
+            name=chat_div.attributes['data-name'],
             interlocutor=interlocutor,
             is_notifications_enabled=notifications,
             is_blocked=banned,
@@ -60,9 +60,9 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParserOptions]):
         btn_div = btn_div[0]
 
         notifications, banned = False, False
-        if 'btn-success' in btn_div.attrs['class']:
+        if 'btn-success' in btn_div.attributes['class']:
             notifications, banned = True, False
-        elif 'btn-danger' in btn_div.attrs['class']:
+        elif 'btn-danger' in btn_div.attributes['class']:
             notifications, banned = False, True
 
         return interlocutor, notifications, banned
