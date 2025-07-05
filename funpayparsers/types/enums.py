@@ -15,7 +15,11 @@ __all__ = (
 from enum import UNIQUE, Enum, verify
 from types import MappingProxyType
 from functools import cache
+from typing import Type, TypeVar
 import re
+
+
+T = TypeVar('T')
 
 
 @verify(UNIQUE)
@@ -26,14 +30,14 @@ class UpdateType(Enum):
     CHAT_NODE = 'chat_node'
     CPU = 'c-p-u'
 
-    @staticmethod
-    def get_by_type_str(type_str: str, /) -> UpdateType | None:
+    @classmethod
+    def get_by_type_str(cls: Type[T], type_str: str, /) -> T | None:
         """
         Determine an update type by its type string.
         """
-        if type_str not in UpdateType:
+        if type_str not in cls:
             return None
-        return UpdateType(type_str)
+        return cls(type_str)
 
 
 @verify(UNIQUE)
@@ -51,17 +55,17 @@ class SubcategoryType(Enum):
     UNKNOWN = ''
     """Unknown type. Just in case, for future FunPay updates."""
 
-    @staticmethod
-    def get_by_url(url: str, /) -> 'SubcategoryType':
+    @classmethod
+    def get_by_url(cls: Type[T], url: str, /) -> T:
         """
         Determine a subcategory type by URL.
         """
-        for i in SubcategoryType:
-            if i is SubcategoryType.UNKNOWN:
+        for i in cls:
+            if i is cls.UNKNOWN:
                 continue
             if i.value in url:
                 return i
-        return SubcategoryType.UNKNOWN
+        return cls.UNKNOWN
 
 
 @verify(UNIQUE)
@@ -84,18 +88,18 @@ class OrderStatus(Enum):
     UNKNOWN = ''
     """Unknown status. Just in case, for future FunPay updates."""
 
-    @staticmethod
-    def get_by_css_class(css_class: str, /) -> 'OrderStatus':
+    @classmethod
+    def get_by_css_class(cls: Type[T], css_class: str, /) -> T:
         """
         Determine the order status based on a given CSS class string.
         """
-        for i in OrderStatus:
-            if i is OrderStatus.UNKNOWN:
+        for i in cls:
+            if i is cls.UNKNOWN:
                 continue
 
             if i.value in css_class:
                 return i
-        return OrderStatus.UNKNOWN
+        return cls.UNKNOWN
 
 
 @verify(UNIQUE)
@@ -109,14 +113,14 @@ class Currency(Enum):
     USD = '$'
     EUR = '€'
 
-    @staticmethod
-    def get_by_character(character: str, /) -> 'Currency':
+    @classmethod
+    def get_by_character(cls: Type[T], character: str, /) -> T:
         """
         Determine the currency based on a given currency string.
         """
-        if character not in Currency:
-            return Currency.UNKNOWN
-        return Currency(character)
+        if character not in cls:
+            return cls.UNKNOWN
+        return cls(character)
 
 
 @verify(UNIQUE)
@@ -135,19 +139,19 @@ class TransactionStatus(Enum):
     UNKNOWN = ''
     """Unknown transaction status. Just in case, for future FunPay updates."""
 
-    @staticmethod
-    def get_by_css_class(css_class: str, /) -> 'TransactionStatus':
+    @classmethod
+    def get_by_css_class(cls: Type[T], css_class: str, /) -> T:
         """
         Determine the transaction type based on a given CSS class string.
         """
 
-        for i in TransactionStatus:
-            if i is TransactionStatus.UNKNOWN:
+        for i in cls:
+            if i is cls.UNKNOWN:
                 continue
 
             if i.value in css_class:
                 return i
-        return TransactionStatus.UNKNOWN
+        return cls.UNKNOWN
 
 
 @verify(UNIQUE)
@@ -166,18 +170,18 @@ class BadgeType(Enum):
     AUTO_DELIVERY = 'label-default'
     UNKNOWN = ''
 
-    @staticmethod
-    def get_by_css_class(css_class: str, /) -> 'BadgeType':
+    @classmethod
+    def get_by_css_class(cls: Type[T], css_class: str, /) -> T:
         """
         Determine the badge type based on a given CSS class string.
         """
-        for i in BadgeType:
-            if i is BadgeType.UNKNOWN:
+        for i in cls:
+            if i is cls.UNKNOWN:
                 continue
 
             if i.value in css_class:
                 return i
-        return BadgeType.UNKNOWN
+        return cls.UNKNOWN
 
 
 _PAYMENT_METHOD_CLS_RE = re.compile(r'payment-method-[a-zA-Z0-9_]+')
@@ -281,24 +285,24 @@ class PaymentMethod(Enum):
 
     # MIR = 26, ('UNKNOWN', ), (345, Y)  =(
 
-    @staticmethod
+    @classmethod
     @cache
-    def css_class_to_method_map() -> MappingProxyType[str, 'PaymentMethod']:
+    def css_class_to_method_map(cls: Type[T]) -> MappingProxyType[str, T]:
         return MappingProxyType({
-            css_class: method for method in PaymentMethod for css_class in method.value
+            css_class: method for method in cls for css_class in method.value
         })
 
-    @staticmethod
-    def get_by_css_class(css_class: str) -> 'PaymentMethod':
+    @classmethod
+    def get_by_css_class(cls: Type[T], css_class: str) -> T:
         """
         Determine the payment method based on a given CSS class string.
         """
         match = _PAYMENT_METHOD_CLS_RE.search(css_class)
         if not match:
-            return PaymentMethod.UNKNOWN
+            return cls.UNKNOWN
 
         css_class = match.string[match.start():match.end()]
-        return PaymentMethod.css_class_to_method_map().get(css_class) or PaymentMethod.UNKNOWN
+        return cls.css_class_to_method_map().get(css_class) or cls.UNKNOWN
 
 
 class Language(Enum):
@@ -310,8 +314,8 @@ class Language(Enum):
     EN = 'en'
     UK = 'uk'
 
-    @staticmethod
-    def get_by_lang_code(self, lang_code: str, /) -> 'Language':
-        if lang_code not in Language:
-            return Language.UNKNOWN
-        return Language(lang_code)
+    @classmethod
+    def get_by_lang_code(cls: Type[T], lang_code: str, /) -> T:
+        if lang_code not in cls:
+            return cls.UNKNOWN
+        return cls(lang_code)
