@@ -95,8 +95,8 @@ class UserRating(FunPayObject):
     Represents full user rating.
     """
 
-    stars: int
-    """Stars amount."""
+    stars: float | None
+    """Stars amount (if available)."""
 
     reviews: int
     """Reviews amount."""
