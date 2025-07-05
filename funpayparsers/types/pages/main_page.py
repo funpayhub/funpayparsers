@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from funpayparsers.types.pages.base import FunPayPage
 from funpayparsers.types.categories import Category
 from funpayparsers.types.chat import Chat
-from funpayparsers.types.common_page_elements import PageHeader, AppData
 
 
 @dataclass
