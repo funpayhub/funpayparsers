@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import json
 from funpayparsers.parsers.base import FunPayJSONObjectParser, FunPayObjectParserOptions
 from funpayparsers.types.common_page_elements import AppData, WebPush
+from funpayparsers.types.enums import Language
 
 
 @dataclass(frozen=True)
@@ -29,7 +30,7 @@ class AppDataParser(FunPayJSONObjectParser):
 
         return AppData(
             raw_source=self.raw_source,
-            locale=...,
+            locale=Language.get_by_lang_code(self.data.get('locale')),
             csrf_token=self.data.get('csrf-token'),
             user_id=self.data.get('userId'),
             webpush=webpush
