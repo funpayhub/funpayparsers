@@ -27,7 +27,7 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParserOptions]):
         result = []
 
         for review_div in self.tree.css('div.review-container'):
-            order_id, rating = review_div.attrs.get('data-order'), review_div.attrs.get('data-rating')
+            order_id, rating = review_div.attributes.get('data-order'), review_div.attributes.get('data-rating')
 
             if order_id is not None:
                 return ReviewsBatch(raw_source=self.raw_source,
@@ -49,15 +49,15 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParserOptions]):
         return ReviewsBatch(
             raw_source=self.raw_source,
             reviews=result,
-            user_id=int(user_id[0].attrs.get('value')) if user_id else None,
-            filter=filter_[0].attrs.get('value') if filter_ else None,
-            next_review_id=next_id[0].attrs.get('value') if next_id else None
+            user_id=int(user_id[0].attributes.get('value')) if user_id else None,
+            filter=filter_[0].attributes.get('value') if filter_ else None,
+            next_review_id=next_id[0].attributes.get('value') if next_id else None
         )
 
     def _parse_common_review(self, review_div: LexborNode):
         date_str, text, game, value = self._parse_review_meta(review_div)
         rating = review_div.css(','.join(f'div.rating{i}' for i in range(1, 5+1)))[0]
-        rating = int(rating.attrs['class'][-1])
+        rating = int(rating.attributes['class'][-1])
 
         order_id_div = review_div.css('div.review-item-order')
         order_id = None if not order_id_div else order_id_div[0].text().strip().split()[1][1:]  # "Order #ORDERID"
@@ -73,22 +73,22 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParserOptions]):
             order_total=value,
             category_str=game,
             sender_username=username,
-            sender_id=int(user_tag.css('a')[0].attrs['href'].split('/')[-2]) if username else None,
-            sender_avatar_url=user_tag.css('img')[0].attrs['src'],
+            sender_id=int(user_tag.css('a')[0].attributes['href'].split('/')[-2]) if username else None,
+            sender_avatar_url=user_tag.css('img')[0].attributes['src'],
             order_id=order_id,
             time_ago_str=date_str,
             reply=self._parse_reply(review_div)
         )
 
     def _parse_order_page_review(self, order_id: str, rating: str, review_div: LexborNode) -> Review:
-        author_id = int(review_div.css('div.review-item-row[data-row="review"]')[0].attrs.get('data-author'))
+        author_id = int(review_div.css('div.review-item-row[data-row="review"]')[0].attributes.get('data-author'))
 
         if rating:  # if review exists
             rating = int(rating)
             date_str, text, game, value = self._parse_review_meta(review_div)
 
             user_tag = review_div.css('div.review-item-user')[0]
-            avatar_url = user_tag.css('img')[0].attrs['src']
+            avatar_url = user_tag.css('img')[0].attributes['src']
 
         else:
             rating = text = value = game = avatar_url = date_str = None

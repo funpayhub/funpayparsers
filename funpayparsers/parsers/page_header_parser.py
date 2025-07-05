@@ -61,7 +61,7 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParserOption
             currency = _CURRENCIES.get(currency_text, Currency.UNKNOWN)
             money_value = MoneyValue(raw_source='', value=0.0, character=currency.value())
 
-        language_class = header.css('a.dropdown-toggle.menu-item-langs > i.menu-icon')[0].attrs['class']
+        language_class = header.css('a.dropdown-toggle.menu-item-langs > i.menu-icon')[0].attributes['class']
         for i in _LANGUAGES:
             if i in language_class:
                 language = _LANGUAGES[i]
@@ -72,9 +72,9 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParserOption
 
         return PageHeader(
             raw_source=header.html,
-            user_id=int(header.css('a.user-link-dropdown')[0].attrs['href'].split('/')[-2]),
+            user_id=int(header.css('a.user-link-dropdown')[0].attributes['href'].split('/')[-2]),
             username=header.css('div.user-link-name')[0].text().strip(),
-            avatar_url=header.css('img')[0].attrs['src'],
+            avatar_url=header.css('img')[0].attributes['src'],
             language=language,
             currency=currency,
             purchases=int(purchases_div[0].text().strip()) if purchases_div else None,
@@ -87,7 +87,7 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParserOption
         currency_text = header.css('a.dropdown-toggle.menu-item-currencies')[0].text(deep=False).strip().lower()
         currency = _CURRENCIES.get(currency_text, Currency.UNKNOWN)
 
-        language_class = header.css('a.dropdown-toggle.menu-item-langs > i.menu-icon')[0].attrs['class']
+        language_class = header.css('a.dropdown-toggle.menu-item-langs > i.menu-icon')[0].attributes['class']
         for i in _LANGUAGES:
             if i in language_class:
                 language = _LANGUAGES[i]

@@ -27,7 +27,7 @@ class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParserOp
             # Some categories have "clones" with different locations (RU, US/EU, etc.)
             # FunPay treats them as different categories, but on main page they are in the same div.
             for cat in categories:
-                id_ = int(cat.attrs['data-id'])
+                id_ = int(cat.attributes['data-id'])
                 location = global_cat.css(f'button[data-id="{id_}"]')
                 location = location[0].text(strip=True) if location else None
 
@@ -47,9 +47,9 @@ class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParserOp
         for link in div.css('a'):
             result.append(Subcategory(
                 raw_source=link.html,
-                id=int(link.attrs['href'].split('/')[-2]),
+                id=int(link.attributes['href'].split('/')[-2]),
                 name=link.text(strip=True),
-                type=SubcategoryType.get_by_url(link.attrs['href'])
+                type=SubcategoryType.get_by_url(link.attributes['href'])
             ))
 
         return result

@@ -28,7 +28,7 @@ class OrderPreviewsParser(FunPayHTMLObjectParser[
         result = []
 
         for order in self.tree.css('a.tc-item'):
-            status_class = order.css('div.tc-status')[0].attrs['class']
+            status_class = order.css('div.tc-status')[0].attributes['class']
 
             value = MoneyValueParser(raw_source=order.css('div.tc-price')[0].html,
                                       options=MoneyValueParserOptions(
@@ -43,7 +43,7 @@ class OrderPreviewsParser(FunPayHTMLObjectParser[
 
             order_obj = OrderPreview(
                 raw_source=order.html,
-                id=order.attrs['href'].split('/')[-2],
+                id=order.attributes['href'].split('/')[-2],
                 date_text=order.css('div.tc-date-time')[0].text(strip=True),
                 desc=order.css('div.order-desc > div')[0].text(deep=False, strip=True),
                 category_text=order.css('div.text-muted')[0].text(strip=True),
@@ -58,5 +58,5 @@ class OrderPreviewsParser(FunPayHTMLObjectParser[
         return OrderPreviewsBatch(
             raw_source=self.raw_source,
             orders=result,
-            next_order_id=next_id[0].attrs.get('value') if next_id else None
+            next_order_id=next_id[0].attributes.get('value') if next_id else None
         )
