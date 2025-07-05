@@ -54,7 +54,11 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParserOptions]):
         interlocutor = UserPreviewParser(raw_source=interlocutor_div[0].html,
                                          options=self.options.user_preview_parser_options & self.options).parse()
 
-        btn_div = header_div.css('button')[1]
+        btn_div = header_div.css('button')
+        if not btn_div:
+            return interlocutor, None, None
+        btn_div = btn_div[0]
+
         notifications, banned = False, False
         if 'btn-success' in btn_div.attrs['class']:
             notifications, banned = True, False
