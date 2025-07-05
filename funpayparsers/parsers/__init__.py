@@ -17,3 +17,4 @@ from .private_chat_info_parser import *
 from .chat_parser import *
 from .appdata_parser import *
 from .page_header_parser import *
+from .rating_parser import *
