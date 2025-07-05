@@ -12,14 +12,14 @@ __all__ = (
 )
 
 
-from enum import UNIQUE, Enum, StrEnum, verify
+from enum import UNIQUE, Enum, verify
 from types import MappingProxyType
 from functools import cache
 import re
 
 
 @verify(UNIQUE)
-class UpdateType(StrEnum):
+class UpdateType(Enum):
     ORDERS_COUNTERS = 'orders_counters'
     CHAT_COUNTER = 'chat_counter'
     CHAT_BOOKMARKS = 'chat_bookmarks'
@@ -38,7 +38,7 @@ class UpdateType(StrEnum):
 
 
 @verify(UNIQUE)
-class SubcategoryType(StrEnum):
+class SubcategoryType(Enum):
     """
     Subcategory types enumerations.
     """
@@ -66,7 +66,7 @@ class SubcategoryType(StrEnum):
 
 
 @verify(UNIQUE)
-class OrderStatus(StrEnum):
+class OrderStatus(Enum):
     """
     Order statuses enumeration.
 
@@ -100,7 +100,7 @@ class OrderStatus(StrEnum):
 
 
 @verify(UNIQUE)
-class Currency(StrEnum):
+class Currency(Enum):
     """Currencies enumeration."""
 
     UNKNOWN = ''
@@ -124,7 +124,7 @@ class Currency(StrEnum):
 
 
 @verify(UNIQUE)
-class TransactionStatus(StrEnum):
+class TransactionStatus(Enum):
     """Transaction statuses enumeration."""
 
     PENDING = 'transaction-status-waiting'
@@ -159,7 +159,7 @@ class SystemMessageType(Enum): ...
 
 
 @verify(UNIQUE)
-class BadgeType(StrEnum):
+class BadgeType(Enum):
     """
     Badge types enumeration.
     """
@@ -311,7 +311,7 @@ class Language(Enum):
     """
     Page languages enumeration.
     """
-    UNKNOWN = 0
-    RU = 1
-    EN = 2
-    UK = 3
+    UNKNOWN = ''
+    RU = 'ru'
+    EN = 'en'
+    UK = 'uk'
