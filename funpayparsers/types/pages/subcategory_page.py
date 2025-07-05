@@ -1,0 +1,29 @@
+__all__ = ('SubcategoryPage', )
+
+from dataclasses import dataclass
+from funpayparsers.types.pages.base import FunPayPage
+from funpayparsers.types.offers import OfferPreview
+from funpayparsers.types.categories import Subcategory, SubcategoryType
+
+
+
+@dataclass
+class SubcategoryPage(FunPayPage):
+    """
+    Represents FunPay main page (https://funpay.com/<lots/chips>/<subcategory_id>/)
+    """
+
+    category_id: int
+    """Subcategory category ID."""
+
+    subcategory_id: int
+    """Subcategory ID."""
+
+    subcategory_type: SubcategoryType
+    """Subcategory type."""
+
+    related_subcategories: list[Subcategory] | None
+    """List of related subcategories (including this one), if exists."""
+
+    offers: list[OfferPreview]
+    """Subcategory offers list."""
