@@ -31,10 +31,9 @@ class UpdateType(Enum):
         """
         Determine an update type by its type string.
         """
-        for i in UpdateType:
-            if i.value == type_str:
-                return i
-        return None
+        if type_str not in UpdateType:
+            return None
+        return UpdateType[type_str]
 
 
 @verify(UNIQUE)
@@ -115,13 +114,9 @@ class Currency(Enum):
         """
         Determine the currency based on a given currency string.
         """
-        for i in Currency:
-            if i is Currency.UNKNOWN:
-                continue
-            if character == i.value:
-                return i
-        return Currency.UNKNOWN
-
+        if character not in Currency:
+            return Currency.UNKNOWN
+        return Currency[character]
 
 @verify(UNIQUE)
 class TransactionStatus(Enum):
@@ -315,3 +310,9 @@ class Language(Enum):
     RU = 'ru'
     EN = 'en'
     UK = 'uk'
+
+    @staticmethod
+    def get_by_lang_code(self, lang_code: str, /) -> 'Language':
+        if lang_code not in Language:
+            return Language.UNKNOWN
+        return Language[lang_code]
