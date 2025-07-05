@@ -1,7 +1,6 @@
 __all__ = ('AppData', 'WebPush', 'PageHeader')
 
 from dataclasses import dataclass
-from typing import Literal
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.common import MoneyValue
@@ -30,7 +29,7 @@ class AppData(FunPayObject):
     Represents an AppData dict.
     """
 
-    locale: Literal['en', 'ru', 'uk']
+    locale: Language
     """Current users locale."""
 
     csrf_token: str
