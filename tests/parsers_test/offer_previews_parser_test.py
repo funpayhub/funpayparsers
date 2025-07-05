@@ -49,7 +49,7 @@ common_lot_html = """<a href="https://funpay.com/lots/offer?id=12345" class="tc-
 common_lot_obj = OfferPreview(
     raw_source='',
     id=12345,
-    auto_issue=True,
+    auto_delivery=True,
     is_pinned=True,
     desc='Lot Description',
     amount=1,
@@ -111,7 +111,7 @@ currency_lot_html = """
 currency_lot_obj = OfferPreview(
     raw_source='',
     id='15090731-20-20-97-0',
-    auto_issue=False,
+    auto_delivery=False,
     is_pinned=False,
     desc=None,
     amount=2000000,

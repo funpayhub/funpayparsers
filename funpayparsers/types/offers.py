@@ -43,8 +43,8 @@ class OfferPreview(FunPayObject):
     id: int | str
     """Unique offer ID."""
 
-    auto_issue: bool
-    """Whether auto-issue is enabled for this offer."""
+    auto_delivery: bool
+    """Whether auto delivery is enabled for this offer."""
 
     is_pinned: bool
     """Whether this offer is pinned to the top of the list."""
@@ -226,7 +226,7 @@ class OfferFields(FunPayObject):
     @property
     def secrets(self) -> list[str] | None:
         """
-        List of goods in auto-issue.
+        List of goods in auto delivery.
         Field name: `fields[secrets]`
         """
         goods = self.fields_dict.get('fields[secrets]')

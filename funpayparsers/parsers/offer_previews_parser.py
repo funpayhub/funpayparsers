@@ -79,7 +79,7 @@ class OfferPreviewsParser(FunPayHTMLObjectParser[list[OfferPreview], OfferPrevie
             result.append(OfferPreview(
                 raw_source=offer_div.html,
                 id=int(offer_id_str) if offer_id_str.isnumeric() else offer_id_str,
-                auto_issue=bool(offer_div.attrs.get('data-auto')),
+                auto_delivery=bool(offer_div.attrs.get('data-auto')),
                 is_pinned=bool(offer_div.attrs.get('data-user')),
                 desc=desc,
                 amount=amount,

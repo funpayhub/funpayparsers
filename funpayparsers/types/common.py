@@ -46,7 +46,7 @@ class UserBadge(FunPayObject):
     The full CSS class of the badge.
 
     Known values:
-        - `label-default` — FunPay auto-issue bot;
+        - `label-default` — FunPay auto delivery bot;
         - `label-primary` — FunPay system notifications 
             (e.g., new order, order COMPLETED, new review, etc.);
         - `label-success` — support or arbitration;
