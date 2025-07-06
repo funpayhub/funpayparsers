@@ -186,6 +186,7 @@ def parse_money_value_string(money_value_str: str, /, *, raw_source: str | None 
     String will be stripped before parsing.
     """
 
+    # It is important to replace ' ' with '' to support space seperated values, e.g., 12 345.67
     to_process = money_value_str.strip().replace(' ', '').replace('\u2212', '-')
     if not (match := MONEY_VALUE_RE.fullmatch(to_process)):
         if raise_on_error:
