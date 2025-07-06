@@ -6,11 +6,17 @@ from funpayparsers.types.common import UserPreview
 from funpayparsers.parsers.utils import extract_css_url
 
 from dataclasses import dataclass
+from enum import Enum
+
+
+class UserPreviewParsingMode(Enum):
+    FROM_ORDER_PREVIEW = 0
+    FROM_CHAT = 1
 
 
 @dataclass(frozen=True)
 class UserPreviewParserOptions(FunPayObjectParserOptions):
-    ...
+    parsing_mode: UserPreviewParsingMode = UserPreviewParsingMode.FROM_ORDER_PREVIEW
 
 
 class UserPreviewParser(FunPayHTMLObjectParser[UserPreview, UserPreviewParserOptions]):
