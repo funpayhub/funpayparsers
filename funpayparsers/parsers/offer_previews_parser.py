@@ -5,7 +5,7 @@ from copy import deepcopy
 from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
 from funpayparsers.types.offers import OfferPreview, OfferSeller
 from funpayparsers.parsers.utils import extract_css_url
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
+from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingMode
 from dataclasses import dataclass
 import re
 from selectolax.lexbor import LexborNode
@@ -54,7 +54,7 @@ class OfferPreviewsParser(FunPayHTMLObjectParser[list[OfferPreview], OfferPrevie
             price_div = offer_div.css('div.tc-price')[0]
             price = MoneyValueParser(price_div.html,
                                      options=MoneyValueParserOptions(
-                                         parsing_type=MoneyValueParsingType.FROM_OFFER_PREVIEW,
+                                         parsing_mode=MoneyValueParsingMode.FROM_OFFER_PREVIEW,
                                          parse_value_from_attribute=False if 'chips' in offer_div.attributes['href'] else True,
                                      ) & self.options).parse()
 

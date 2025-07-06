@@ -1,4 +1,4 @@
-__all__ = ('MoneyValueParser', 'MoneyValueParserOptions', 'MoneyValueParsingType')
+__all__ = ('MoneyValueParser', 'MoneyValueParserOptions', 'MoneyValueParsingMode')
 
 from dataclasses import dataclass
 from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
@@ -7,7 +7,7 @@ from funpayparsers.parsers.utils import parse_money_value_string
 from enum import Enum
 
 
-class MoneyValueParsingType(Enum):
+class MoneyValueParsingMode(Enum):
     FROM_STRING = 0
     FROM_ORDER_PREVIEW = 1
     FROM_TRANSACTION_PREVIEW = 2
@@ -17,7 +17,7 @@ class MoneyValueParsingType(Enum):
 
 @dataclass(frozen=True)
 class MoneyValueParserOptions(FunPayObjectParserOptions):
-    parsing_type: MoneyValueParsingType = MoneyValueParsingType.FROM_STRING
+    parsing_mode: MoneyValueParsingMode = MoneyValueParsingMode.FROM_STRING
     parse_value_from_attribute: bool = True
     """
     Take numeric value from node attribute or not.
@@ -43,12 +43,12 @@ class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParserOption
     """
     def _parse(self):
         types = {
-            MoneyValueParsingType.FROM_ORDER_PREVIEW: self._parse_order_preview_type,
-            MoneyValueParsingType.FROM_TRANSACTION_PREVIEW: self._parse_transaction_preview_type,
-            MoneyValueParsingType.FROM_OFFER_PREVIEW: self._parse_offer_preview_type,
-            MoneyValueParsingType.FROM_STRING: self._parse_string_type,
+            MoneyValueParsingMode.FROM_ORDER_PREVIEW: self._parse_order_preview_type,
+            MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW: self._parse_transaction_preview_type,
+            MoneyValueParsingMode.FROM_OFFER_PREVIEW: self._parse_offer_preview_type,
+            MoneyValueParsingMode.FROM_STRING: self._parse_string_type,
         }
-        return types[self.options.parsing_type]()
+        return types[self.options.parsing_mode]()
 
     def _parse_order_preview_type(self) -> MoneyValue:
         val_str = self.tree.css('div.tc-price')[0].text().strip()

@@ -6,7 +6,7 @@ from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObje
 from funpayparsers.types.orders import OrderPreview, OrderPreviewsBatch
 from funpayparsers.parsers.user_preview_parser import UserPreviewParser, UserPreviewParserOptions
 from funpayparsers.types.enums import OrderStatus
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
+from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingMode
 
 
 @dataclass(frozen=True)
@@ -32,7 +32,7 @@ class OrderPreviewsParser(FunPayHTMLObjectParser[
 
             value = MoneyValueParser(raw_source=order.css('div.tc-price')[0].html,
                                       options=MoneyValueParserOptions(
-                                          parsing_type=MoneyValueParsingType.FROM_ORDER_PREVIEW
+                                          parsing_mode=MoneyValueParsingMode.FROM_ORDER_PREVIEW
                                       ) & self.options).parse()
 
             user_tag = order.css('div.media-user')[0]
