@@ -7,6 +7,8 @@ from funpayparsers.types.offers import OfferPreview
 from funpayparsers.types.reviews import ReviewsBatch
 from funpayparsers.types.chat import Chat
 from funpayparsers.types.common import UserRating, UserBadge
+from funpayparsers.types.enums import SubcategoryType
+from typing import Literal
 
 
 @dataclass
@@ -43,7 +45,7 @@ class ProfilePage(FunPayPage):
     rating: UserRating | None
     """User rating."""
 
-    offers: dict[str, list[OfferPreview]]
+    offers: dict[Literal[SubcategoryType.COMMON, SubcategoryType.CURRENCY, SubcategoryType.UNKNOWN], dict[int, list[OfferPreview]]] | None
     """User offers."""
 
     chat: Chat | None
