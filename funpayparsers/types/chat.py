@@ -56,8 +56,11 @@ class Chat(FunPayObject):
     """
     Represents a chat.
     """
-    id: int
-    """Chat ID."""
+    id: int | None
+    """
+    Chat ID.
+    Will be None if parsing anonymous request response.
+    """
 
     name: str
     """Chat name."""
