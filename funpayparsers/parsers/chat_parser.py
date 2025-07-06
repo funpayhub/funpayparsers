@@ -2,7 +2,7 @@ __all__ = ('ChatParserOptions', 'ChatParser')
 
 from dataclasses import dataclass
 from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
-from funpayparsers.parsers.user_preview_parser import UserPreviewParser, UserPreviewParserOptions
+from funpayparsers.parsers.user_preview_parser import UserPreviewParser, UserPreviewParserOptions, UserPreviewParsingMode
 from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParserOptions
 from funpayparsers.types.chat import Chat
 from funpayparsers.types.common import UserPreview
@@ -11,7 +11,7 @@ from selectolax.lexbor import LexborNode
 
 @dataclass(frozen=True)
 class ChatParserOptions(FunPayObjectParserOptions):
-    user_preview_parser_options: UserPreviewParserOptions = UserPreviewParserOptions()
+    user_preview_parser_options: UserPreviewParserOptions = UserPreviewParserOptions(parsing_mode=UserPreviewParsingMode.FROM_CHAT)
     messages_parser_options: MessagesParserOptions = MessagesParserOptions()
 
 
