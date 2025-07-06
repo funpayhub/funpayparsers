@@ -36,7 +36,7 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParserOptions]):
         return Chat(
             raw_source=chat_div.html,
             id=int(chat_div.attributes['data-id']) if chat_div.attributes.get('data-id') else None,
-            name=chat_div.attributes['data-name'],
+            name=chat_div.attributes.get('data-name'),
             interlocutor=interlocutor,
             is_notifications_enabled=notifications,
             is_blocked=banned,

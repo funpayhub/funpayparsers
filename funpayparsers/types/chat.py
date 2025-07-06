@@ -63,7 +63,10 @@ class Chat(FunPayObject):
     """
 
     name: str
-    """Chat name."""
+    """
+    Chat name.
+    Will be None if parsing anonymous request response.
+    """
 
     interlocutor: UserPreview | None
     """Interlocutor preview. Available in private chats only."""
