@@ -5,7 +5,7 @@ __all__ = (
 
 from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
 from funpayparsers.types.reviews import Review, ReviewsBatch
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingType
+from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingMode
 from funpayparsers.types.common import MoneyValue
 from dataclasses import dataclass
 from selectolax.lexbor import LexborNode
@@ -116,7 +116,7 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParserOptions]):
         game, value = ', '.join(split[:-1]), split[-1]
         value = MoneyValueParser(raw_source=value.strip(),
                                  options=MoneyValueParserOptions(
-                                     parsing_type=MoneyValueParsingType.FROM_STRING
+                                     parsing_mode=MoneyValueParsingMode.FROM_STRING
                                  ) & self.options).parse()
 
         return date_str, text, game, value

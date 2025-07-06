@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
 from funpayparsers.types.finances import TransactionPreview, TransactionPreviewsBatch
 from funpayparsers.types.enums import TransactionStatus, PaymentMethod
-from funpayparsers.parsers.money_value_parser import MoneyValueParserOptions, MoneyValueParsingType, MoneyValueParser
+from funpayparsers.parsers.money_value_parser import MoneyValueParserOptions, MoneyValueParsingMode, MoneyValueParser
 
 
 @dataclass(frozen=True)
@@ -26,7 +26,7 @@ class TransactionPreviewsParser(FunPayHTMLObjectParser[
         for i in self.tree.css('div.tc-item'):
             value = MoneyValueParser(raw_source=i.css('div.tc-price')[0].html,
                                      options=MoneyValueParserOptions(
-                                         parsing_type=MoneyValueParsingType.FROM_TRANSACTION_PREVIEW
+                                         parsing_mode=MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW
                                      ) & self.options).parse()
             recipient_div = i.css('span.tc-payment-number')
 
