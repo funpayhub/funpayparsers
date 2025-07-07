@@ -9,6 +9,7 @@ from collections.abc import Sequence, Mapping
 import json
 
 from funpayparsers.types.base import FunPayObject
+from funpayparsers.exceptions import ParsingError
 from selectolax.lexbor import LexborHTMLParser
 
 
@@ -115,8 +116,8 @@ class FunPayObjectParser(ABC, Generic[R, O]):
 
             return result
 
-        except Exception as e:
-            raise e  # todo: make custom exceptions e.g. ParsingError
+        except:
+            raise ParsingError(raw_source=self.raw_source) from e
 
     def empty_raw_source(self,
                          obj: FunPayObject | Sequence[Any] | Mapping[Any, Any]) -> None:
