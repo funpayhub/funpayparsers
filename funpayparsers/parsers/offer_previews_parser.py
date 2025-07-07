@@ -67,11 +67,6 @@ class OfferPreviewsParser(FunPayHTMLObjectParser[list[OfferPreview], OfferPrevie
 
             price_div = offer_div.css('div.tc-price')[0]
             price = MoneyValueParser(price_div.html,
-                                     options=MoneyValueParsingOptions(
-                                         parsing_mode=MoneyValueParsingMode.FROM_OFFER_PREVIEW,
-                                         parse_value_from_attribute=False if 'chips' in offer_div.attributes['href'] else True,
-                                     ) & self.options).parse()
-            price = MoneyValueParser(price_div.html,
                                      options=self.options.money_value_parsing_options,
                                      parse_value_from_attribute=False if 'chips' in offer_div.attributes['href'] else True
                                      ).parse()
