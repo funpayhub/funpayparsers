@@ -1,11 +1,11 @@
 from funpayparsers.parsers.transaction_previews_parser import (TransactionPreviewsParser,
-                                                               TransactionPreviewsParserOptions)
+                                                               TransactionPreviewsParsingOptions)
 from funpayparsers.types import PaymentMethod, TransactionStatus
 from funpayparsers.types.finances import TransactionPreview, TransactionPreviewsBatch
 from funpayparsers.types.common import MoneyValue
 
 
-OPTIONS = TransactionPreviewsParserOptions(empty_raw_source=True)
+OPTIONS = TransactionPreviewsParsingOptions(empty_raw_source=True)
 
 
 complete_order_transaction_html = """

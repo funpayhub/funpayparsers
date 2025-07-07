@@ -1,20 +1,20 @@
-__all__ = ('TransactionPreviewsParser', 'TransactionPreviewsParserOptions')
+__all__ = ('TransactionPreviewsParser', 'TransactionPreviewsParsingOptions')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
 from funpayparsers.types.finances import TransactionPreview, TransactionPreviewsBatch
 from funpayparsers.types.enums import TransactionStatus, PaymentMethod
-from funpayparsers.parsers.money_value_parser import MoneyValueParserOptions, MoneyValueParsingMode, MoneyValueParser
+from funpayparsers.parsers.money_value_parser import MoneyValueParsingOptions, MoneyValueParsingMode, MoneyValueParser
 
 
 @dataclass(frozen=True)
-class TransactionPreviewsParserOptions(FunPayObjectParserOptions):
+class TransactionPreviewsParsingOptions(ParsingOptions):
     ...
 
 
 class TransactionPreviewsParser(FunPayHTMLObjectParser[
     TransactionPreviewsBatch,
-    TransactionPreviewsParserOptions
+    TransactionPreviewsParsingOptions
 ]):
     """
     Class for parsing transaction previews.
@@ -25,7 +25,7 @@ class TransactionPreviewsParser(FunPayHTMLObjectParser[
         result = []
         for i in self.tree.css('div.tc-item'):
             value = MoneyValueParser(raw_source=i.css('div.tc-price')[0].html,
-                                     options=MoneyValueParserOptions(
+                                     options=MoneyValueParsingOptions(
                                          parsing_mode=MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW
                                      ) & self.options).parse()
             recipient_div = i.css('span.tc-payment-number')

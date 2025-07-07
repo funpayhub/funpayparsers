@@ -1,7 +1,7 @@
-__all__ = ('MoneyValueParser', 'MoneyValueParserOptions', 'MoneyValueParsingMode')
+__all__ = ('MoneyValueParser', 'MoneyValueParsingOptions', 'MoneyValueParsingMode')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.common import MoneyValue
 from funpayparsers.parsers.utils import parse_money_value_string
 from enum import Enum
@@ -16,7 +16,7 @@ class MoneyValueParsingMode(Enum):
 
 
 @dataclass(frozen=True)
-class MoneyValueParserOptions(FunPayObjectParserOptions):
+class MoneyValueParsingOptions(ParsingOptions):
     parsing_mode: MoneyValueParsingMode = MoneyValueParsingMode.FROM_STRING
     parse_value_from_attribute: bool = True
     """
@@ -31,7 +31,7 @@ class MoneyValueParserOptions(FunPayObjectParserOptions):
     """
 
 
-class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParserOptions]):
+class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParsingOptions]):
     """
     Class for parsing money values.
     Possible locations:

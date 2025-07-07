@@ -1,11 +1,11 @@
 from funpayparsers.parsers.order_previews_parser import (OrderPreviewsParser,
-                                                         OrderPreviewsParserOptions)
+                                                         OrderPreviewsParsingOptions)
 from funpayparsers.types.orders import OrderPreview, OrderPreviewsBatch
 from funpayparsers.types.enums import OrderStatus
 from funpayparsers.types.common import MoneyValue, UserPreview
 
 
-OPTIONS = OrderPreviewsParserOptions(empty_raw_source=True)
+OPTIONS = OrderPreviewsParsingOptions(empty_raw_source=True)
 
 
 refunded_order_html = """

@@ -1,4 +1,4 @@
-__all__ = ('FunPayObjectParser', 'FunPayObjectParserOptions',
+__all__ = ('FunPayObjectParser', 'ParsingOptions',
            'FunPayHTMLObjectParser', 'FunPayJSONObjectParser')
 
 from abc import ABC, abstractmethod
@@ -13,11 +13,11 @@ from selectolax.lexbor import LexborHTMLParser
 
 
 R = TypeVar('R', bound=Any)
-O = TypeVar('O', bound='FunPayObjectParserOptions')
+O = TypeVar('O', bound='ParsingOptions')
 
 
 @dataclass(frozen=True)
-class FunPayObjectParserOptions:
+class ParsingOptions:
     """
     Base class for all parser option dataclasses.
 
@@ -29,16 +29,16 @@ class FunPayObjectParserOptions:
 
     Examples:
 
-        >>> options1 = FunPayObjectParserOptions(empty_raw_source=True)
-        >>> options2 = FunPayObjectParserOptions(context={"key": "value"})
+        >>> options1 = ParsingOptions(empty_raw_source=True)
+        >>> options2 = ParsingOptions(context={"key": "value"})
         >>> options3 = options1 & options2  # Creates a new instance of options1
         >>> options3.empty_raw_source
         True
         >>> options3.context
         {'key': 'value'}
 
-        >>> options1 = FunPayObjectParserOptions(empty_raw_source=True)
-        >>> options2 = FunPayObjectParserOptions(context={"key": "value"})
+        >>> options1 = ParsingOptions(empty_raw_source=True)
+        >>> options2 = ParsingOptions(context={"key": "value"})
         >>> options3 = options1 | options2  # Creates a new instance of options1
         >>> options3.empty_raw_source
         False
@@ -74,12 +74,12 @@ class FunPayObjectParserOptions:
 
 
 def _new(cls: Type[O], *args: Any, **kwargs: Any) -> O:
-    instance = cast(O, super(FunPayObjectParserOptions, cls).__new__(cls))
-    super(FunPayObjectParserOptions, cls).__setattr__(instance, '__passed_args__', args)
-    super(FunPayObjectParserOptions, cls).__setattr__(instance, '__passed_kwargs__', kwargs)
+    instance = cast(O, super(ParsingOptions, cls).__new__(cls))
+    super(ParsingOptions, cls).__setattr__(instance, '__passed_args__', args)
+    super(ParsingOptions, cls).__setattr__(instance, '__passed_kwargs__', kwargs)
     return instance
 
-setattr(FunPayObjectParserOptions, '__new__', _new)
+setattr(ParsingOptions, '__new__', _new)
 
 
 class FunPayObjectParser(ABC, Generic[R, O]):
@@ -94,7 +94,7 @@ class FunPayObjectParser(ABC, Generic[R, O]):
         `FunPayHTMLObjectParser` (for HTML sources) or
         `FunPayJSONObjectParser` (for JSON-string/python collection sources)
     """
-    __options_cls__: Type[FunPayObjectParserOptions] | None = None
+    __options_cls__: Type[ParsingOptions] | None = None
 
     def __init__(self, raw_source: Any, options: O | None = None, **overrides):
         """
@@ -174,7 +174,7 @@ class FunPayObjectParser(ABC, Generic[R, O]):
                 return origin.get_options_cls()
 
             for arg in args:
-                if isinstance(arg, type) and issubclass(arg, FunPayObjectParserOptions):
+                if isinstance(arg, type) and issubclass(arg, ParsingOptions):
                     return arg
         raise LookupError('No suitable options class found.')
 

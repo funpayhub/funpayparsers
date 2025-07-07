@@ -1,19 +1,19 @@
-__all__ = ('PrivateChatPreviewParser', 'PrivateChatPreviewParserOptions')
+__all__ = ('PrivateChatPreviewParser', 'PrivateChatPreviewParsingOptions')
 
 from dataclasses import dataclass
 
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
 from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.types.chat import PrivateChatPreview
 
 
 @dataclass(frozen=True)
-class PrivateChatPreviewParserOptions(FunPayObjectParserOptions):
+class PrivateChatPreviewParsingOptions(ParsingOptions):
     ...
 
 
 class PrivateChatPreviewParser(
-    FunPayHTMLObjectParser[list[PrivateChatPreview], PrivateChatPreviewParserOptions,]):
+    FunPayHTMLObjectParser[list[PrivateChatPreview], PrivateChatPreviewParsingOptions,]):
     """
     Class for parsing private chat previews.
     Possible locations:

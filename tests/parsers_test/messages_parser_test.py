@@ -1,8 +1,8 @@
-from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParserOptions
+from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParsingOptions
 from funpayparsers.types import Message, UserBadge
 
 
-OPTIONS = MessagesParserOptions(empty_raw_source=True)
+OPTIONS = MessagesParsingOptions(empty_raw_source=True)
 
 
 heading_message_html = """<div class="chat-msg-item chat-msg-with-head" id="message-12345">

@@ -1,6 +1,6 @@
-__all__ = ('UpdatesParser', 'UpdatesParserOptions')
+__all__ = ('UpdatesParser', 'UpdatesParsingOptions')
 
-from funpayparsers.parsers.base import FunPayJSONObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayJSONObjectParser, ParsingOptions
 from funpayparsers.types.updates import (OrdersCounters,
                                          ChatBookmarks,
                                          ChatCounter,
@@ -10,20 +10,20 @@ from funpayparsers.types.updates import (OrdersCounters,
                                          ActionResponse,
                                          UpdateObject,
                                          UpdatesPack)
-from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParserOptions
-from funpayparsers.parsers.chat_preview_parser import PrivateChatPreviewParser, PrivateChatPreviewParserOptions
-from funpayparsers.parsers.cpu_parser import CurrentlyViewingOfferInfoParser, CurrentlyViewingOfferInfoParserOptions
+from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParsingOptions
+from funpayparsers.parsers.chat_preview_parser import PrivateChatPreviewParser, PrivateChatPreviewParsingOptions
+from funpayparsers.parsers.cpu_parser import CurrentlyViewingOfferInfoParser, CurrentlyViewingOfferInfoParsingOptions
 from funpayparsers.types.enums import UpdateType
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class UpdatesParserOptions(FunPayObjectParserOptions):
+class UpdatesParsingOptions(ParsingOptions):
     ...
 
 
 
-class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParserOptions]):
+class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
     """
     Class for parsing updates.
     Possible locations:
@@ -79,7 +79,7 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParserOptions]):
         )
 
     def _parse_chat_bookmarks(self, obj: dict) -> ChatBookmarks:
-        previews = PrivateChatPreviewParser(obj['html'], options=PrivateChatPreviewParserOptions() & self.options).parse()
+        previews = PrivateChatPreviewParser(obj['html'], options=PrivateChatPreviewParsingOptions() & self.options).parse()
         return ChatBookmarks(
             raw_source=str(obj),
             counter=int(obj['counter']),
@@ -92,7 +92,7 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParserOptions]):
         html_ = obj['html']['desktop']
         return CurrentlyViewingOfferInfoParser(
             html_,
-            options=CurrentlyViewingOfferInfoParserOptions() & self.options
+            options=CurrentlyViewingOfferInfoParsingOptions() & self.options
         ).parse()
 
     def _parse_node(self, obj: dict) -> ChatNode:
@@ -106,7 +106,7 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParserOptions]):
 
         messages = MessagesParser(
             '\n'.join(i['html'] for i in obj['messages']),
-            options=MessagesParserOptions() & self.options,
+            options=MessagesParsingOptions() & self.options,
         ).parse()
 
         return ChatNode(

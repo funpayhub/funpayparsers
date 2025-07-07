@@ -1,8 +1,8 @@
-from funpayparsers.parsers.cpu_parser import CurrentlyViewingOfferInfoParser, CurrentlyViewingOfferInfoParserOptions
+from funpayparsers.parsers.cpu_parser import CurrentlyViewingOfferInfoParser, CurrentlyViewingOfferInfoParsingOptions
 from funpayparsers.types.updates import CurrentlyViewingOfferInfo
 
 
-OPTIONS = CurrentlyViewingOfferInfoParserOptions(empty_raw_source=True)
+OPTIONS = CurrentlyViewingOfferInfoParsingOptions(empty_raw_source=True)
 
 
 cpu_html = """

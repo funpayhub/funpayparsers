@@ -1,16 +1,16 @@
-__all__ = ('AchievementParserOptions', 'AchievementParser')
+__all__ = ('AchievementParsingOptions', 'AchievementParser')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
 from funpayparsers.types.common import Achievement
 
 
 @dataclass(frozen=True)
-class AchievementParserOptions(FunPayObjectParserOptions):
+class AchievementParsingOptions(ParsingOptions):
     ...
 
 
-class AchievementParser(FunPayHTMLObjectParser[Achievement, AchievementParserOptions]):
+class AchievementParser(FunPayHTMLObjectParser[Achievement, AchievementParsingOptions]):
     """
     Class for parsing user achievements.
     Possible locations:

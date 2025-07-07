@@ -1,8 +1,8 @@
-from funpayparsers.parsers.offer_fields_parser import OfferFieldsParser, OfferFieldsParserOptions
+from funpayparsers.parsers.offer_fields_parser import OfferFieldsParser, OfferFieldsParsingOptions
 from funpayparsers.types.offers import OfferFields
 
 
-OPTIONS = OfferFieldsParserOptions(empty_raw_source=True)
+OPTIONS = OfferFieldsParsingOptions(empty_raw_source=True)
 
 
 lot_fields_html = """

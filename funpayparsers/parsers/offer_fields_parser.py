@@ -1,17 +1,17 @@
-__all__ = ('OfferFieldsParser', 'OfferFieldsParserOptions')
+__all__ = ('OfferFieldsParser', 'OfferFieldsParsingOptions')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
 from funpayparsers.parsers.utils import serialize_form
 from funpayparsers.types.offers import OfferFields
 
 
 @dataclass(frozen=True)
-class OfferFieldsParserOptions(FunPayObjectParserOptions):
+class OfferFieldsParsingOptions(ParsingOptions):
     ...
 
 
-class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParserOptions]):
+class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOptions]):
     """
     Class for parsing available offer fields.
     Possible locations:

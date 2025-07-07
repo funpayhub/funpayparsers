@@ -1,7 +1,7 @@
-__all__ = ('UserPreviewParser', 'UserPreviewParserOptions', 'UserPreviewParsingMode')
+__all__ = ('UserPreviewParser', 'UserPreviewParsingOptions', 'UserPreviewParsingMode')
 
 
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
 from funpayparsers.types.common import UserPreview
 from funpayparsers.parsers.utils import extract_css_url
 
@@ -15,11 +15,11 @@ class UserPreviewParsingMode(Enum):
 
 
 @dataclass(frozen=True)
-class UserPreviewParserOptions(FunPayObjectParserOptions):
+class UserPreviewParsingOptions(ParsingOptions):
     parsing_mode: UserPreviewParsingMode = UserPreviewParsingMode.FROM_ORDER_PREVIEW
 
 
-class UserPreviewParser(FunPayHTMLObjectParser[UserPreview, UserPreviewParserOptions]):
+class UserPreviewParser(FunPayHTMLObjectParser[UserPreview, UserPreviewParsingOptions]):
     """
     Class for parsing user previews.
     Possible locations:

@@ -1,18 +1,18 @@
-__all__ = ('AppDataParserOptions', 'AppDataParser')
+__all__ = ('AppDataParsingOptions', 'AppDataParser')
 
 from dataclasses import dataclass
 import json
-from funpayparsers.parsers.base import FunPayJSONObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayJSONObjectParser, ParsingOptions
 from funpayparsers.types.common_page_elements import AppData, WebPush
 from funpayparsers.types.enums import Language
 
 
 @dataclass(frozen=True)
-class AppDataParserOptions(FunPayObjectParserOptions):
+class AppDataParsingOptions(ParsingOptions):
     ...
 
 
-class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParserOptions]):
+class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParsingOptions]):
     """
     Class for parsing AppData JSON.
     Possible locations:

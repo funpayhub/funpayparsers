@@ -1,22 +1,22 @@
-__all__ = ('OfferPreviewsParser', 'OfferPreviewsParserOptions')
+__all__ = ('OfferPreviewsParser', 'OfferPreviewsParsingOptions')
 
 from copy import deepcopy
 
-from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.offers import OfferPreview, OfferSeller
 from funpayparsers.parsers.utils import extract_css_url
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingMode
+from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParsingOptions, MoneyValueParsingMode
 from dataclasses import dataclass
 import re
 from selectolax.lexbor import LexborNode
 
 
 @dataclass(frozen=True)
-class OfferPreviewsParserOptions(FunPayObjectParserOptions):
+class OfferPreviewsParsingOptions(ParsingOptions):
     ...
 
 
-class OfferPreviewsParser(FunPayHTMLObjectParser[list[OfferPreview], OfferPreviewsParserOptions]):
+class OfferPreviewsParser(FunPayHTMLObjectParser[list[OfferPreview], OfferPreviewsParsingOptions]):
     """
     Class for parsing public offer previews.
     Possible locations:
@@ -53,7 +53,7 @@ class OfferPreviewsParser(FunPayHTMLObjectParser[list[OfferPreview], OfferPrevie
 
             price_div = offer_div.css('div.tc-price')[0]
             price = MoneyValueParser(price_div.html,
-                                     options=MoneyValueParserOptions(
+                                     options=MoneyValueParsingOptions(
                                          parsing_mode=MoneyValueParsingMode.FROM_OFFER_PREVIEW,
                                          parse_value_from_attribute=False if 'chips' in offer_div.attributes['href'] else True,
                                      ) & self.options).parse()

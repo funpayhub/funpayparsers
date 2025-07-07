@@ -1,22 +1,22 @@
 __all__ = (
     'ReviewsParser',
-    'ReviewsParserOptions'
+    'ReviewsParsingOptions'
 )
 
-from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.reviews import Review, ReviewsBatch
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingMode
+from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParsingOptions, MoneyValueParsingMode
 from funpayparsers.types.common import MoneyValue
 from dataclasses import dataclass
 from selectolax.lexbor import LexborNode
 
 
 @dataclass(frozen=True)
-class ReviewsParserOptions(FunPayObjectParserOptions):
+class ReviewsParsingOptions(ParsingOptions):
     ...
 
 
-class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParserOptions]):
+class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions]):
     """
     Class for parsing reviews.
     Possible locations:
@@ -117,7 +117,7 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParserOptions]):
         split = review_details_str.split(', ')
         game, value = ', '.join(split[:-1]), split[-1]
         value = MoneyValueParser(raw_source=value.strip(),
-                                 options=MoneyValueParserOptions(
+                                 options=MoneyValueParsingOptions(
                                      parsing_mode=MoneyValueParsingMode.FROM_STRING
                                  ) & self.options).parse()
 

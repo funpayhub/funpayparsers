@@ -1,21 +1,21 @@
-__all__ = ('ChatParserOptions', 'ChatParser')
+__all__ = ('ChatParsingOptions', 'ChatParser')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
-from funpayparsers.parsers.user_preview_parser import UserPreviewParser, UserPreviewParserOptions, UserPreviewParsingMode
-from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
+from funpayparsers.parsers.user_preview_parser import UserPreviewParser, UserPreviewParsingOptions, UserPreviewParsingMode
+from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParsingOptions
 from funpayparsers.types.chat import Chat
 from funpayparsers.types.common import UserPreview
 from selectolax.lexbor import LexborNode
 
 
 @dataclass(frozen=True)
-class ChatParserOptions(FunPayObjectParserOptions):
-    user_preview_parser_options: UserPreviewParserOptions = UserPreviewParserOptions(parsing_mode=UserPreviewParsingMode.FROM_CHAT)
-    messages_parser_options: MessagesParserOptions = MessagesParserOptions()
+class ChatParsingOptions(ParsingOptions):
+    user_preview_parsing_options: UserPreviewParsingOptions = UserPreviewParsingOptions(parsing_mode=UserPreviewParsingMode.FROM_CHAT)
+    messages_parsing_options: MessagesParsingOptions = MessagesParsingOptions()
 
 
-class ChatParser(FunPayHTMLObjectParser[Chat, ChatParserOptions]):
+class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
     """
     Class for parsing chats.
     Possible locations:
@@ -31,7 +31,7 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParserOptions]):
 
         messages_div = chat_div.css('div.chat-message-list')[0]
         history = MessagesParser(raw_source=messages_div.html,
-                                 options=self.options.messages_parser_options & self.options).parse()
+                                 options=self.options.messages_parsing_options & self.options).parse()
 
         return Chat(
             raw_source=chat_div.html,
@@ -52,7 +52,7 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParserOptions]):
             return None, None, None
 
         interlocutor = UserPreviewParser(raw_source=interlocutor_div[0].html,
-                                         options=self.options.user_preview_parser_options & self.options).parse()
+                                         options=self.options.user_preview_parsing_options & self.options).parse()
 
         btn_div = header_div.css('button')
         if not btn_div:

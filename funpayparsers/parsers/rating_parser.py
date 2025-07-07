@@ -1,9 +1,9 @@
-__all__ = ('UserRatingParserOptions', 'UserRatingParser')
+__all__ = ('UserRatingParsingOptions', 'UserRatingParser')
 
 
 from dataclasses import dataclass
 import re
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
 from funpayparsers.types.common import UserRating
 from enum import Enum
 
@@ -14,11 +14,11 @@ class UserRatingParsingMode(Enum):
 
 
 @dataclass(frozen=True)
-class UserRatingParserOptions(FunPayObjectParserOptions):
+class UserRatingParsingOptions(ParsingOptions):
     parsing_mode: UserRatingParsingMode = UserRatingParsingMode.FROM_REVIEWS_SECTION
 
 
-class UserRatingParser(FunPayHTMLObjectParser[UserRating, UserRatingParserOptions]):
+class UserRatingParser(FunPayHTMLObjectParser[UserRating, UserRatingParsingOptions]):
     """
     Class for parsing user rating.
     Possible locations:

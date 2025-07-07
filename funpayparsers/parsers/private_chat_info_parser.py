@@ -1,17 +1,17 @@
-__all__ = ('PrivateChatInfoParserOptions', 'PrivateChatInfoParser')
+__all__ = ('PrivateChatInfoParsingOptions', 'PrivateChatInfoParser')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
-from funpayparsers.parsers.cpu_parser import CurrentlyViewingOfferInfoParser, CurrentlyViewingOfferInfoParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
+from funpayparsers.parsers.cpu_parser import CurrentlyViewingOfferInfoParser, CurrentlyViewingOfferInfoParsingOptions
 from funpayparsers.types.chat import PrivateChatInfo
 
 
 @dataclass(frozen=True)
-class PrivateChatInfoParserOptions(FunPayObjectParserOptions):
-    cpu_parser_options: CurrentlyViewingOfferInfoParserOptions = CurrentlyViewingOfferInfoParserOptions()
+class PrivateChatInfoParsingOptions(ParsingOptions):
+    cpu_parsing_options: CurrentlyViewingOfferInfoParsingOptions = CurrentlyViewingOfferInfoParsingOptions()
 
 
-class PrivateChatInfoParser(FunPayHTMLObjectParser[PrivateChatInfo, PrivateChatInfoParserOptions]):
+class PrivateChatInfoParser(FunPayHTMLObjectParser[PrivateChatInfo, PrivateChatInfoParsingOptions]):
     """
     Class for parsing private chat info block.
     Possible locations:
@@ -33,7 +33,7 @@ class PrivateChatInfoParser(FunPayHTMLObjectParser[PrivateChatInfo, PrivateChatI
         for div in blocks:
             if div.attributes.get('data-type') == 'c-p-u':
                 cpu = CurrentlyViewingOfferInfoParser(raw_source=div.html,
-                                                      options=self.options.cpu_parser_options & self.options).parse()
+                                                      options=self.options.cpu_parsing_options & self.options).parse()
                 result.currently_viewing_offer = cpu
             else:
                 result.language = div.css('div')[0].text(separator='\n', strip=True).strip().split('\n')[-1].strip()
