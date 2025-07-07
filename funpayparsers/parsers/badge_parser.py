@@ -9,6 +9,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class UserBadgeParsingOptions(ParsingOptions):
     """Options class for ``UserBadgeParser``."""
+
     ...
 
 
@@ -20,6 +21,7 @@ class UserBadgeParser(FunPayHTMLObjectParser[UserBadge, UserBadgeParsingOptions]
         - User profile pages (`https://funpay.com/<userid>/`).
         - Chats.
     """
+
     def _parse(self):
         badge_span = self.tree.css('span.label')[0]
         return UserBadge(

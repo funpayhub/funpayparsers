@@ -8,6 +8,7 @@ from funpayparsers.types.common import Achievement
 @dataclass(frozen=True)
 class AchievementParsingOptions(ParsingOptions):
     """Options class for ``AchievementParser``."""
+
     ...
 
 

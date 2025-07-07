@@ -8,15 +8,20 @@ from funpayparsers.types.offers import OfferFields
 
 @dataclass(frozen=True)
 class OfferFieldsParsingOptions(ParsingOptions):
+    """Options class for ``OfferFieldsParser``."""
+
     ...
 
 
 class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOptions]):
     """
     Class for parsing available offer fields.
+
     Possible locations:
-        - On offer edit pages (https://funpay.com/lots/offerEdit?node=<node_id>&offer=<offer_id>)
+        - Offer creating page (`https://funpay.com/lots/offerEdit?node=<node_id>`)
+        - Offer editing page (`https://funpay.com/lots/offerEdit?node=<node_id>&offer=<offer_id>`)
     """
+
     def _parse(self):
         form = self.tree.css('form')[0]
         return OfferFields(

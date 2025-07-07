@@ -62,6 +62,7 @@ class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParsingOptio
         - On subcategory offers list page (https://funpay.com/lots/<subcategory_id>/)
         - etc.
     """
+
     def _parse(self):
         types = {
             MoneyValueParsingMode.FROM_ORDER_PREVIEW: self._parse_order_preview_type,

@@ -10,6 +10,7 @@ from funpayparsers.types.chat import PrivateChatPreview
 @dataclass(frozen=True)
 class PrivateChatPreviewParsingOptions(ParsingOptions):
     """Options class for ``PrivateChatPreviewParser``."""
+
     ...
 
 

@@ -9,6 +9,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class CurrentlyViewingOfferInfoParsingOptions(ParsingOptions):
     """Options class for ``CurrentlyViewingOfferInfoParser``."""
+
     ...
 
 
@@ -22,6 +23,7 @@ class CurrentlyViewingOfferInfoParser(FunPayHTMLObjectParser[
         - Private chat pages (`https://funpay.com/chat/?node=<chat_id>`).
         - In runners response.
     """
+
     def _parse(self):
         link = self.tree.css('a')[0]
         url = link.attributes['href']

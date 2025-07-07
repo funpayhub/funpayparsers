@@ -10,6 +10,7 @@ from funpayparsers.types.enums import Language
 @dataclass(frozen=True)
 class AppDataParsingOptions(ParsingOptions):
     """Options class for ``AppDataParser``."""
+
     ...
 
 
@@ -20,6 +21,7 @@ class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParsingOptions]):
     Possible locations:
         - Any FunPay page.
     """
+
     def _parse(self):
         webpush = self.data.get('webpush')
         if webpush is not None:

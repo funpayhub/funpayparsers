@@ -11,6 +11,7 @@ from selectolax.lexbor import LexborNode
 @dataclass(frozen=True)
 class CategoriesParsingOptions(ParsingOptions):
     """Options class for ``CategoriesParser``."""
+
     ...
 
 
@@ -21,6 +22,7 @@ class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParsingO
     Possible locations:
         - Main page (https://funpay.com).
     """
+
     def _parse(self):
         result = []
 

@@ -52,6 +52,7 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
         - On chat pages (https://funpay.com/chat/?node=<chat_id>).
         - In runners response.
     """
+
     def _parse(self):
         messages = []
         for msg_div in self.tree.css('div.chat-msg-item'):
