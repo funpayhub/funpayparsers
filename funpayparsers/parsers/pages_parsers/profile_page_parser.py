@@ -45,7 +45,7 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParserOpt
         reviews_div = self.tree.css('div.offer:has(div.dyn-table-body)')
 
         badges = [UserBadgeParser(i.html, options=self.options.user_badge_parser_options).parse()
-                  for i in profile_header.css('div.user-badges > span')]
+                  for i in profile_header.css('small.user-badges > span')]
         for i in badges:
             if i.type is BadgeType.BANNED:
                 banned = True
@@ -78,8 +78,8 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParserOpt
             online='online' in profile_header.css_first('h1.mb40').attributes['class'],
             banned=banned,
             registration_date_text=reg_date_text_div[0].text(separator='\n', strip=True).strip().split('\n')[-2],
-            status_text=profile_header.css_first('span.media-user-status').text().strip(),
-            rating=UserRatingParser(rating_div.html, options=self.options.user_rating_parser_options).parse(),
+            status_text=profile_header.css_first('span.media-user-status').text().strip() if not banned else None,
+            rating=UserRatingParser(rating_div.html, options=self.options.user_rating_parser_options).parse() if rating_div else None,
             offers=offers,
             chat=ChatParser(chat_div[0].html, options=self.options.chat_parser_options).parse() if chat_div else None,
             reviews=ReviewsParser(reviews_div[0].html, options=self.options.reviews_parser_options).parse() if reviews_div else [],
