@@ -6,7 +6,7 @@ from funpayparsers.types.pages.base import FunPayPage
 from funpayparsers.types.offers import OfferPreview
 from funpayparsers.types.reviews import ReviewsBatch
 from funpayparsers.types.chat import Chat
-from funpayparsers.types.common import UserRating, UserBadge
+from funpayparsers.types.common import UserRating, UserBadge, Achievement
 from funpayparsers.types.enums import SubcategoryType
 from typing import Literal
 
@@ -24,7 +24,7 @@ class ProfilePage(FunPayPage):
     badge: UserBadge | None
     """User badge."""
 
-    achievements: list[str]
+    achievements: list[Achievement]
     """User achievements."""
 
     avatar_url: str

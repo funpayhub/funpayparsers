@@ -10,6 +10,7 @@ from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParser, Off
 from funpayparsers.parsers.rating_parser import UserRatingParser, UserRatingParserOptions
 from funpayparsers.parsers.chat_parser import ChatParser, ChatParserOptions
 from funpayparsers.parsers.badge_parser import UserBadgeParser, UserBadgeParserOptions
+from funpayparsers.parsers.achievement_parser import AchievementParser, AchievementParserOptions
 from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.types.pages.profile_page import ProfilePage
 from funpayparsers.types.enums import BadgeType, SubcategoryType
@@ -24,6 +25,7 @@ class ProfilePageParserOptions(FunPayObjectParserOptions):
     user_badge_parser_options: UserBadgeParserOptions = UserBadgeParserOptions()
     chat_parser_options: ChatParserOptions = ChatParserOptions()
     reviews_parser_options: ReviewsParserOptions = ReviewsParserOptions()
+    achievement_parser_options: AchievementParserOptions = AchievementParserOptions()
 
 
 class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParserOptions]):
@@ -40,6 +42,7 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParserOpt
         profile_header = self.tree.css_first('div.profile-header')
         reg_date_text_div = profile_header.css('div.param-item')
         offer_divs = self.tree.css('div.mb20 div.offer')
+        achievements_divs = self.tree.css('div.achievement-item')
         chat_div = self.tree.css('div.chat')
 
         # It is better to parse the rating from the reviews block,
@@ -78,7 +81,7 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParserOpt
             user_id=int(self.tree.css_first('head > link[rel="canonical"]').attributes['href'].split('/')[-2]),
             username=profile_header.css_first('span.mr4').text().strip(),
             badge=badge,
-            achievements=...,
+            achievements=[AchievementParser(i.html, self.options.achievement_parser_options).parse() for i in achievements_divs],
             avatar_url=extract_css_url(self.tree.css_first('div.avatar-photo').attributes['style']),
             online='online' in profile_header.css_first('h1.mb40').attributes['class'],
             banned=banned,
