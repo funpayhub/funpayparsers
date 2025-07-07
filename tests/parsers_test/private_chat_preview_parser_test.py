@@ -4,7 +4,7 @@ from dataclasses import replace
 
 import pytest
 
-from funpayparsers.parsers import PrivateChatPreviewParser
+from funpayparsers.parsers import PrivateChatPreviewsParser
 from funpayparsers.types import PrivateChatPreview
 
 html = """
@@ -51,5 +51,5 @@ def private_chat_preview_data(chat_preview_data: PrivateChatPreview):
 
 def test_private_chat_preview_parser(private_chat_preview_data):
     source, data = private_chat_preview_data
-    parser = PrivateChatPreviewParser(source)
+    parser = PrivateChatPreviewsParser(source)
     assert parser.parse() == [data]

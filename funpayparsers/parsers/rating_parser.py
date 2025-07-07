@@ -9,20 +9,37 @@ from enum import Enum
 
 
 class UserRatingParsingMode(Enum):
+    """``UserRatingParser`` parsing modes enumeration."""
+
     FROM_PROFILE_HEADER = 0
+    """Raw source is/from a profile header."""
+
     FROM_REVIEWS_SECTION = 1
+    """Raw source is/from a reviews section header."""
 
 
 @dataclass(frozen=True)
 class UserRatingParsingOptions(ParsingOptions):
+    """Options class for ``UserRatingParser``."""
+
     parsing_mode: UserRatingParsingMode = UserRatingParsingMode.FROM_REVIEWS_SECTION
+    """
+    ``UserRatingParser`` parsing mode.
+
+    It is recommended to parse the user rating from the reviews section, because some profiles contain legacy reviews
+    that do not include a rating. If a user has only such reviews, the profile header will not include the rating block.
+    However, the reviews section always contains a rating block as long as there is at least one review of any type.
+
+    Defaults to ``UserRatingParsingMode.FROM_REVIEWS_SECTION``.
+    """
 
 
 class UserRatingParser(FunPayHTMLObjectParser[UserRating, UserRatingParsingOptions]):
     """
     Class for parsing user rating.
+
     Possible locations:
-        - On sellers pages (https://funpay.com/<userid>/).
+        - User profile pages (`https://funpay.com/<userid>/`).
     """
 
     def _parse(self):

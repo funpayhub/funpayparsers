@@ -11,7 +11,23 @@ from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValu
 
 @dataclass(frozen=True)
 class OrderPreviewsParsingOptions(ParsingOptions):
-    ...
+    """Options class for ``OrderPreviewsParser``."""
+
+    money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions(
+        parsing_mode=MoneyValueParsingMode.FROM_ORDER_PREVIEW
+    )
+    """
+    Options instance for ``MoneyValueParser``, which is used by ``OrderPreviewsParser``.
+
+    Defaults to ``UserPreviewParsingOptions(parsing_mode=MoneyValueParsingMode.FROM_ORDER_PREVIEW)``.
+    """
+
+    user_preview_parsing_options: UserPreviewParsingOptions = UserPreviewParsingOptions()
+    """
+    Options instance for ``UserPreviewParsingOptions``, which is used by ``OrderPreviewsParser``.
+
+    Defaults to ``UserPreviewParsingOptions()``.
+    """
 
 
 class OrderPreviewsParser(FunPayHTMLObjectParser[
@@ -20,26 +36,23 @@ class OrderPreviewsParser(FunPayHTMLObjectParser[
                           ]):
     """
     Class for parsing order previews.
+
     Possible locations:
-        - On sales page (https://funpay.com/orders/trade).
-        - On purchases page (https://funpay.com/orders/).
+        - Sales page (https://funpay.com/orders/trade).
+        - Purchases page (https://funpay.com/orders/).
     """
+
     def _parse(self):
         result = []
 
         for order in self.tree.css('a.tc-item'):
             status_class = order.css('div.tc-status')[0].attributes['class']
 
-            value = MoneyValueParser(raw_source=order.css('div.tc-price')[0].html,
-                                      options=MoneyValueParsingOptions(
-                                          parsing_mode=MoneyValueParsingMode.FROM_ORDER_PREVIEW
-                                      ) & self.options).parse()
+            value = MoneyValueParser(order.css('div.tc-price')[0].html,
+                                     options=self.options.money_value_parsing_options).parse()
 
             user_tag = order.css('div.media-user')[0]
-            counterparty = UserPreviewParser(
-                raw_source=user_tag.html,
-                options=UserPreviewParsingOptions() & self.options
-            ).parse()
+            counterparty = UserPreviewParser(user_tag.html, options=self.options.user_preview_parsing_options).parse()
 
             order_obj = OrderPreview(
                 raw_source=order.html,

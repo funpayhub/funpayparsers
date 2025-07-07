@@ -13,16 +13,31 @@ from selectolax.lexbor import LexborNode
 
 @dataclass(frozen=True)
 class OfferPreviewsParsingOptions(ParsingOptions):
-    ...
+    """Options class for ``OfferPreviewsParser``."""
+
+    money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions(
+        parsing_mode=MoneyValueParsingMode.FROM_OFFER_PREVIEW
+    )
+    """
+    Options instance for ``MoneyValueParser``, which is used by ``OfferPreviewsParser``.
+
+    Defaults to ``UserPreviewParsingOptions(parsing_mode=MoneyValueParsingMode.FROM_OFFER_PREVIEW)``.
+    
+    ``parse_value_from_attribute`` option determines dynamically inside ``OfferPreviewsParser`` 
+    depends on offer subcategory type.
+    """
+
 
 
 class OfferPreviewsParser(FunPayHTMLObjectParser[list[OfferPreview], OfferPreviewsParsingOptions]):
     """
     Class for parsing public offer previews.
+
     Possible locations:
-        - On sellers pages (https://funpay.com/<userid>/).
+        - User profile pages (https://funpay.com/<userid>/).
         - On subcategories offer list pages (https://funpay.com/<lots/chips>/<subcategory_id>).
     """
+
     def _parse(self):
         result = []
 
@@ -53,10 +68,9 @@ class OfferPreviewsParser(FunPayHTMLObjectParser[list[OfferPreview], OfferPrevie
 
             price_div = offer_div.css('div.tc-price')[0]
             price = MoneyValueParser(price_div.html,
-                                     options=MoneyValueParsingOptions(
-                                         parsing_mode=MoneyValueParsingMode.FROM_OFFER_PREVIEW,
-                                         parse_value_from_attribute=False if 'chips' in offer_div.attributes['href'] else True,
-                                     ) & self.options).parse()
+                                     options=self.options.money_value_parsing_options,
+                                     parse_value_from_attribute=False if 'chips' in offer_div.attributes['href'] else True
+                                     ).parse()
 
             seller = self._parse_user_tag(offer_div, processed_users)
 
