@@ -41,8 +41,13 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParserOpt
         reg_date_text_div = profile_header.css('div.param-item')
         offer_divs = self.tree.css('div.mb20 div.offer')
         chat_div = self.tree.css('div.chat')
-        reviews_div = self.tree.css('div.offer:has(div.dyn-table-body)')
+
+        # It is better to parse the rating from the reviews block,
+        # because some old profiles have only old type reviews (without rating)
+        # and then there is no full rating block in profile header,
+        # but in the reviews block it is always present when there are any reviews.
         rating_div = self.tree.css_first('div.param-item.mb10')
+        reviews_div = self.tree.css('div.offer:has(div.dyn-table-body)') if rating_div else None
 
         badges = [UserBadgeParser(i.html, options=self.options.user_badge_parser_options).parse()
                   for i in profile_header.css('small.user-badges > span')]
