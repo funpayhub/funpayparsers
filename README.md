@@ -11,3 +11,27 @@ FunPay Parser использует [Selectolax](https://github.com/rushter/selec
 
 ### 📊 Покрытие
 С помощью FunPay Parser можно спарсить 99% всех сущностей FunPay. Начиная с бейджиков и заканчивая целыми страницами.
+
+## Пример использования
+```python
+from funpayparsers.parsers.pages_parsers import MainPageParser
+import requests
+
+html = requests.get('https://funpay.com').content.decode()
+main_page = MainPageParser(html).parse()
+
+for i in main_page.categories:
+    print(f'{i.full_name} (ID: {i.id})')
+```
+```
+Abyss of Dungeons (ID: 754)
+Acrobat (ID: 655)
+Adobe (ID: 652)
+AFK Arena (ID: 250)
+AFK Journey (ID: 503)
+After Effects (ID: 654)
+Age of Empires Mobile (ID: 628)
+Age of Mythology: Retold (ID: 534)
+Age of Wonders 4 (ID: 344)
+...
+```
