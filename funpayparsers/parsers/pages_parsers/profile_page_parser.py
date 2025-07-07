@@ -39,10 +39,10 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParserOpt
 
         profile_header = self.tree.css_first('div.profile-header')
         reg_date_text_div = profile_header.css('div.param-item')
-        rating_div = profile_header.css_first('div.profile-header-col-rating')
         offer_divs = self.tree.css('div.mb20 div.offer')
         chat_div = self.tree.css('div.chat')
         reviews_div = self.tree.css('div.offer:has(div.dyn-table-body)')
+        rating_div = self.tree.css_first('div.param-item.mb10')
 
         badges = [UserBadgeParser(i.html, options=self.options.user_badge_parser_options).parse()
                   for i in profile_header.css('small.user-badges > span')]
