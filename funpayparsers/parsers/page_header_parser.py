@@ -30,12 +30,17 @@ _LANGUAGES = {
 
 @dataclass(frozen=True)
 class PageHeaderParsingOptions(ParsingOptions):
+    """Options class for ``PageHeaderParser``."""
+
     ...
 
 
 class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptions]):
     """
     Class for parsing page header.
+
+    Possible locations:
+        - Any FunPay page.
     """
 
     def _parse(self):

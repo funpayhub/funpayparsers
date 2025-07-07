@@ -32,8 +32,9 @@ class OfferPreviewsParsingOptions(ParsingOptions):
 class OfferPreviewsParser(FunPayHTMLObjectParser[list[OfferPreview], OfferPreviewsParsingOptions]):
     """
     Class for parsing public offer previews.
+
     Possible locations:
-        - On sellers pages (https://funpay.com/<userid>/).
+        - User profile pages (https://funpay.com/<userid>/).
         - On subcategories offer list pages (https://funpay.com/<lots/chips>/<subcategory_id>).
     """
 

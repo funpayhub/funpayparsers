@@ -1,4 +1,4 @@
-__all__ = ('PrivateChatPreviewParser', 'PrivateChatPreviewParsingOptions')
+__all__ = ('PrivateChatPreviewsParser', 'PrivateChatPreviewParsingOptions')
 
 from dataclasses import dataclass
 
@@ -9,12 +9,12 @@ from funpayparsers.types.chat import PrivateChatPreview
 
 @dataclass(frozen=True)
 class PrivateChatPreviewParsingOptions(ParsingOptions):
-    """Options class for ``PrivateChatPreviewParser``."""
+    """Options class for ``PrivateChatPreviewsParser``."""
 
     ...
 
 
-class PrivateChatPreviewParser(
+class PrivateChatPreviewsParser(
     FunPayHTMLObjectParser[list[PrivateChatPreview], PrivateChatPreviewParsingOptions,]):
     """
     Class for parsing private chat previews.

@@ -10,22 +10,35 @@ from enum import Enum
 
 
 class UserPreviewParsingMode(Enum):
+    """``UserPreviewParser`` parsing modes enumeration."""
+
     FROM_ORDER_PREVIEW = 0
+    """Raw source is/from an order preview."""
+
     FROM_CHAT = 1
+    """Raw source is/from a chat header."""
 
 
 @dataclass(frozen=True)
 class UserPreviewParsingOptions(ParsingOptions):
+    """Options class for ``UserPreviewParser``."""
+
     parsing_mode: UserPreviewParsingMode = UserPreviewParsingMode.FROM_ORDER_PREVIEW
+    """
+    ``UserPreviewParser`` parsing mode.
+
+    Defaults to ``UserPreviewParsingMode.FROM_ORDER_PREVIEW``.
+    """
 
 
 class UserPreviewParser(FunPayHTMLObjectParser[UserPreview, UserPreviewParsingOptions]):
     """
     Class for parsing user previews.
+
     Possible locations:
-        - In private chat header (https://funpay.com/en/chat/?node=<chat_id>)
-        - On sales page (https://funpay.com/en/orders/trade)
-        - On purchases page (https://funpay.com/en/orders/)
+        - Private chat pages (`https://funpay.com/en/chat/?node=<chat_id>`)
+        - Sales page (https://funpay.com/en/orders/trade)
+        - Purchases page (https://funpay.com/en/orders/)
     """
 
     def _parse(self):

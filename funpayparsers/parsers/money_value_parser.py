@@ -8,19 +8,19 @@ from enum import Enum
 
 
 class MoneyValueParsingMode(Enum):
-    """Money value parsing modes enumeration."""
+    """``MoneyValueParser`` parsing modes enumeration."""
 
     FROM_STRING = 0
     """Raw source is a regular string, e.g., ``+12345.67$``."""
 
     FROM_ORDER_PREVIEW = 1
-    """Raw source is an order preview HTML."""
+    """Raw source is/from an order preview HTML."""
 
     FROM_TRANSACTION_PREVIEW = 2
-    """Raw source is a transaction preview HTML."""
+    """Raw source is/from a transaction preview HTML."""
 
     FROM_OFFER_PREVIEW = 3
-    """Raw source is an offer preview HTML."""
+    """Raw source is/from an offer preview HTML."""
 
 
 
@@ -30,7 +30,7 @@ class MoneyValueParsingOptions(ParsingOptions):
 
     parsing_mode: MoneyValueParsingMode = MoneyValueParsingMode.FROM_STRING
     """
-    Money value parsing mode.
+    ``MoneyValueParser`` parsing mode.
     
     Defaults to ``MoneyValueParsingMode.FROM_STRING``.
     """

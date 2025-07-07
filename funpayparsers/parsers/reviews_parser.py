@@ -13,16 +13,27 @@ from selectolax.lexbor import LexborNode
 
 @dataclass(frozen=True)
 class ReviewsParsingOptions(ParsingOptions):
-    ...
+    """Options class for ``ReviewsParser``."""
+
+    money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions(
+        parsing_mode=MoneyValueParsingMode.FROM_STRING
+    )
+    """
+    Options instance for ``MoneyValueParser``, which is used by ``ReviewsParser``.
+
+    Defaults to ``UserPreviewParsingOptions(parsing_mode=MoneyValueParsingMode.FROM_STRING)``.
+    """
 
 
 class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions]):
     """
     Class for parsing reviews.
+
     Possible locations:
-        - On sellers pages (https://funpay.com/<userid>/).
-        - On orders pages (https://funpay.com/orders/<orderid>/)
+        - User profile pages (`https://funpay.com/<userid>/`).
+        - Order pages (`https://funpay.com/orders/<orderid>/`)
     """
+
     def _parse(self):
         result = []
 
@@ -117,9 +128,7 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
         split = review_details_str.split(', ')
         game, value = ', '.join(split[:-1]), split[-1]
         value = MoneyValueParser(raw_source=value.strip(),
-                                 options=MoneyValueParsingOptions(
-                                     parsing_mode=MoneyValueParsingMode.FROM_STRING
-                                 ) & self.options).parse()
+                                 options=self.options.money_value_parsing_options).parse()
 
         return date_str, text, game, value
 

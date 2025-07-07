@@ -8,14 +8,22 @@ from funpayparsers.types.chat import PrivateChatInfo
 
 @dataclass(frozen=True)
 class PrivateChatInfoParsingOptions(ParsingOptions):
+    """Options class for ``PrivateChatInfoParser``."""
+
     cpu_parsing_options: CurrentlyViewingOfferInfoParsingOptions = CurrentlyViewingOfferInfoParsingOptions()
+    """
+    Options instance for ``CurrentlyViewingOfferInfoParser``, which is used by ``PrivateChatInfoParser``.
+
+    Defaults to ``CurrentlyViewingOfferInfoParsingOptions()``.
+    """
 
 
 class PrivateChatInfoParser(FunPayHTMLObjectParser[PrivateChatInfo, PrivateChatInfoParsingOptions]):
     """
     Class for parsing private chat info block.
+
     Possible locations:
-        - On opened private chat page (https://funpay.com/chat/?node=<chat_id>)
+        - Private chat pages (`https://funpay.com/chat/?node=<chat_id>`)
     """
 
     def _parse(self):
@@ -33,7 +41,7 @@ class PrivateChatInfoParser(FunPayHTMLObjectParser[PrivateChatInfo, PrivateChatI
         for div in blocks:
             if div.attributes.get('data-type') == 'c-p-u':
                 cpu = CurrentlyViewingOfferInfoParser(raw_source=div.html,
-                                                      options=self.options.cpu_parsing_options & self.options).parse()
+                                                      options=self.options.cpu_parsing_options).parse()
                 result.currently_viewing_offer = cpu
             else:
                 result.language = div.css('div')[0].text(separator='\n', strip=True).strip().split('\n')[-1].strip()

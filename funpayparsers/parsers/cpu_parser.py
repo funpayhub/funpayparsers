@@ -21,7 +21,7 @@ class CurrentlyViewingOfferInfoParser(FunPayHTMLObjectParser[
     Class for parsing C-P-U data (which offer specific user is currently viewing).
     Possible locations:
         - Private chat pages (`https://funpay.com/chat/?node=<chat_id>`).
-        - In runners response.
+        - Runner response.
     """
 
     def _parse(self):
