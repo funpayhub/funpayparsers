@@ -56,8 +56,10 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParserOptions]):
 
     def _parse_common_review(self, review_div: LexborNode):
         date_str, text, game, value = self._parse_review_meta(review_div)
-        rating = review_div.css(','.join(f'div.rating{i}' for i in range(1, 5+1)))[0]
-        rating = int(rating.attributes['class'][-1])
+        rating = review_div.css(','.join(f'div.rating{i}' for i in range(1, 5+1)))
+
+        # old reviews might have no rating
+        rating = int(rating[0].attributes['class'][-1]) if rating else None
 
         order_id_div = review_div.css('div.review-item-order')
         order_id = None if not order_id_div else order_id_div[0].text().strip().split()[1][1:]  # "Order #ORDERID"
