@@ -1,11 +1,11 @@
 import pytest
-from funpayparsers.parsers import UserBadgeParser, UserBadgeParserOptions
+from funpayparsers.parsers import UserBadgeParser, UserBadgeParsingOptions
 from funpayparsers.types import UserBadge
 
 
 
 class TestUserBadgeParser:
-    OPTIONS = UserBadgeParserOptions(empty_raw_source=True)
+    OPTIONS = UserBadgeParsingOptions(empty_raw_source=True)
 
     @pytest.mark.parametrize(
         'html,obj',

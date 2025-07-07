@@ -1,9 +1,9 @@
-from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParserOptions
+from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParsingOptions
 from funpayparsers.types.reviews import Review, ReviewsBatch
 from funpayparsers.types.common import MoneyValue
 
 
-OPTIONS = ReviewsParserOptions(empty_raw_source=True)
+OPTIONS = ReviewsParsingOptions(empty_raw_source=True)
 
 
 public_review_html = """

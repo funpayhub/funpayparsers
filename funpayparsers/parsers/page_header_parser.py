@@ -1,8 +1,8 @@
-__all__ = ('PageHeaderParserOptions', 'PageHeaderParser')
+__all__ = ('PageHeaderParsingOptions', 'PageHeaderParser')
 
 from dataclasses import dataclass
 from selectolax.lexbor import LexborNode
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
 from funpayparsers.types.common_page_elements import PageHeader
 from funpayparsers.parsers.utils import parse_money_value_string
 from funpayparsers.types.enums import Currency, Language
@@ -29,11 +29,11 @@ _LANGUAGES = {
 
 
 @dataclass(frozen=True)
-class PageHeaderParserOptions(FunPayObjectParserOptions):
+class PageHeaderParsingOptions(ParsingOptions):
     ...
 
 
-class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParserOptions]):
+class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptions]):
     """
     Class for parsing page header.
     """

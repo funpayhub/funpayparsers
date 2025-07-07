@@ -1,10 +1,10 @@
 import pytest
 
-from funpayparsers.parsers import PrivateChatInfoParser, PrivateChatInfoParserOptions
+from funpayparsers.parsers import PrivateChatInfoParser, PrivateChatInfoParsingOptions
 from funpayparsers.types import PrivateChatInfo, CurrentlyViewingOfferInfo
 
 
-OPTIONS = PrivateChatInfoParserOptions(empty_raw_source=True)
+OPTIONS = PrivateChatInfoParsingOptions(empty_raw_source=True)
 
 
 @pytest.fixture

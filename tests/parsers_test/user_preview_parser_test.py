@@ -1,9 +1,9 @@
-from funpayparsers.parsers import UserPreviewParser, UserPreviewParserOptions
+from funpayparsers.parsers import UserPreviewParser, UserPreviewParsingOptions
 from funpayparsers.types import UserPreview
 import pytest
 
 
-OPTIONS = UserPreviewParserOptions(empty_raw_source=True)
+OPTIONS = UserPreviewParsingOptions(empty_raw_source=True)
 
 
 @pytest.fixture

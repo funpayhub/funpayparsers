@@ -1,9 +1,9 @@
-from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParser, OfferPreviewsParserOptions
+from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParser, OfferPreviewsParsingOptions
 from funpayparsers.types.offers import OfferPreview, OfferSeller
 from funpayparsers.types.common import MoneyValue
 
 
-OPTIONS = OfferPreviewsParserOptions(empty_raw_source=True)
+OPTIONS = OfferPreviewsParsingOptions(empty_raw_source=True)
 
 
 common_lot_html = """<a href="https://funpay.com/lots/offer?id=12345" class="tc-item offer-promo offer-promoted" 

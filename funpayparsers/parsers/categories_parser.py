@@ -1,19 +1,19 @@
-__all__ = ('CategoriesParser', 'CategoriesParserOptions')
+__all__ = ('CategoriesParser', 'CategoriesParsingOptions')
 
 from dataclasses import dataclass
 
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
 from funpayparsers.types.categories import Category, Subcategory
 from funpayparsers.types.enums import SubcategoryType
 from selectolax.lexbor import LexborNode
 
 
 @dataclass(frozen=True)
-class CategoriesParserOptions(FunPayObjectParserOptions):
+class CategoriesParsingOptions(ParsingOptions):
     ...
 
 
-class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParserOptions]):
+class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParsingOptions]):
     """
     Class for parsing categories and subcategories.
     Possible locations:

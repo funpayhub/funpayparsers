@@ -1,22 +1,22 @@
-__all__ = ('MessagesParserOptions', 'MessagesParser')
+__all__ = ('MessagesParsingOptions', 'MessagesParser')
 
 from dataclasses import dataclass
 from selectolax.lexbor import LexborNode
 
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
 from funpayparsers.types.messages import Message
 from funpayparsers.types.common import UserBadge
 from funpayparsers.parsers.utils import resolve_messages_senders
-from funpayparsers.parsers.badge_parser import UserBadgeParserOptions, UserBadgeParser
+from funpayparsers.parsers.badge_parser import UserBadgeParsingOptions, UserBadgeParser
 
 
 @dataclass(frozen=True)
-class MessagesParserOptions(FunPayObjectParserOptions):
+class MessagesParsingOptions(ParsingOptions):
     sort_by_id: bool = True
     resolve_senders: bool = True
 
 
-class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions]):
+class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOptions]):
     """
     Class for parsing messages.
     Possible locations:
@@ -89,5 +89,5 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParserOptions
             name,
             date,
             UserBadgeParser(raw_source=badge[0].html,
-                            options=UserBadgeParserOptions() & self.options).parse()
+                            options=UserBadgeParsingOptions() & self.options).parse()
         )

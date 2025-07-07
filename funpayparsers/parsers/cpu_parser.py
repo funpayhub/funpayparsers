@@ -1,19 +1,19 @@
-__all__ = ('CurrentlyViewingOfferInfoParserOptions', 'CurrentlyViewingOfferInfoParser')
+__all__ = ('CurrentlyViewingOfferInfoParsingOptions', 'CurrentlyViewingOfferInfoParser')
 
 
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, FunPayObjectParserOptions
+from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
 from funpayparsers.types.updates import CurrentlyViewingOfferInfo
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class CurrentlyViewingOfferInfoParserOptions(FunPayObjectParserOptions):
+class CurrentlyViewingOfferInfoParsingOptions(ParsingOptions):
     ...
 
 
 class CurrentlyViewingOfferInfoParser(FunPayHTMLObjectParser[
                                           CurrentlyViewingOfferInfo,
-                                          CurrentlyViewingOfferInfoParserOptions
+                                          CurrentlyViewingOfferInfoParsingOptions
                                       ]):
     """
     Class for parsing C-P-U data (which offer specific user is currently viewing).

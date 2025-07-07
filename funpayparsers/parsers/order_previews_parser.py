@@ -1,22 +1,22 @@
-__all__ = ('OrderPreviewsParserOptions', 'OrderPreviewsParser', )
+__all__ = ('OrderPreviewsParsingOptions', 'OrderPreviewsParser',)
 
 from dataclasses import dataclass
 
-from funpayparsers.parsers.base import FunPayObjectParserOptions, FunPayHTMLObjectParser
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.orders import OrderPreview, OrderPreviewsBatch
-from funpayparsers.parsers.user_preview_parser import UserPreviewParser, UserPreviewParserOptions
+from funpayparsers.parsers.user_preview_parser import UserPreviewParser, UserPreviewParsingOptions
 from funpayparsers.types.enums import OrderStatus
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParserOptions, MoneyValueParsingMode
+from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParsingOptions, MoneyValueParsingMode
 
 
 @dataclass(frozen=True)
-class OrderPreviewsParserOptions(FunPayObjectParserOptions):
+class OrderPreviewsParsingOptions(ParsingOptions):
     ...
 
 
 class OrderPreviewsParser(FunPayHTMLObjectParser[
                               list[OrderPreview],
-                              OrderPreviewsParserOptions
+                              OrderPreviewsParsingOptions
                           ]):
     """
     Class for parsing order previews.
@@ -31,14 +31,14 @@ class OrderPreviewsParser(FunPayHTMLObjectParser[
             status_class = order.css('div.tc-status')[0].attributes['class']
 
             value = MoneyValueParser(raw_source=order.css('div.tc-price')[0].html,
-                                      options=MoneyValueParserOptions(
+                                      options=MoneyValueParsingOptions(
                                           parsing_mode=MoneyValueParsingMode.FROM_ORDER_PREVIEW
                                       ) & self.options).parse()
 
             user_tag = order.css('div.media-user')[0]
             counterparty = UserPreviewParser(
                 raw_source=user_tag.html,
-                options=UserPreviewParserOptions() & self.options
+                options=UserPreviewParsingOptions() & self.options
             ).parse()
 
             order_obj = OrderPreview(
