@@ -18,3 +18,4 @@ from .chat_parser import *
 from .appdata_parser import *
 from .page_header_parser import *
 from .rating_parser import *
+from .achievement_parser import *
