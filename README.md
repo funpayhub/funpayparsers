@@ -1,0 +1,1 @@
+![FunPay Parsers logo](https://repository-images.githubusercontent.com/987755633/dc43078b-d948-4a54-8beb-e76cd864b9d7)
