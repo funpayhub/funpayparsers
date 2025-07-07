@@ -11,17 +11,43 @@ from funpayparsers.types.pages.main_page import MainPage
 
 @dataclass(frozen=True)
 class MainPageParsingOptions(ParsingOptions):
+    """Options class for ``MainPageParser``."""
+
     header_parsing_options: PageHeaderParsingOptions = PageHeaderParsingOptions()
+    """
+    Options instance for ``PageHeaderParser``, which is used by ``MainPageParser``.
+
+    Defaults to ``PageHeaderParsingOptions()``.
+    """
+
     app_data_parsing_options: AppDataParsingOptions = AppDataParsingOptions()
+    """
+    Options instance for ``AppDataParser``, which is used by ``MainPageParser``.
+
+    Defaults to ``AppDataParsingOptions()``.
+    """
+
     categories_parsing_options: CategoriesParsingOptions = CategoriesParsingOptions()
+    """
+    Options instance for ``CategoriesParser``, which is used by ``MainPageParser``.
+
+    Defaults to ``CategoriesParsingOptions()``.
+    """
+
     chat_parsing_options: ChatParsingOptions = ChatParsingOptions()
+    """
+    Options instance for ``ChatParser``, which is used by ``MainPageParser``.
+
+    Defaults to ``ChatParsingOptions()``.
+    """
 
 
 class MainPageParser(FunPayHTMLObjectParser[MainPage, MainPageParsingOptions]):
     """
     Class for parsing FunPay main page.
+
     Possible locations:
-        - https://funpay.com/
+        - Main page (https://funpay.com)
     """
 
     def _parse(self):

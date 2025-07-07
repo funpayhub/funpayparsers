@@ -12,8 +12,37 @@ from funpayparsers.parsers.badge_parser import UserBadgeParsingOptions, UserBadg
 
 @dataclass(frozen=True)
 class MessagesParsingOptions(ParsingOptions):
+    """Options class for ``MessagesParser``."""
+
     sort_by_id: bool = True
+    """
+    Sorts result messages in ascending order by their ID.
+    
+    Defaults to ``True``.
+    """
+
     resolve_senders: bool = True
+    """
+    Determines whether to resolve message senders for non-heading messages.
+
+    In FunPay chats, there are two types of messages: heading and non-heading.
+    Heading messages include full information about the sender (ID, username, badge, timestamp, etc.).
+    Non-heading messages are sent by the same user as the previous message and do not include sender information.
+    
+    If ``resolve_senders`` is ``False``, non-heading messages will have sender-related fields set to ``None``.
+    
+    If ``True``, the ``funpayparsers.parsers.utils.resolve_messages_senders`` function will be used to propagate sender information
+    from the preceding heading messages to the subsequent non-heading ones.
+    
+    Defaults to ``True``.
+    """
+
+    user_badge_parsing_options: UserBadgeParsingOptions = UserBadgeParsingOptions()
+    """
+    Options instance for ``UserBadgeParser``, which is used by ``MessagesParser``.
+    
+    Defaults to ``UserBadgeParsingOptions()``.
+    """
 
 
 class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOptions]):
@@ -23,6 +52,7 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
         - On chat pages (https://funpay.com/chat/?node=<chat_id>).
         - In runners response.
     """
+
     def _parse(self):
         messages = []
         for msg_div in self.tree.css('div.chat-msg-item'):
@@ -89,5 +119,5 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
             name,
             date,
             UserBadgeParser(raw_source=badge[0].html,
-                            options=UserBadgeParsingOptions() & self.options).parse()
+                            options=self.options.user_badge_parsing_options).parse()
         )
