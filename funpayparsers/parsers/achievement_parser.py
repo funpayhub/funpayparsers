@@ -7,14 +7,16 @@ from funpayparsers.types.common import Achievement
 
 @dataclass(frozen=True)
 class AchievementParsingOptions(ParsingOptions):
+    """Options class for ``AchievementParser``."""
     ...
 
 
 class AchievementParser(FunPayHTMLObjectParser[Achievement, AchievementParsingOptions]):
     """
     Class for parsing user achievements.
+
     Possible locations:
-        - On sellers pages (https://funpay.com/<userid>/).
+        - User profile pages (`https://funpay.com/<userid>/`).
     """
 
     def _parse(self):

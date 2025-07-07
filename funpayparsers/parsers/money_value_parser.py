@@ -8,26 +8,47 @@ from enum import Enum
 
 
 class MoneyValueParsingMode(Enum):
+    """Money value parsing modes enumeration."""
+
     FROM_STRING = 0
+    """Raw source is a regular string, e.g., ``+12345.67$``."""
+
     FROM_ORDER_PREVIEW = 1
+    """Raw source is an order preview HTML."""
+
     FROM_TRANSACTION_PREVIEW = 2
+    """Raw source is a transaction preview HTML."""
+
     FROM_OFFER_PREVIEW = 3
+    """Raw source is an offer preview HTML."""
 
 
 
 @dataclass(frozen=True)
 class MoneyValueParsingOptions(ParsingOptions):
+    """Options class for ``MoneyValueParser``."""
+
     parsing_mode: MoneyValueParsingMode = MoneyValueParsingMode.FROM_STRING
+    """
+    Money value parsing mode.
+    
+    Defaults to ``MoneyValueParsingMode.FROM_STRING``.
+    """
+
     parse_value_from_attribute: bool = True
     """
-    Take numeric value from node attribute or not.
-    Uses when parsing from offer preview.
-    This parameter is necessary because standard offers have an exact price in the data-s attribute, 
-    while currency offers have a minimum purchase amount in the data-s attribute.
+    Whether to take money value from ``node`` attribute or not.
     
-    If parsing standard offer, set it to True.
-    If parsing currency offer, set it to False.
-    Defaults to True.
+    Uses when parsing from offer preview.
+    
+    This parameter is necessary because standard offers have an exact price in the ``data-s`` attribute, 
+    while currency offers have a minimum purchase amount instead.
+    
+    If parsing standard offer, set it to ``True``.
+    
+    If parsing currency offer, set it to ``False``.
+    
+    Defaults to ``True``.
     """
 
 
@@ -51,17 +72,17 @@ class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParsingOptio
         return types[self.options.parsing_mode]()
 
     def _parse_order_preview_type(self) -> MoneyValue:
-        val_str = self.tree.css('div.tc-price')[0].text().strip()
-        return parse_money_value_string(val_str, raw_source=self.raw_source, raise_on_error=True)
+        val = self.tree.css_first('div.tc-price')
+        return parse_money_value_string(val.text().strip(), raw_source=val.html, raise_on_error=True)
 
     def _parse_transaction_preview_type(self) -> MoneyValue:
-        val_str = self.tree.css('div.tc-price')[0].text().strip()
-        return parse_money_value_string(val_str, raw_source=self.raw_source, raise_on_error=True)
+        val = self.tree.css_first('div.tc-price')
+        return parse_money_value_string(val.text().strip(), raw_source=val.html, raise_on_error=True)
 
     def _parse_offer_preview_type(self) -> MoneyValue:
-        div = self.tree.css('div.tc-price')[0]
+        div = self.tree.css_first('div.tc-price')
         val_str = div.css('div')[0].text().strip()
-        value = parse_money_value_string(val_str, raw_source=self.raw_source, raise_on_error=True)
+        value = parse_money_value_string(val_str, raw_source=div.html, raise_on_error=True)
         if self.options.parse_value_from_attribute:
             value.value = float(div.attributes.get('data-s'))
         return value

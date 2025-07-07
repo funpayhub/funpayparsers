@@ -11,18 +11,32 @@ from selectolax.lexbor import LexborNode
 
 @dataclass(frozen=True)
 class ChatParsingOptions(ParsingOptions):
+    """Options class for ``ChatParser``."""
+
     user_preview_parsing_options: UserPreviewParsingOptions = UserPreviewParsingOptions(parsing_mode=UserPreviewParsingMode.FROM_CHAT)
+    """
+    Options instance for ``UserPreviewParser``, which is used by ``ChatParser``.
+    
+    Defaults to ``UserPreviewParsingOptions(parsing_mode=UserPreviewParsingMode.FROM_CHAT)``.
+    """
+
     messages_parsing_options: MessagesParsingOptions = MessagesParsingOptions()
+    """
+    Options instance for ``MessagesParser``, which is used by ``ChatParser``.
+    
+    Defaults to ``MessagesParsingOptions()``.
+    """
 
 
 class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
     """
     Class for parsing chats.
+
     Possible locations:
-        - On main page (https://funpay.com/)
-        - On private chat page (https://funpay.com/chat/?node=<chat_id>).
-        - On sellers page (https://funpay.com/users/<user_id>/)
-        - On some subcategory offers list pages (https://funpay.com/<lots/chips>/<subcategory_id>/
+        - Main page (https://funpay.com/)
+        - Chat pages (`https://funpay.com/chat/?node=<chat_id>`).
+        - User profile pages (`https://funpay.com/users/<user_id>/`)
+        - Some subcategory offers list pages (`https://funpay.com/<lots/chips>/<subcategory_id>/`)
     """
 
     def _parse(self):
@@ -31,7 +45,7 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
 
         messages_div = chat_div.css('div.chat-message-list')[0]
         history = MessagesParser(raw_source=messages_div.html,
-                                 options=self.options.messages_parsing_options & self.options).parse()
+                                 options=self.options.messages_parsing_options).parse()
 
         return Chat(
             raw_source=chat_div.html,
@@ -52,7 +66,7 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
             return None, None, None
 
         interlocutor = UserPreviewParser(raw_source=interlocutor_div[0].html,
-                                         options=self.options.user_preview_parsing_options & self.options).parse()
+                                         options=self.options.user_preview_parsing_options).parse()
 
         btn_div = header_div.css('button')
         if not btn_div:

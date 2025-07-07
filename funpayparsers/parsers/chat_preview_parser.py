@@ -9,6 +9,7 @@ from funpayparsers.types.chat import PrivateChatPreview
 
 @dataclass(frozen=True)
 class PrivateChatPreviewParsingOptions(ParsingOptions):
+    """Options class for ``PrivateChatPreviewParser``."""
     ...
 
 
@@ -16,8 +17,10 @@ class PrivateChatPreviewParser(
     FunPayHTMLObjectParser[list[PrivateChatPreview], PrivateChatPreviewParsingOptions,]):
     """
     Class for parsing private chat previews.
+
     Possible locations:
-        - On private chats page (https://funpay.com/chat/)
+        - Private chats list page (https://funpay.com/chat/)
+        - Chats pages (`https://funpay.com/chat/?node=<chat_id>`)
     """
 
     def _parse(self):

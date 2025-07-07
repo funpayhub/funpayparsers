@@ -9,12 +9,14 @@ from funpayparsers.types.enums import Language
 
 @dataclass(frozen=True)
 class AppDataParsingOptions(ParsingOptions):
+    """Options class for ``AppDataParser``."""
     ...
 
 
 class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParsingOptions]):
     """
     Class for parsing AppData JSON.
+
     Possible locations:
         - Any FunPay page.
     """

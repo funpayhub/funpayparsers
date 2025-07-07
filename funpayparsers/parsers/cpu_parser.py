@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class CurrentlyViewingOfferInfoParsingOptions(ParsingOptions):
+    """Options class for ``CurrentlyViewingOfferInfoParser``."""
     ...
 
 
@@ -18,7 +19,7 @@ class CurrentlyViewingOfferInfoParser(FunPayHTMLObjectParser[
     """
     Class for parsing C-P-U data (which offer specific user is currently viewing).
     Possible locations:
-        - On private chat pages (https://funpay.com/chat/?node=<chat_id>).
+        - Private chat pages (`https://funpay.com/chat/?node=<chat_id>`).
         - In runners response.
     """
     def _parse(self):
