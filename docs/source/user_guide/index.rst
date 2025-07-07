@@ -6,3 +6,4 @@
     :caption: Начало
 
     installation
+    structure
