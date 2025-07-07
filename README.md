@@ -3,7 +3,7 @@
 <p align=center>FunPay Parsers - это набор парсеров для популярной биржи игровых ценностей <a href="https://funpay.com">FunPay</a>.</p>
 
 ### ⚡ Скорость
-FunPay Parser использует [Selectolax](https://github.com/rushter/selectolax) на [Lexbor](https://github.com/lexbor/lexbor) 
+FunPay Parser использует [Selectolax](https://github.com/rushter/selectolax) на [Lexbor](https://github.com/lexbor/lexbor),
 что делает скорость парсинга крайне высокой. Например, парсинг 4000 лотов занимает всего ~0.2 секунды!
 
 ### ✅ Удобство
