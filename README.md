@@ -19,7 +19,7 @@ pip install funpayparsers
 
 ## Пример использования
 ```python
-from funpayparsers.parsers.pages_parsers import MainPageParser
+from funpayparsers.parsers.page_parsers import MainPageParser
 import requests
 
 html = requests.get('https://funpay.com').content.decode()
