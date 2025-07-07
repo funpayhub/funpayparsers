@@ -1,4 +1,4 @@
-__all__ = ('MoneyValue', 'UserBadge', 'UserPreview', 'UserRating')
+__all__ = ('MoneyValue', 'UserBadge', 'UserPreview', 'UserRating', 'Achievement',)
 
 from dataclasses import dataclass
 
@@ -115,3 +115,14 @@ class UserRating(FunPayObject):
 
     one_star_reviews_percentage: float
     """One star reviews percentage."""
+
+
+@dataclass
+class Achievement(FunPayObject):
+    """Represents a user achievement."""
+
+    css_class: str
+    """The full CSS class of the achievement."""
+
+    text: str
+    """Achievement text."""
