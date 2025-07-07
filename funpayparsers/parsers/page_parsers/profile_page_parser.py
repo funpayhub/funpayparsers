@@ -18,21 +18,71 @@ from funpayparsers.types.enums import BadgeType, SubcategoryType
 
 @dataclass(frozen=True)
 class ProfilePageParsingOptions(ParsingOptions):
+    """Options class for ``ProfilePageParser``."""
+
     page_header_parsing_options: PageHeaderParsingOptions = PageHeaderParsingOptions()
+    """
+    Options instance for ``PageHeaderParser``, which is used by ``ProfilePageParser``.
+
+    Defaults to ``PageHeaderParsingOptions()``.
+    """
+
     app_data_parsing_options: AppDataParsingOptions = AppDataParsingOptions()
+    """
+    Options instance for ``AppDataParser``, which is used by ``ProfilePageParser``.
+
+    Defaults to ``AppDataParsingOptions()``.
+    """
+
     user_rating_parsing_options: UserRatingParsingOptions = UserRatingParsingOptions()
+    """
+    Options instance for ``UserRatingParser``, which is used by ``ProfilePageParser``.
+
+    Defaults to ``UserRatingParsingOptions()``.
+    """
+
     offer_previews_parsing_options: OfferPreviewsParsingOptions = OfferPreviewsParsingOptions()
+    """
+    Options instance for ``OfferPreviewsParser``, which is used by ``ProfilePageParser``.
+
+    Defaults to ``OfferPreviewsParsingOptions()``.
+    """
+
     user_badge_parsing_options: UserBadgeParsingOptions = UserBadgeParsingOptions()
+    """
+    Options instance for ``UserBadgeParser``, which is used by ``ProfilePageParser``.
+
+    Defaults to ``UserBadgeParsingOptions()``.
+    """
+
     chat_parsing_options: ChatParsingOptions = ChatParsingOptions()
+    """
+    Options instance for ``ChatParser``, which is used by ``ProfilePageParser``.
+
+    Defaults to ``ChatParsingOptions()``.
+    """
+
     reviews_parsing_options: ReviewsParsingOptions = ReviewsParsingOptions()
+    """
+    Options instance for ``ReviewsParser``, which is used by ``ProfilePageParser``.
+
+    Defaults to ``ReviewsParsingOptions()``.
+    """
+
     achievement_parsing_options: AchievementParsingOptions = AchievementParsingOptions()
+    """
+    Options instance for ``AchievementParser``, which is used by ``ProfilePageParser``.
+
+    Defaults to ``AchievementParsingOptions()``.
+    """
 
 
 class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOptions]):
-    """"
+    """
     Class for parsing FunPay profile page.
+
     Possible locations:
-        - https://funpay.com/users/<user_id>/
+        - User profile pages (`https://funpay.com/users/<user_id>/`)
     """
 
     def _parse(self):
