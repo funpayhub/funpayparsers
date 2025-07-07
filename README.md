@@ -12,6 +12,11 @@ FunPay Parser использует [Selectolax](https://github.com/rushter/selec
 ### 📊 Покрытие
 С помощью FunPay Parser можно спарсить 99% всех сущностей FunPay. Начиная с бейджиков и заканчивая целыми страницами.
 
+## Установка
+```commandline
+pip install funpayparsers
+```
+
 ## Пример использования
 ```python
 from funpayparsers.parsers.pages_parsers import MainPageParser
