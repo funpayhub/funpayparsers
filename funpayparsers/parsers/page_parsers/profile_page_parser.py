@@ -79,10 +79,7 @@ class ProfilePageParsingOptions(ParsingOptions):
 
 class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOptions]):
     """
-    Class for parsing FunPay profile page.
-
-    Possible locations:
-        - User profile pages (`https://funpay.com/users/<user_id>/`)
+    Class for parsing user profile pages (`https://funpay.com/users/<user_id>/`).
     """
 
     def _parse(self):
