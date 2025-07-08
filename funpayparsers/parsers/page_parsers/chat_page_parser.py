@@ -52,7 +52,7 @@ class ChatPageParsingOptions(ParsingOptions):
 
 class ChatPageParser(FunPayHTMLObjectParser[ChatPage, ChatPageParsingOptions]):
     """
-    Class for parsing chat page (`https://funpay.com/chat/?node=<chat_id>`).
+    Class for parsing chat pages (`https://funpay.com/chat/?node=<chat_id>`).
     """
 
     def _parse(self):

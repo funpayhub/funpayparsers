@@ -44,10 +44,7 @@ class MainPageParsingOptions(ParsingOptions):
 
 class MainPageParser(FunPayHTMLObjectParser[MainPage, MainPageParsingOptions]):
     """
-    Class for parsing FunPay main page.
-
-    Possible locations:
-        - Main page (https://funpay.com)
+    Class for parsing the main page (https://funpay.com).
     """
 
     def _parse(self):

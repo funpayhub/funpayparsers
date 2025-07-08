@@ -50,7 +50,7 @@ class TransactionsPageParsingOptions(ParsingOptions):
 
 
 class TransactionsPageParser(FunPayHTMLObjectParser[TransactionsPage, TransactionsPageParsingOptions]):
-    """Class for parsing transactions page (https://funpay.com/account/balance)."""
+    """Class for parsing the transactions page (https://funpay.com/account/balance)."""
 
     def _parse(self):
         header_div = self.tree.css_first('header')
