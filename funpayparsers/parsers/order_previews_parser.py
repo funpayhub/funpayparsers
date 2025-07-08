@@ -16,6 +16,9 @@ class OrderPreviewsParsingOptions(ParsingOptions):
     money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions()
     """
     Options instance for ``MoneyValueParser``, which is used by ``OrderPreviewsParser``.
+    
+    ``parsing_mode`` option is hardcoded in ``OrderPreviewsParser`` and is therefore ignored 
+    if provided externally.
 
     Defaults to ``UserPreviewParsingOptions()``.
     """
@@ -23,6 +26,9 @@ class OrderPreviewsParsingOptions(ParsingOptions):
     user_preview_parsing_options: UserPreviewParsingOptions = UserPreviewParsingOptions()
     """
     Options instance for ``UserPreviewParsingOptions``, which is used by ``OrderPreviewsParser``.
+    
+    ``parsing_mode`` option is hardcoded in ``OrderPreviewsParser`` and is therefore ignored 
+    if provided externally.
 
     Defaults to ``UserPreviewParsingOptions()``.
     """

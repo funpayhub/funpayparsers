@@ -17,6 +17,9 @@ class ChatParsingOptions(ParsingOptions):
     """
     Options instance for ``UserPreviewParser``, which is used by ``ChatParser``.
     
+    ``parsing_mode`` option is hardcoded in ``ChatParser`` and is therefore ignored 
+    if provided externally.
+    
     Defaults to ``UserPreviewParsingOptions()``.
     """
 

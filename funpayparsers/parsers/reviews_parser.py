@@ -18,6 +18,9 @@ class ReviewsParsingOptions(ParsingOptions):
     money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions()
     """
     Options instance for ``MoneyValueParser``, which is used by ``ReviewsParser``.
+    
+    ``parsing_mode`` option is hardcoded in ``ReviewsParser`` and is therefore ignored 
+    if provided externally.
 
     Defaults to ``UserPreviewParsingOptions()``.
     """

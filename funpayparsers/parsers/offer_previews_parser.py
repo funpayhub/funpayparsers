@@ -18,6 +18,9 @@ class OfferPreviewsParsingOptions(ParsingOptions):
     money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions()
     """
     Options instance for ``MoneyValueParser``, which is used by ``OfferPreviewsParser``.
+    
+    ``parsing_mode`` and ``parse_value_from_attribute`` options are hardcoded in 
+    ``OfferPreviewsParser`` and is therefore ignored if provided externally.
 
     Defaults to ``UserPreviewParsingOptions()``.
     """
