@@ -123,7 +123,7 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
 
     def _parse_review_meta(self, review_div: LexborNode) -> tuple[str, str, str, MoneyValue]:
         date_str = review_div.css('div.review-item-date')[0].text().strip()
-        text = review_div.css('div.review-item-text')[0].text()[1:-1]
+        text = review_div.css('div.review-item-text')[0].text().strip()
 
         review_details_str = review_div.css('div.review-item-detail')[0].text().strip()
         split = review_details_str.split(', ')
