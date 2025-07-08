@@ -63,7 +63,7 @@ class MainPageParser(FunPayHTMLObjectParser[MainPage, MainPageParsingOptions]):
             categories = CategoriesParser(categories_divs[1].html,
                                           options=self.options.categories_parsing_options).parse()
 
-        secret_chat_div = self.tree.css('div.chat')[0]
+        secret_chat_div = self.tree.css('div.chat')
 
         appdata = self.tree.css('body')[0].attributes.get('data-app-data')
 
@@ -72,6 +72,6 @@ class MainPageParser(FunPayHTMLObjectParser[MainPage, MainPageParsingOptions]):
             header=PageHeaderParser(header_div.html, options=self.options.header_parsing_options).parse(),
             last_categories=last_categories,
             categories=categories,
-            secret_chat=ChatParser(secret_chat_div.html, options=self.options.chat_parsing_options).parse(),
+            secret_chat=ChatParser(secret_chat_div[0].html, options=self.options.chat_parsing_options).parse() if secret_chat_div else None,
             app_data=AppDataParser(appdata, self.options.app_data_parsing_options).parse()
         )
