@@ -69,7 +69,7 @@ class TransactionsPageParser(FunPayHTMLObjectParser[TransactionsPage, Transactio
             transactions = TransactionPreviewsParser(
                 transactions_div[0].html,
                 options=self.options.transaction_previews_parsing_options,
-            )
+            ).parse()
 
         return TransactionsPage(
             raw_source=self.raw_source,
