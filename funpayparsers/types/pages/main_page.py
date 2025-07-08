@@ -17,5 +17,8 @@ class MainPage(FunPayPage):
     categories: list[Category]
     """List of categories."""
 
-    secret_chat: Chat
-    """Secret chat (ID: 2, name: 'flood')."""
+    secret_chat: Chat | None
+    """
+    Secret chat (ID: 2, name: 'flood').
+    Does not exist on EN version of the main page.
+    """
