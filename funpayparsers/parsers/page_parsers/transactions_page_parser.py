@@ -57,7 +57,7 @@ class TransactionsPageParser(FunPayHTMLObjectParser[TransactionsPage, Transactio
         for i in self.tree.css('span.balances-value'):
             money_values.append(
                 MoneyValueParser(
-                    i.html,
+                    i.text().strip(),
                     options=self.options.money_value_parsing_options,
                     parsing_mode=MoneyValueParsingMode.FROM_STRING).parse()
             )
