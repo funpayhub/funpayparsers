@@ -30,12 +30,6 @@ class OrderPage(FunPayPage):
     images: list[str] | None
     """List of attached images."""
 
-    order_category_name: str
-    """Order category name."""
-
-    order_subcategory_name: str
-    """Order subcategory name."""
-
     order_subcategory_id: int
     """Order subcategory id."""
 
@@ -87,3 +81,12 @@ class OrderPage(FunPayPage):
             return None
         return date_str.split('\n')[0].strip()
 
+    @property
+    def order_category_name(self) -> str | None:
+        """Order category name."""
+        return self._first_found(['game', 'игра', 'гра'])
+
+    @property
+    def order_subcategory_name(self) -> str | None:
+        """Order subcategory name."""
+        return self._first_found(['category', 'категория', 'категорія'])
