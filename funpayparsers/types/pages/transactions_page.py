@@ -9,7 +9,7 @@ from funpayparsers.types.finances import TransactionPreviewsBatch
 @dataclass
 class TransactionsPage(FunPayPage):
     """
-    Represents a FunPay transactions page.
+    Represents the transactions page (https://funpay.com/account/balance).
     """
 
     rub_balance: MoneyValue

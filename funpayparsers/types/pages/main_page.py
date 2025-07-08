@@ -9,7 +9,7 @@ from funpayparsers.types.chat import Chat
 @dataclass
 class MainPage(FunPayPage):
     """
-    Represents FunPay main page (https://funpay.com)
+    Represents the main page (https://funpay.com).
     """
     last_categories: list[Category]
     """Last opened categories."""

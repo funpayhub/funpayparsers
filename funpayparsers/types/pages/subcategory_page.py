@@ -11,7 +11,8 @@ from funpayparsers.types.enums import SubcategoryType
 @dataclass
 class SubcategoryPage(FunPayPage):
     """
-    Represents FunPay main page (https://funpay.com/<lots/chips>/<subcategory_id>/)
+    Represents a subcategory offers list page
+    (`https://funpay.com/<lots/chips>/<subcategory_id>/`)
     """
 
     category_id: int

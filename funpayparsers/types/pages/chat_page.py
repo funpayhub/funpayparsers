@@ -8,10 +8,10 @@ from funpayparsers.types.chat import PrivateChatPreview, Chat, PrivateChatInfo
 @dataclass
 class ChatPage(FunPayPage):
     """
-    Represents FunPay chat page (https://funpay.com/chat/?node=<chat_id>).
+    Represents a chat page (`https://funpay.com/chat/?node=<chat_id>`).
     """
 
-    chat_previews: list[PrivateChatPreview]
+    chat_previews: list[PrivateChatPreview] | None
     """List of private chat previews."""
 
     chat: Chat | None
