@@ -13,7 +13,9 @@ from typing import Literal
 
 @dataclass
 class ProfilePage(FunPayPage):
-    """Represents FunPay user profile page."""
+    """
+    Represents a user profile page (`https://funpay.com/users/<user_id>`).
+    """
 
     user_id: int
     """User id."""
