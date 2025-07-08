@@ -28,7 +28,7 @@ class PrivateChatInfoParser(FunPayHTMLObjectParser[PrivateChatInfo, PrivateChatI
 
     def _parse(self):
         info_div = self.tree.css('div.chat-detail-list')[0]
-        blocks = info_div.css('div.param-item')
+        blocks = info_div.css('div.param-item:not(.hidden)')
 
         result = PrivateChatInfo(
             raw_source=info_div.html,
