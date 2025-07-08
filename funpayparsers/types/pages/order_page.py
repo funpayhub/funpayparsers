@@ -75,9 +75,15 @@ class OrderPage(FunPayPage):
 
     @property
     def opened_date_str(self) -> str | None:
-        ...
+        date_str = self._first_found(['open', 'открыт', 'відкрито'])
+        if not date_str:
+            return None
+        return date_str.split('\n')[0].strip()
 
     @property
     def closed_date_str(self) -> str | None:
-        ...
+        date_str = self._first_found(['closed', 'закрыт', 'закрито'])
+        if not date_str:
+            return None
+        return date_str.split('\n')[0].strip()
 
