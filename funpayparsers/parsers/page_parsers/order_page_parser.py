@@ -5,11 +5,10 @@ import re
 from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
 from funpayparsers.parsers.page_header_parser import PageHeaderParser, PageHeaderParsingOptions
 from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParsingOptions
 from funpayparsers.parsers.chat_parser import ChatParser, ChatParsingOptions
 from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParsingOptions
 from funpayparsers.types.pages import OrderPage
-from funpayparsers.types.enums import OrderStatus
+from funpayparsers.types.enums import OrderStatus, SubcategoryType
 
 
 @dataclass(frozen=True)
@@ -42,16 +41,6 @@ class OrderPageParsingOptions(ParsingOptions):
     Options instance for ``ReviewsParser``, which is used by ``OrderPageParser``.
 
     Defaults to ``ReviewsParsingOptions()``.
-    """
-
-    money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions()
-    """
-    Options instance for ``MoneyValueParser``, which is used by ``OrderPageParser``.
-    
-    ``parsing_mode`` option is hardcoded in ``OrderPageParser`` and is therefore ignored 
-    if provided externally.
-
-    Defaults to ``MoneyValueParsingOptions()``.
     """
 
 
@@ -91,6 +80,7 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
 
             data[name[0].text().strip().lower()] = value[-1].text().strip()
 
+        subcategory_url = self.tree.css_first('div.param-item:has(h5):not(:has(ul, ol)) a', strict=False).attributes['href']
 
         return OrderPage(
             raw_source=self.raw_source,
@@ -100,7 +90,8 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
             order_status=order_status,
             delivered_goods=delivered_goods,
             images=[i.attributes['href'] for i in self.tree.css('a.attachments-thumb')] or None,
-            order_subcategory_id=...,
+            order_subcategory_id=int(subcategory_url.split('/')[-2]),
+            order_subcategory_type=SubcategoryType.get_by_url(subcategory_url),
             review=ReviewsParser(review_div.html, options=self.options.reviews_parsing_options).parse().reviews[0],
             chat=ChatParser(self.tree.css_first('div.chat').html, options=self.options.chat_parsing_options).parse(),
             data=data

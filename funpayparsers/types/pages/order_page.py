@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from funpayparsers.parsers.utils import parse_money_value_string
 from funpayparsers.types.pages.base import FunPayPage
-from funpayparsers.types.enums import OrderStatus
+from funpayparsers.types.enums import OrderStatus, SubcategoryType
 from funpayparsers.types.common import MoneyValue
 from funpayparsers.types.reviews import Review
 from funpayparsers.types.chat import Chat
@@ -31,6 +31,9 @@ class OrderPage(FunPayPage):
 
     order_subcategory_id: int
     """Order subcategory id."""
+
+    order_subcategory_type: SubcategoryType
+    """Order subcategory type."""
 
     data: dict[str, str]
     """Order data (short description, full description, etc.)"""
