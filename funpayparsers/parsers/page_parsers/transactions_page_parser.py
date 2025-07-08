@@ -41,6 +41,9 @@ class TransactionsPageParsingOptions(ParsingOptions):
     money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions()
     """
     Options instance for ``MoneyValueParser``, which is used by ``TransactionsPageParser``.
+    
+    ``parsing_mode`` option is hardcoded in ``TransactionsPageParser`` and is therefore ignored 
+    if provided externally.
 
     Defaults to ``MoneyValueParsingOptions()``.
     """
