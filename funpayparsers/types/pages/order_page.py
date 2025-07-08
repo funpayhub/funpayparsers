@@ -1,6 +1,8 @@
 __all__ = ('OrderPage', )
 
 from dataclasses import dataclass
+
+from funpayparsers.parsers.utils import parse_money_value_string
 from funpayparsers.types.pages.base import FunPayPage
 from funpayparsers.types.enums import OrderStatus
 from funpayparsers.types.common import MoneyValue
@@ -20,9 +22,6 @@ class OrderPage(FunPayPage):
 
     order_status: OrderStatus
     """Order status."""
-
-    order_total: MoneyValue
-    """Order total."""
 
     delivered_goods: list[str] | None
     """List of delivered goods."""
@@ -68,14 +67,18 @@ class OrderPage(FunPayPage):
         return int(re.search(r'\d+', amount_str).group())
 
     @property
-    def opened_date_str(self) -> str | None:
+    def open_date_text(self) -> str | None:
+        """Order open date."""
+
         date_str = self._first_found(['open', 'открыт', 'відкрито'])
         if not date_str:
             return None
         return date_str.split('\n')[0].strip()
 
     @property
-    def closed_date_str(self) -> str | None:
+    def close_date_text(self) -> str | None:
+        """Order close date."""
+
         date_str = self._first_found(['closed', 'закрыт', 'закрито'])
         if not date_str:
             return None
@@ -90,3 +93,12 @@ class OrderPage(FunPayPage):
     def order_subcategory_name(self) -> str | None:
         """Order subcategory name."""
         return self._first_found(['category', 'категория', 'категорія'])
+
+    @property
+    def order_total(self) -> MoneyValue | None:
+        """Order total."""
+        value = self._first_found(['total', 'сумма', 'сума'])
+        if not value:
+            return None
+        return parse_money_value_string(value)
+

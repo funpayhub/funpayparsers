@@ -98,7 +98,6 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
             app_data=AppDataParser(app_data, self.options.app_data_parsing_options).parse(),
             order_id=order_id,
             order_status=order_status,
-            order_total=...,
             delivered_goods=delivered_goods,
             images=[i.attributes['href'] for i in self.tree.css('a.attachments-thumb')] or None,
             order_subcategory_id=...,
