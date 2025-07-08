@@ -69,7 +69,7 @@ class TransactionsPageParser(FunPayHTMLObjectParser[TransactionsPage, Transactio
         usd_balance = [i for i in money_values if i.currency is Currency.USD]
         eur_balance = [i for i in money_values if i.currency is Currency.EUR]
 
-        transactions_div = self.tree.css('div.tc-finance:not([hidden])')
+        transactions_div = self.tree.css('div.tc-finance:not(.hidden)')
         if not transactions_div:
             transactions = None
         else:
