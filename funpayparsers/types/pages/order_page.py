@@ -1,4 +1,4 @@
-__all__ = ()
+__all__ = ('OrderPage', )
 
 from dataclasses import dataclass
 from funpayparsers.types.pages.base import FunPayPage
