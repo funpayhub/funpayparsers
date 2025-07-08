@@ -89,7 +89,7 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
             except:
                 continue
 
-            data[name[0].text().strip()] = value[-1].text().strip()
+            data[name[0].text().strip().lower()] = value[-1].text().strip()
 
 
         return OrderPage(
