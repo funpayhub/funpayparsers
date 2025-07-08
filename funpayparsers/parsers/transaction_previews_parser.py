@@ -11,13 +11,11 @@ from funpayparsers.parsers.money_value_parser import MoneyValueParsingOptions, M
 class TransactionPreviewsParsingOptions(ParsingOptions):
     """Options class for ``ReviewsParser``."""
 
-    money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions(
-        parsing_mode=MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW
-    )
+    money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions()
     """
     Options instance for ``MoneyValueParser``, which is used by ``ReviewsParser``.
 
-    Defaults to ``UserPreviewParsingOptions(parsing_mode=MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW)``.
+    Defaults to ``UserPreviewParsingOptions()``.
     """
 
 
@@ -35,8 +33,11 @@ class TransactionPreviewsParser(FunPayHTMLObjectParser[
     def _parse(self):
         result = []
         for i in self.tree.css('div.tc-item'):
-            value = MoneyValueParser(raw_source=i.css('div.tc-price')[0].html,
-                                     options=self.options.money_value_parsing_options).parse()
+            value = MoneyValueParser(
+                raw_source=i.css('div.tc-price')[0].html,
+                options=self.options.money_value_parsing_options,
+                parsing_mode=MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW
+            ).parse()
             recipient_div = i.css('span.tc-payment-number')
 
             payment_method = i.css('span.payment-logo')
