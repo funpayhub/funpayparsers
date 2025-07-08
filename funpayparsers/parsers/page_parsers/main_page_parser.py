@@ -13,7 +13,7 @@ from funpayparsers.types.pages.main_page import MainPage
 class MainPageParsingOptions(ParsingOptions):
     """Options class for ``MainPageParser``."""
 
-    header_parsing_options: PageHeaderParsingOptions = PageHeaderParsingOptions()
+    page_header_parsing_options: PageHeaderParsingOptions = PageHeaderParsingOptions()
     """
     Options instance for ``PageHeaderParser``, which is used by ``MainPageParser``.
 
@@ -69,7 +69,7 @@ class MainPageParser(FunPayHTMLObjectParser[MainPage, MainPageParsingOptions]):
 
         return MainPage(
             raw_source=self.tree.html,
-            header=PageHeaderParser(header_div.html, options=self.options.header_parsing_options).parse(),
+            header=PageHeaderParser(header_div.html, options=self.options.page_header_parsing_options).parse(),
             last_categories=last_categories,
             categories=categories,
             secret_chat=ChatParser(secret_chat_div[0].html, options=self.options.chat_parsing_options).parse() if secret_chat_div else None,
