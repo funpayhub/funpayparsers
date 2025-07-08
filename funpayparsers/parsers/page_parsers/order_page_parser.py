@@ -78,6 +78,19 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
 
         review_div = self.tree.css_first('div.review-container')
 
+        data = {}
+        for i in self.tree.css('div.param-item:has(h5):not(:has(ul, ol))'):
+            name = i.css('h5')
+            if not name:
+                continue
+
+            try:
+                value = i.css('div')
+            except:
+                continue
+
+            data[name[0].text().strip()] = value[-1].text().strip()
+
 
         return OrderPage(
             raw_source=self.raw_source,
@@ -88,10 +101,8 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
             order_total=...,
             delivered_goods=delivered_goods,
             images=[i.attributes['href'] for i in self.tree.css('a.attachments-thumb')] or None,
-            order_category_name=...,
-            order_subcategory_name=...,
             order_subcategory_id=...,
             review=ReviewsParser(review_div.html, options=self.options.reviews_parsing_options).parse().reviews[0],
             chat=ChatParser(self.tree.css_first('div.chat').html, options=self.options.chat_parsing_options).parse(),
-            data=...
+            data=data
         )
