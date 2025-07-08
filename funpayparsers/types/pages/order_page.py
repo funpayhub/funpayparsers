@@ -30,6 +30,15 @@ class OrderPage(FunPayPage):
     images: list[str] | None
     """List of attached images."""
 
+    order_category_name: str
+    """Order category name."""
+
+    order_subcategory_name: str
+    """Order subcategory name."""
+
+    order_subcategory_id: int
+    """Order subcategory id."""
+
     data: dict[str, str]
     """Order data (short description, full description, etc.)"""
 
