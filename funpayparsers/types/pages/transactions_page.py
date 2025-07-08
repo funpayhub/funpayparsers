@@ -12,13 +12,13 @@ class TransactionsPage(FunPayPage):
     Represents the transactions page (https://funpay.com/account/balance).
     """
 
-    rub_balance: MoneyValue
+    rub_balance: MoneyValue | None
     """RUB balance."""
 
-    usd_balance: MoneyValue
+    usd_balance: MoneyValue | None
     """USD balance."""
 
-    eur_balance: MoneyValue
+    eur_balance: MoneyValue | None
     """EUR balance."""
 
     transactions: TransactionPreviewsBatch | None

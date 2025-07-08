@@ -62,6 +62,10 @@ class TransactionsPageParser(FunPayHTMLObjectParser[TransactionsPage, Transactio
                     parsing_mode=MoneyValueParsingMode.FROM_STRING).parse()
             )
 
+        rub_balance = [i for i in money_values if i.currency is Currency.RUB]
+        usd_balance = [i for i in money_values if i.currency is Currency.USD]
+        eur_balance = [i for i in money_values if i.currency is Currency.EUR]
+
         transactions_div = self.tree.css('div.tc-finance:not([hidden])')
         if not transactions_div:
             transactions = None
@@ -75,8 +79,8 @@ class TransactionsPageParser(FunPayHTMLObjectParser[TransactionsPage, Transactio
             raw_source=self.raw_source,
             header=PageHeaderParser(header_div.html, options=self.options.page_header_parsing_options).parse(),
             app_data=AppDataParser(app_data, self.options.app_data_parsing_options).parse(),
-            rub_balance=[i for i in money_values if i.currency is Currency.RUB][0],
-            usd_balance=[i for i in money_values if i.currency is Currency.USD][0],
-            eur_balance=[i for i in money_values if i.currency is Currency.EUR][0],
+            rub_balance=rub_balance[0] if rub_balance else None,
+            usd_balance=usd_balance[0] if usd_balance else None,
+            eur_balance=eur_balance[0] if eur_balance else None,
             transactions=transactions,
         )
