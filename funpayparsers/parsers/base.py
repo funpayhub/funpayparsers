@@ -116,7 +116,7 @@ class FunPayObjectParser(ABC, Generic[R, O]):
 
             return result
 
-        except Exceptions as e:
+        except Exception as e:
             raise ParsingError(raw_source=self.raw_source) from e
 
     def empty_raw_source(self,
