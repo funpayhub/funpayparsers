@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.orders import OrderPreview, OrderPreviewsBatch
-from funpayparsers.parsers.user_preview_parser import UserPreviewParser, UserPreviewParsingOptions
+from funpayparsers.parsers.user_preview_parser import UserPreviewParser, UserPreviewParsingOptions, UserPreviewParsingMode
 from funpayparsers.types.enums import OrderStatus
 from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParsingOptions, MoneyValueParsingMode
 
@@ -13,18 +13,22 @@ from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValu
 class OrderPreviewsParsingOptions(ParsingOptions):
     """Options class for ``OrderPreviewsParser``."""
 
-    money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions(
-        parsing_mode=MoneyValueParsingMode.FROM_ORDER_PREVIEW
-    )
+    money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions()
     """
     Options instance for ``MoneyValueParser``, which is used by ``OrderPreviewsParser``.
+    
+    ``parsing_mode`` option is hardcoded in ``OrderPreviewsParser`` and is therefore ignored 
+    if provided externally.
 
-    Defaults to ``UserPreviewParsingOptions(parsing_mode=MoneyValueParsingMode.FROM_ORDER_PREVIEW)``.
+    Defaults to ``UserPreviewParsingOptions()``.
     """
 
     user_preview_parsing_options: UserPreviewParsingOptions = UserPreviewParsingOptions()
     """
     Options instance for ``UserPreviewParsingOptions``, which is used by ``OrderPreviewsParser``.
+    
+    ``parsing_mode`` option is hardcoded in ``OrderPreviewsParser`` and is therefore ignored 
+    if provided externally.
 
     Defaults to ``UserPreviewParsingOptions()``.
     """
@@ -48,13 +52,20 @@ class OrderPreviewsParser(FunPayHTMLObjectParser[
         for order in self.tree.css('a.tc-item'):
             status_class = order.css('div.tc-status')[0].attributes['class']
 
-            value = MoneyValueParser(order.css('div.tc-price')[0].html,
-                                     options=self.options.money_value_parsing_options).parse()
+            value = MoneyValueParser(
+                order.css('div.tc-price')[0].html,
+                options=self.options.money_value_parsing_options,
+                parsing_mode=MoneyValueParsingMode.FROM_ORDER_PREVIEW
+            ).parse()
 
             user_tag = order.css('div.media-user')[0]
-            counterparty = UserPreviewParser(user_tag.html, options=self.options.user_preview_parsing_options).parse()
+            counterparty = UserPreviewParser(
+                user_tag.html,
+                options=self.options.user_preview_parsing_options,
+                parsing_mode=UserPreviewParsingMode.FROM_ORDER_PREVIEW
+            ).parse()
 
-            order_obj = OrderPreview(
+            result.append(OrderPreview(
                 raw_source=order.html,
                 id=order.attributes['href'].split('/')[-2],
                 date_text=order.css('div.tc-date-time')[0].text(strip=True),
@@ -63,8 +74,7 @@ class OrderPreviewsParser(FunPayHTMLObjectParser[
                 status=OrderStatus.get_by_css_class(status_class),
                 total=value,
                 counterparty=counterparty
-            )
-            result.append(order_obj)
+            ))
 
         next_id = self.tree.css('input[type="hidden"][name="continue"]')
 
