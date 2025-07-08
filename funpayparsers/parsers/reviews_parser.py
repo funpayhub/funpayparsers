@@ -15,13 +15,14 @@ from selectolax.lexbor import LexborNode
 class ReviewsParsingOptions(ParsingOptions):
     """Options class for ``ReviewsParser``."""
 
-    money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions(
-        parsing_mode=MoneyValueParsingMode.FROM_STRING
-    )
+    money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions()
     """
     Options instance for ``MoneyValueParser``, which is used by ``ReviewsParser``.
+    
+    ``parsing_mode`` option is hardcoded in ``ReviewsParser`` and is therefore ignored 
+    if provided externally.
 
-    Defaults to ``UserPreviewParsingOptions(parsing_mode=MoneyValueParsingMode.FROM_STRING)``.
+    Defaults to ``UserPreviewParsingOptions()``.
     """
 
 
@@ -128,7 +129,8 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
         split = review_details_str.split(', ')
         game, value = ', '.join(split[:-1]), split[-1]
         value = MoneyValueParser(raw_source=value.strip(),
-                                 options=self.options.money_value_parsing_options).parse()
+                                 options=self.options.money_value_parsing_options,
+                                 parsing_mode=MoneyValueParsingMode.FROM_STRING).parse()
 
         return date_str, text, game, value
 

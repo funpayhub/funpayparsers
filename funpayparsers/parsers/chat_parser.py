@@ -13,11 +13,14 @@ from selectolax.lexbor import LexborNode
 class ChatParsingOptions(ParsingOptions):
     """Options class for ``ChatParser``."""
 
-    user_preview_parsing_options: UserPreviewParsingOptions = UserPreviewParsingOptions(parsing_mode=UserPreviewParsingMode.FROM_CHAT)
+    user_preview_parsing_options: UserPreviewParsingOptions = UserPreviewParsingOptions()
     """
     Options instance for ``UserPreviewParser``, which is used by ``ChatParser``.
     
-    Defaults to ``UserPreviewParsingOptions(parsing_mode=UserPreviewParsingMode.FROM_CHAT)``.
+    ``parsing_mode`` option is hardcoded in ``ChatParser`` and is therefore ignored 
+    if provided externally.
+    
+    Defaults to ``UserPreviewParsingOptions()``.
     """
 
     messages_parsing_options: MessagesParsingOptions = MessagesParsingOptions()
@@ -66,7 +69,8 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
             return None, None, None
 
         interlocutor = UserPreviewParser(raw_source=interlocutor_div[0].html,
-                                         options=self.options.user_preview_parsing_options).parse()
+                                         options=self.options.user_preview_parsing_options,
+                                         parsing_mode=UserPreviewParsingMode.FROM_CHAT).parse()
 
         btn_div = header_div.css('button')
         if not btn_div:
