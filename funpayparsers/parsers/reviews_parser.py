@@ -110,7 +110,7 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
         return Review(
             raw_source=review_div.html,
             rating=rating,
-            text=text.strip(),
+            text=text,
             order_total=value,
             category_str=game,
             sender_username=self.options.context.get('sender_username'),
