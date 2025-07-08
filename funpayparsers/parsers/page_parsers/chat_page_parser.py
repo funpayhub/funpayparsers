@@ -1,4 +1,4 @@
-__all__ = ()
+__all__ = ('ChatPageParsingOptions', 'ChatPageParser')
 
 from dataclasses import dataclass
 from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
@@ -78,7 +78,7 @@ class ChatPageParser(FunPayHTMLObjectParser[ChatPage, ChatPageParsingOptions]):
             else:
                 chat_info = PrivateChatInfoParser(
                     raw_source=chat_info_div[0].html,
-                    options=self.options.chat_parsing_options
+                    options=self.options.private_chat_info_parsing_options
                 ).parse()
 
 
