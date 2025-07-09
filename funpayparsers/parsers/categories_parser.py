@@ -53,7 +53,8 @@ class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParsingO
                 raw_source=link.html,
                 id=int(link.attributes['href'].split('/')[-2]),
                 name=link.text(strip=True),
-                type=SubcategoryType.get_by_url(link.attributes['href'])
+                type=SubcategoryType.get_by_url(link.attributes['href']),
+                offers_amount=None
             ))
 
         return result

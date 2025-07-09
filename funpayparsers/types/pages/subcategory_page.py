@@ -27,5 +27,5 @@ class SubcategoryPage(FunPayPage):
     related_subcategories: list[Subcategory] | None
     """List of related subcategories (including this one), if exists."""
 
-    offers: list[OfferPreview]
+    offers: list[OfferPreview] | None
     """Subcategory offers list."""

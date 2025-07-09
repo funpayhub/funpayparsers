@@ -46,10 +46,10 @@ class SubcategoryType(Enum):
     Subcategory types enumerations.
     """
 
-    COMMON = 'lots'
+    COMMON = 'lot'
     """Common lots."""
 
-    CURRENCY = 'chips'
+    CURRENCY = 'chip'
     """Currency lots (/chips/)."""
 
     UNKNOWN = ''
