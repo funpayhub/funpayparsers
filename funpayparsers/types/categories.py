@@ -55,7 +55,7 @@ class Subcategory(FunPayObject):
     type: SubcategoryType
     """Subcategory type."""
 
-    offers_amount: int | None = None
+    offers_amount: int | None
     """
     Subcategory offers amount.
     Available only when parsing Subcategory offers list page.
