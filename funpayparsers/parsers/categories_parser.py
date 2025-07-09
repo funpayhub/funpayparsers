@@ -45,7 +45,7 @@ class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParsingO
         return result
 
     def _parse_subcategories(self, global_cat: LexborNode,
-                             data_id: int | str) -> list[Subcategory]:
+                             data_id: int | str) -> tuple[Subcategory, ...]:
         result = []
         div = global_cat.css(f'ul.list-inline[data-id="{data_id}"]')[0]
         for link in div.css('a'):
@@ -57,4 +57,4 @@ class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParsingO
                 offers_amount=None
             ))
 
-        return result
+        return tuple(result)

@@ -23,7 +23,7 @@ def single_category_html():
 
 @pytest.fixture
 def single_category_obj():
-    subcategories = [
+    subcategories = (
         Subcategory(
             raw_source='',
             name='Аккаунты',
@@ -38,7 +38,7 @@ def single_category_obj():
             type=SubcategoryType.COMMON,
             offers_amount=None
         )
-    ]
+    )
     return [Category(
         raw_source='',
         id=344,
@@ -71,7 +71,7 @@ def multiple_categories_html() -> str:
 
 @pytest.fixture
 def multiple_categories_obj():
-    subcategories_1 = [
+    subcategories_1 = (
         Subcategory(
             raw_source='',
             name='Кинары',
@@ -86,9 +86,9 @@ def multiple_categories_obj():
             type=SubcategoryType.COMMON,
             offers_amount=None
         )
-    ]
+    )
 
-    subcategories_2 = [
+    subcategories_2 = (
         Subcategory(
             raw_source='',
             name='Кинары2',
@@ -103,7 +103,7 @@ def multiple_categories_obj():
             type=SubcategoryType.COMMON,
             offers_amount=None
         )
-    ]
+    )
 
     return [
         Category(

@@ -17,7 +17,7 @@ class Category(FunPayObject):
     name: str
     """Category name."""
 
-    subcategories: list['Subcategory']
+    subcategories: tuple['Subcategory', ...]
     """List of subcategories."""
 
     location: str | None = None
