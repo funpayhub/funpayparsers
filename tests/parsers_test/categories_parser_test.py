@@ -28,13 +28,15 @@ def single_category_obj():
             raw_source='',
             name='Аккаунты',
             id=1407,
-            type=SubcategoryType.COMMON
+            type=SubcategoryType.COMMON,
+            offers_amount=None
         ),
         Subcategory(
             raw_source='',
             name='Ключи',
             id=1408,
-            type=SubcategoryType.COMMON
+            type=SubcategoryType.COMMON,
+            offers_amount=None
         )
     ]
     return [Category(
@@ -74,13 +76,15 @@ def multiple_categories_obj():
             raw_source='',
             name='Кинары',
             id=6,
-            type=SubcategoryType.CURRENCY
+            type=SubcategoryType.CURRENCY,
+            offers_amount=None
         ),
         Subcategory(
             raw_source='',
             name='Аккаунты',
             id=24,
-            type=SubcategoryType.COMMON
+            type=SubcategoryType.COMMON,
+            offers_amount=None
         )
     ]
 
@@ -89,13 +93,15 @@ def multiple_categories_obj():
             raw_source='',
             name='Кинары2',
             id=26,
-            type=SubcategoryType.CURRENCY
+            type=SubcategoryType.CURRENCY,
+            offers_amount=None
         ),
         Subcategory(
             raw_source='',
             name='Аккаунты2',
             id=44,
-            type=SubcategoryType.COMMON
+            type=SubcategoryType.COMMON,
+            offers_amount=None
         )
     ]
 
