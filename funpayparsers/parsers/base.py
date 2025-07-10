@@ -16,8 +16,8 @@ from funpayparsers.exceptions import ParsingError
 from funpayparsers.types.base import FunPayObject
 
 
-R = TypeVar('R', bound=Any)
-O = TypeVar('O', bound='ParsingOptions')
+ReturnType = TypeVar('ReturnType', bound=Any)
+OptionsClass = TypeVar('OptionsClass', bound='ParsingOptions')
 
 
 @dataclass(frozen=True)
@@ -49,15 +49,17 @@ class ParsingOptions:
         >>> options3.context
         {'key': 'value'}
 
-    Note:
+    .. note::
         - Neither operator mutates the original instances.
-        - The result is always a new instance of the left-hand operand's class (`options1`).
+        - The result is always a new instance of the left-hand operand's class
+        (``options1``).
     """
 
     empty_raw_source: bool = False
     context: dict[Any, Any] = field(default_factory=dict)
 
-    def __merge_options__(self: O, other, non_explicit: bool = False) -> O:
+    def __merge_options__(self: OptionsClass,
+                          other, non_explicit: bool = False) -> OptionsClass:
         self_fields = {i.name: getattr(self, i.name)
                        for i in getattr(self, '__dataclass_fields__', {}).values()}
         other_fields = {i.name: getattr(other, i.name)
@@ -70,15 +72,15 @@ class ParsingOptions:
 
         return self.__class__(**self_fields)
 
-    def __and__(self: O, other) -> O:
+    def __and__(self: OptionsClass, other) -> OptionsClass:
         return self.__merge_options__(other, non_explicit=False)
 
-    def __or__(self: O, other) -> O:
+    def __or__(self: OptionsClass, other) -> OptionsClass:
         return self.__merge_options__(other, non_explicit=True)
 
 
-def _new(cls: Type[O], *args: Any, **kwargs: Any) -> O:
-    instance = cast(O, super(ParsingOptions, cls).__new__(cls))
+def _new(cls: Type[OptionsClass], *args: Any, **kwargs: Any) -> OptionsClass:
+    instance = cast(OptionsClass, super(ParsingOptions, cls).__new__(cls))
     super(ParsingOptions, cls).__setattr__(instance, '__passed_args__', args)
     super(ParsingOptions, cls).__setattr__(instance, '__passed_kwargs__', kwargs)
     return instance
@@ -86,31 +88,35 @@ def _new(cls: Type[O], *args: Any, **kwargs: Any) -> O:
 setattr(ParsingOptions, '__new__', _new)
 
 
-class FunPayObjectParser(ABC, Generic[R, O]):
+class FunPayObjectParser(ABC, Generic[ReturnType, OptionsClass]):
     """
     Base class for all parsers.
 
     Note:
-        You should not inherit from this class directly, unless you are implementing a new type of parsers
-        (e.g., `FunPayXMLObjectParser` or `FunPayYAMLObjectParser`).
+        You should not inherit from this class directly,
+        unless you are implementing a new type of parsers
+        (e.g., ``FunPayXMLObjectParser`` or ``FunPayYAMLObjectParser``).
 
         For most use cases, such as parsing FunPay objects, inherit from
-        `FunPayHTMLObjectParser` (for HTML sources) or
-        `FunPayJSONObjectParser` (for JSON-string/python collection sources)
+        ``FunPayHTMLObjectParser`` (for HTML sources) or
+        ``FunPayJSONObjectParser`` (for JSON-string/python collection sources)
     """
     __options_cls__: Type[ParsingOptions] | None = None
 
-    def __init__(self, raw_source: Any, options: O | None = None, **overrides):
+    def __init__(self,
+                 raw_source: Any,
+                 options: OptionsClass | None = None,
+                 **overrides):
         """
         :param raw_source: raw source of an object (HTML / JSON string)
         """
         self._raw_source = raw_source
-        self._options: O = self._build_options(options, **overrides)
+        self._options: OptionsClass = self._build_options(options, **overrides)
 
     @abstractmethod
-    def _parse(self) -> R: ...
+    def _parse(self) -> ReturnType: ...
 
-    def parse(self) -> R:
+    def parse(self) -> ReturnType:
         try:
             result = self._parse()
 
@@ -144,30 +150,32 @@ class FunPayObjectParser(ABC, Generic[R, O]):
         return self._raw_source
 
     @property
-    def options(self) -> O:
+    def options(self) -> OptionsClass:
         return self._options
 
     @classmethod
-    def _build_options(cls, options: O | None, **overrides) -> O:
+    def _build_options(cls, options: OptionsClass | None, **overrides) -> OptionsClass:
         base = options or cls.get_options_cls()()
         overrides = {k: v for k, v in overrides.items() if
                      k in getattr(base, '__dataclass_fields__', {})}
         return replace(base, **overrides)
 
     @classmethod
-    def get_options_cls(cls) -> Type[O]:
+    def get_options_cls(cls) -> Type[OptionsClass]:
         if cls.__options_cls__ is not None:
             return cls.__options_cls__
 
         try:
             return cls._get_options_cls_inner()
         except Exception as e:
-            raise LookupError(f'Unable to determine options class for `{cls.__name__}`.\n'
-                              f'This can happen with complicated inheritance.\n'
-                              f'Try explicitly specifying `__options_cls__` in `{cls.__name__}`.') from e
+            raise LookupError(
+                f'Unable to determine options class for `{cls.__name__}`.\n'
+                f'This can happen with complicated inheritance.\n'
+                f'Try explicitly specifying `__options_cls__` in `{cls.__name__}`.',
+            ) from e
 
     @classmethod
-    def _get_options_cls_inner(cls) -> Type[O]:
+    def _get_options_cls_inner(cls) -> Type[OptionsClass]:
         parents = getattr(cls, '__orig_bases__', ())
         for parent in parents:
             origin, args = get_origin(parent), get_args(parent)
@@ -183,8 +191,11 @@ class FunPayObjectParser(ABC, Generic[R, O]):
         raise LookupError('No suitable options class found.')
 
 
-class FunPayHTMLObjectParser(FunPayObjectParser[R, O], ABC):
-    def __init__(self, raw_source: str, options: O | None = None, **overrides):
+class FunPayHTMLObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
+    def __init__(self,
+                 raw_source: str,
+                 options: OptionsClass | None = None,
+                 **overrides):
         """
         :param raw_source: raw source of an object (HTML / JSON string)
         """
@@ -204,8 +215,11 @@ class FunPayHTMLObjectParser(FunPayObjectParser[R, O], ABC):
         return self._raw_source
 
 
-class FunPayJSONObjectParser(FunPayObjectParser[R, O], ABC):
-    def __init__(self, raw_source: str | dict | list, options: O | None = None, **overrides):
+class FunPayJSONObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
+    def __init__(self,
+                 raw_source: str | dict | list,
+                 options: OptionsClass | None = None,
+                 **overrides):
         super().__init__(raw_source=raw_source, options=options, **overrides)
         self._data = None
 
@@ -214,7 +228,8 @@ class FunPayJSONObjectParser(FunPayObjectParser[R, O], ABC):
         if self._data is not None:
             return self._data
 
-        self._data = json.loads(self.raw_source) if isinstance(self.raw_source, str) else self.raw_source
+        self._data = json.loads(self.raw_source) \
+            if isinstance(self.raw_source, str) else self.raw_source
         return self._data
 
     @property

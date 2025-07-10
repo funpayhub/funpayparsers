@@ -11,9 +11,7 @@ from funpayparsers.types.pages.base import FunPayPage
 
 @dataclass
 class ChatPage(FunPayPage):
-    """
-    Represents a chat page (`https://funpay.com/chat/?node=<chat_id>`).
-    """
+    """Represents a chat page (`https://funpay.com/chat/?node=<chat_id>`)."""
 
     chat_previews: list[PrivateChatPreview] | None
     """List of private chat previews."""

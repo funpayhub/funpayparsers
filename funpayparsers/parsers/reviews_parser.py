@@ -3,7 +3,7 @@ from __future__ import annotations
 
 __all__ = (
     'ReviewsParser',
-    'ReviewsParsingOptions'
+    'ReviewsParsingOptions',
 )
 
 from dataclasses import dataclass
@@ -48,14 +48,15 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
         result = []
 
         for review_div in self.tree.css('div.review-container'):
-            order_id, rating = review_div.attributes.get('data-order'), review_div.attributes.get('data-rating')
+            order_id, rating = (review_div.attributes.get('data-order'),
+                                review_div.attributes.get('data-rating'))
 
             if order_id is not None:
                 return ReviewsBatch(raw_source=self.raw_source,
                                     reviews=[self._parse_order_page_review(
                                         order_id,
                                         rating,
-                                        review_div
+                                        review_div,
                                     )],
                                     user_id=None,
                                     filter=None,
@@ -72,7 +73,7 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
             reviews=result,
             user_id=int(user_id[0].attributes.get('value')) if user_id else None,
             filter=filter_[0].attributes.get('value') if filter_ else None,
-            next_review_id=next_id[0].attributes.get('value') if next_id else None
+            next_review_id=next_id[0].attributes.get('value') if next_id else None,
         )
 
     def _parse_common_review(self, review_div: LexborNode):
@@ -83,7 +84,10 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
         rating = int(rating[0].attributes['class'][-1]) if rating else None
 
         order_id_div = review_div.css('div.review-item-order')
-        order_id = None if not order_id_div else order_id_div[0].text().strip().split()[1][1:]  # "Order #ORDERID"
+
+        # "Order #ORDERID"
+        order_id = (None if not order_id_div
+                    else order_id_div[0].text().strip().split()[1][1:])
 
         user_tag = review_div.css('div.review-item-user')[0]
         username = user_tag.css('div.media-user-name')
@@ -96,15 +100,23 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
             order_total=value,
             category_str=game,
             sender_username=username,
-            sender_id=int(user_tag.css('a')[0].attributes['href'].split('/')[-2]) if username else None,
+            sender_id=int(
+                user_tag.css('a')[0].attributes['href'].split('/')[-2],
+            ) if username else None,
             sender_avatar_url=user_tag.css('img')[0].attributes['src'],
             order_id=order_id,
             time_ago_str=date_str,
-            reply=self._parse_reply(review_div)
+            reply=self._parse_reply(review_div),
         )
 
-    def _parse_order_page_review(self, order_id: str, rating: str, review_div: LexborNode) -> Review:
-        author_id = int(review_div.css('div.review-item-row[data-row="review"]')[0].attributes.get('data-author'))
+    def _parse_order_page_review(self,
+                                 order_id: str,
+                                 rating: str,
+                                 review_div: LexborNode) -> Review:
+        author_id = int(
+            review_div.css('div.review-item-row[data-row="review"]')[0]
+            .attributes.get('data-author'),
+        )
 
         if rating:  # if review exists
             rating = int(rating)
@@ -127,10 +139,11 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
             sender_avatar_url=avatar_url,
             order_id=order_id,
             time_ago_str=date_str,
-            reply=self._parse_reply(review_div)
+            reply=self._parse_reply(review_div),
         )
 
-    def _parse_review_meta(self, review_div: LexborNode) -> tuple[str, str, str, MoneyValue]:
+    def _parse_review_meta(self,
+                           review_div: LexborNode) -> tuple[str, str, str, MoneyValue]:
         date_str = review_div.css('div.review-item-date')[0].text().strip()
         text = review_div.css('div.review-item-text')[0].text().strip()
 

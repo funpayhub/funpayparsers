@@ -12,9 +12,7 @@ from funpayparsers.types.pages.base import FunPayPage
 
 @dataclass
 class MainPage(FunPayPage):
-    """
-    Represents the main page (https://funpay.com).
-    """
+    """Represents the main page (https://funpay.com)."""
     last_categories: list[Category]
     """Last opened categories."""
 
@@ -23,6 +21,7 @@ class MainPage(FunPayPage):
 
     secret_chat: Chat | None
     """
-    Secret chat (ID: 2, name: 'flood').
+    Secret chat (ID: ``2``, name: ``'flood'``).
+    
     Does not exist on EN version of the main page.
     """

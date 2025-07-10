@@ -61,7 +61,10 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
         app_data = self.tree.css_first('body').attributes['data-app-data']
 
         order_header = self.tree.css_first('h1.page-header')
-        order_id = re.search(r'#[A-Z0-9]{8}', order_header.text(deep=False).strip()).group()[1:]
+        order_id = re.search(
+            r'#[A-Z0-9]{8}',
+            order_header.text(deep=False).strip(),
+        ).group()[1:]
         order_status = OrderStatus.REFUNDED if order_header.css('span.text-warning') \
             else OrderStatus.COMPLETED if order_header.css('span.text-success') \
             else OrderStatus.PAID
@@ -70,7 +73,9 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
         if not goods:
             delivered_goods = None
         else:
-            delivered_goods = [i.attributes['data-copy'] for i in goods[0].css('a.btn-copy')]
+            delivered_goods = [
+                i.attributes['data-copy'] for i in goods[0].css('a.btn-copy')
+            ]
 
         review_div = self.tree.css_first('div.review-container')
 
@@ -82,24 +87,53 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
 
             try:
                 value = i.css('div')
-            except:
+            except Exception:
                 continue
 
             data[name[0].text().strip().lower()] = value[-1].text().strip()
 
-        subcategory_url = self.tree.css_first('div.param-item:has(h5):not(:has(ul, ol)) a', strict=False).attributes['href']
+        subcategory_url = self.tree.css_first(
+            'div.param-item:has(h5):not(:has(ul, ol)) a',
+            strict=False,
+        ).attributes['href']
 
         return OrderPage(
             raw_source=self.raw_source,
-            header=PageHeaderParser(header_div.html, options=self.options.page_header_parsing_options).parse(),
-            app_data=AppDataParser(app_data, self.options.app_data_parsing_options).parse(),
+
+            header=PageHeaderParser(
+                header_div.html,
+                options=self.options.page_header_parsing_options,
+            ).parse(),
+
+            app_data=AppDataParser(
+                app_data,
+                self.options.app_data_parsing_options,
+            ).parse(),
+
             order_id=order_id,
+
             order_status=order_status,
+
             delivered_goods=delivered_goods,
-            images=[i.attributes['href'] for i in self.tree.css('a.attachments-thumb')] or None,
+
+            images=[
+                       i.attributes['href']
+                       for i in self.tree.css('a.attachments-thumb')
+                   ] or None,
+
             order_subcategory_id=int(subcategory_url.split('/')[-2]),
+
             order_subcategory_type=SubcategoryType.get_by_url(subcategory_url),
-            review=ReviewsParser(review_div.html, options=self.options.reviews_parsing_options).parse().reviews[0],
-            chat=ChatParser(self.tree.css_first('div.chat').html, options=self.options.chat_parsing_options).parse(),
-            data=data
+
+            review=ReviewsParser(
+                review_div.html,
+                options=self.options.reviews_parsing_options,
+            ).parse().reviews[0],
+
+            chat=ChatParser(
+                self.tree.css_first('div.chat').html,
+                options=self.options.chat_parsing_options,
+            ).parse(),
+
+            data=data,
         )

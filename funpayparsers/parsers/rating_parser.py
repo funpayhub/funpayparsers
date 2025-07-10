@@ -30,9 +30,12 @@ class UserRatingParsingOptions(ParsingOptions):
     """
     ``UserRatingParser`` parsing mode.
 
-    It is recommended to parse the user rating from the reviews section, because some profiles contain legacy reviews
-    that do not include a rating. If a user has only such reviews, the profile header will not include the rating block.
-    However, the reviews section always contains a rating block as long as there is at least one review of any type.
+    It is recommended to parse the user rating from the reviews section, 
+    because some profiles contain legacy reviews that do not include a rating. 
+    If a user has only such reviews, 
+    the profile header will not include the rating block.
+    However, the reviews section always contains a rating block as long as there is 
+    at least one review of any type.
 
     Defaults to ``UserRatingParsingMode.FROM_REVIEWS_SECTION``.
     """
@@ -49,8 +52,7 @@ class UserRatingParser(FunPayHTMLObjectParser[UserRating, UserRatingParsingOptio
     def _parse(self):
         if self.options.parsing_mode == UserRatingParsingMode.FROM_PROFILE_HEADER:
             return self._parse_from_profile_header()
-        else:
-            return self._parse_from_reviews_section()
+        return self._parse_from_reviews_section()
 
     def _parse_from_profile_header(self) -> UserRating:
         rating_div = self.tree.css('div.profile-header-col-rating')[0]
@@ -63,11 +65,17 @@ class UserRatingParser(FunPayHTMLObjectParser[UserRating, UserRatingParsingOptio
 
         percentage = []
         for i in range(1, 6):
-            value = re.search(r'\d+', rating_div.css(
-                f'div.rating-full-item{i} > div.rating-progress > div')[0].attributes['style'])
+            value = re.search(
+                r'\d+',
+                rating_div.css(
+                    f'div.rating-full-item{i} > div.rating-progress > div',
+                )[0].attributes['style'],
+            )
             percentage.append(float(value.group()))
 
-        reviews_text = rating_div.css('div.rating-full-count')[0].text().replace(' ', '')
+        reviews_text = (
+            rating_div.css('div.rating-full-count')[0].text().replace(' ', '')
+        )
         match = re.search(r'\d+', reviews_text)
         reviews_amount = int(match.group())
 
@@ -92,8 +100,12 @@ class UserRatingParser(FunPayHTMLObjectParser[UserRating, UserRatingParsingOptio
 
         percentage = []
         for i in range(1, 6):
-            value = re.search(r'\d+', rating_div.css(
-                f'div.rating-full-item{i} > div.rating-progress > div')[0].attributes['style'])
+            value = re.search(
+                r'\d+',
+                rating_div.css(
+                    f'div.rating-full-item{i} > div.rating-progress > div',
+                )[0].attributes['style'],
+            )
             percentage.append(float(value.group()))
 
         reviews_text = rating_div.css_first('div.mb5').text().replace(' ', '')

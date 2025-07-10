@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-__all__ = ('MoneyValue', 'UserBadge', 'UserPreview', 'UserRating', 'Achievement',)
+__all__ = ('MoneyValue', 'UserBadge', 'UserPreview', 'UserRating', 'Achievement')
 
 from dataclasses import dataclass
 
@@ -15,17 +15,17 @@ class MoneyValue(FunPayObject):
     Represents a monetary value with an associated currency.
 
     This class is used to store money-related information, such as:
-    - the price of an offer,
-    - the total of an order,
-    - the user balance,
-    - etc.
+        - the price of an offer,
+        - the total of an order,
+        - the user balance,
+        - etc.
     """
 
     value: int | float
     """The numeric amount of the monetary value."""
 
     character: str
-    """The currency character, e.g., $, €, ₽, ¤, etc."""
+    """The currency character, e.g., ``'$'``, ``'€'``, ``'₽'``, ``'¤'``, etc."""
 
     @property
     def currency(self) -> Currency:
@@ -49,14 +49,15 @@ class UserBadge(FunPayObject):
     The full CSS class of the badge.
 
     Known values:
-        - `label-default` — FunPay auto delivery bot;
-        - `label-primary` — FunPay system notifications 
+        - ``'label-default'`` — FunPay auto delivery bot;
+        - ``'label-primary'`` — FunPay system notifications 
             (e.g., new order, order COMPLETED, new review, etc.);
-        - `label-success` — support or arbitration;
-        - `label-danger` - blocked user;
+        - ``'label-success'`` — support or arbitration;
+        - ``'label-danger'`` - blocked user;
 
-    **WARNING**: This field contains the **full** CSS class. To check the badge type,
-        use the `in` operator rather than `==`, as the class may include 
+    .. warning:: 
+        This field contains the **full** CSS class. To check the badge type,
+        use the ``in`` operator instead of ``==``, as the class may include 
         additional modifiers.
     """
 

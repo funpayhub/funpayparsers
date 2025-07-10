@@ -45,7 +45,8 @@ class MoneyValueParsingOptions(ParsingOptions):
     
     Uses when parsing from offer preview.
     
-    This parameter is necessary because standard offers have an exact price in the ``data-s`` attribute, 
+    This parameter is necessary because standard offers have an exact price 
+    in the ``data-s`` attribute, 
     while currency offers have a minimum purchase amount instead.
     
     If parsing standard offer, set it to ``True``.
@@ -59,6 +60,7 @@ class MoneyValueParsingOptions(ParsingOptions):
 class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParsingOptions]):
     """
     Class for parsing money values.
+
     Possible locations:
         - On transactions page (https://funpay.com/account/balance)
         - On sales page (https://funpay.com/orders/trade)
@@ -70,7 +72,8 @@ class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParsingOptio
     def _parse(self):
         types = {
             MoneyValueParsingMode.FROM_ORDER_PREVIEW: self._parse_order_preview_type,
-            MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW: self._parse_transaction_preview_type,
+            MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW:
+                self._parse_transaction_preview_type,
             MoneyValueParsingMode.FROM_OFFER_PREVIEW: self._parse_offer_preview_type,
             MoneyValueParsingMode.FROM_STRING: self._parse_string_type,
         }
@@ -78,16 +81,28 @@ class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParsingOptio
 
     def _parse_order_preview_type(self) -> MoneyValue:
         val = self.tree.css_first('div.tc-price')
-        return parse_money_value_string(val.text().strip(), raw_source=val.html, raise_on_error=True)
+        return parse_money_value_string(
+            val.text().strip(),
+            raw_source=val.html,
+            raise_on_error=True,
+        )
 
     def _parse_transaction_preview_type(self) -> MoneyValue:
         val = self.tree.css_first('div.tc-price')
-        return parse_money_value_string(val.text().strip(), raw_source=val.html, raise_on_error=True)
+        return parse_money_value_string(
+            val.text().strip(),
+            raw_source=val.html,
+            raise_on_error=True,
+        )
 
     def _parse_offer_preview_type(self) -> MoneyValue:
         div = self.tree.css_first('div.tc-price')
         val_str = div.css('div')[0].text().strip()
-        value = parse_money_value_string(val_str, raw_source=div.html, raise_on_error=True)
+        value = parse_money_value_string(
+            val_str,
+            raw_source=div.html,
+            raise_on_error=True,
+        )
         if self.options.parse_value_from_attribute:
             value.value = float(div.attributes.get('data-s'))
         return value

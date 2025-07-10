@@ -29,5 +29,5 @@ class AchievementParser(FunPayHTMLObjectParser[Achievement, AchievementParsingOp
         return Achievement(
             raw_source=div.html,
             css_class=div.css_first('i').attributes['class'],
-            text=div.text(deep=False).strip()
+            text=div.text(deep=False).strip(),
         )
