@@ -15,7 +15,7 @@ __all__ = (
 
 import re
 from typing import Type, TypeVar
-from enum import UNIQUE, Enum, verify
+from enum import Enum
 from types import MappingProxyType
 from functools import cache
 
@@ -23,7 +23,6 @@ from functools import cache
 T = TypeVar('T')
 
 
-@verify(UNIQUE)
 class UpdateType(Enum):
     ORDERS_COUNTERS = 'orders_counters'
     CHAT_COUNTER = 'chat_counter'
@@ -34,12 +33,11 @@ class UpdateType(Enum):
     @classmethod
     def get_by_type_str(cls: Type[T], type_str: str, /) -> T | None:
         """Determine an update type by its type string."""
-        if type_str not in cls:
-            return None
-        return cls(type_str)
+        for i in cls:
+            if i.value == type_str:
+                return i
+        return None
 
-
-@verify(UNIQUE)
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
 
@@ -65,7 +63,6 @@ class SubcategoryType(Enum):
         return cls.UNKNOWN
 
 
-@verify(UNIQUE)
 class OrderStatus(Enum):
     """
     Order statuses enumeration.
@@ -99,7 +96,6 @@ class OrderStatus(Enum):
         return cls.UNKNOWN
 
 
-@verify(UNIQUE)
 class Currency(Enum):
     """Currencies enumeration."""
 
@@ -113,12 +109,12 @@ class Currency(Enum):
     @classmethod
     def get_by_character(cls: Type[T], character: str, /) -> T:
         """Determine the currency based on a given currency string."""
-        if character not in cls:
-            return cls.UNKNOWN
-        return cls(character)
+        for i in cls:
+            if i.value == character:
+                return i
+        return cls.UNKNOWN
 
 
-@verify(UNIQUE)
 class TransactionStatus(Enum):
     """Transaction statuses enumeration."""
 
@@ -149,11 +145,9 @@ class TransactionStatus(Enum):
         return cls.UNKNOWN
 
 
-@verify(UNIQUE)
 class SystemMessageType(Enum): ...
 
 
-@verify(UNIQUE)
 class BadgeType(Enum):
     """Badge types enumeration."""
 
@@ -416,6 +410,7 @@ class Language(Enum):
 
     @classmethod
     def get_by_lang_code(cls: Type[T], lang_code: str, /) -> T:
-        if lang_code not in cls:
-            return cls.UNKNOWN
-        return cls(lang_code)
+        for i in cls:
+            if i.value == lang_code:
+                return i
+        return cls.UNKNOWN
