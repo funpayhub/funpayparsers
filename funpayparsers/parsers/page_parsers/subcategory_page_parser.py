@@ -50,10 +50,12 @@ class SubcategoryPageParsingOptions(ParsingOptions):
     """
 
 
-class SubcategoryPageParser(FunPayHTMLObjectParser[
-                                SubcategoryPage,
-                                SubcategoryPageParsingOptions,
-                            ]):
+class SubcategoryPageParser(
+    FunPayHTMLObjectParser[
+        SubcategoryPage,
+        SubcategoryPageParsingOptions,
+    ]
+):
     """
     Class for parsing subcategory offer list pages
     (`https://funpay.com/<lots/chips>/<subcategory_id>/`).
@@ -68,23 +70,24 @@ class SubcategoryPageParser(FunPayHTMLObjectParser[
         related_subcategories = []
         for i in self.tree.css('a.counter-item'):
             url = i.attributes['href']
-            related_subcategories.append(Subcategory(
-                raw_source=i.html,
-                id=int(url.split('/')[-2]),
-                type=SubcategoryType.get_by_url(url),
-                name=i.css_first('div.counter-param').text().strip(),
-                offers_amount=int(i.css_first('div.counter-value').text().strip()),
-            ))
-
+            related_subcategories.append(
+                Subcategory(
+                    raw_source=i.html,
+                    id=int(url.split('/')[-2]),
+                    type=SubcategoryType.get_by_url(url),
+                    name=i.css_first('div.counter-param').text().strip(),
+                    offers_amount=int(i.css_first('div.counter-value').text().strip()),
+                )
+            )
 
         return SubcategoryPage(
             raw_source=self.raw_source,
             header=PageHeaderParser(
-                header.html,
-                options=self.options.page_header_parsing_options).parse(),
+                header.html, options=self.options.page_header_parsing_options
+            ).parse(),
             app_data=AppDataParser(
-                app_data,
-                options=self.options.app_data_parsing_options).parse(),
+                app_data, options=self.options.app_data_parsing_options
+            ).parse(),
             category_id=int(subcategory_id_str.split('-')[-1]),
             subcategory_id=int(showcase.attributes['data-game']),
             subcategory_type=SubcategoryType.get_by_url(subcategory_id_str),
@@ -92,5 +95,6 @@ class SubcategoryPageParser(FunPayHTMLObjectParser[
             offers=OfferPreviewsParser(
                 showcase.html,
                 options=self.options.offer_previews_parsing_options,
-            ).parse() or None,
+            ).parse()
+            or None,
         )

@@ -75,7 +75,6 @@ class OfferPreview(FunPayObject):
     """
 
 
-
 @dataclass
 class OfferFields(FunPayObject):
     """
@@ -234,8 +233,10 @@ class OfferFields(FunPayObject):
 
     @images.setter
     def images(self, value: list[int] | None):
-        self.set_field('fields[images]',
-                       ','.join(str(i) for i in value) if value is not None else None)
+        self.set_field(
+            'fields[images]',
+            ','.join(str(i) for i in value) if value is not None else None,
+        )
 
     @property
     def secrets(self) -> list[str] | None:
@@ -251,8 +252,9 @@ class OfferFields(FunPayObject):
 
     @secrets.setter
     def secrets(self, value: list[str] | None):
-        self.set_field('fields[secrets]',
-                       '\n'.join(value) if value is not None else None)
+        self.set_field(
+            'fields[secrets]', '\n'.join(value) if value is not None else None
+        )
 
     @property
     def active(self) -> bool:
@@ -265,8 +267,7 @@ class OfferFields(FunPayObject):
 
     @active.setter
     def active(self, value: bool | None):
-        self.set_field('active',
-                       'on' if value else '' if value is not None else None)
+        self.set_field('active', 'on' if value else '' if value is not None else None)
 
     @property
     def auto_delivery(self) -> bool:
@@ -279,8 +280,9 @@ class OfferFields(FunPayObject):
 
     @auto_delivery.setter
     def auto_delivery(self, value: bool | None):
-        self.set_field('auto_delivery',
-                       'on' if value else '' if value is not None else None)
+        self.set_field(
+            'auto_delivery', 'on' if value else '' if value is not None else None
+        )
 
     @property
     def deactivate_after_sale(self) -> bool:
@@ -293,5 +295,7 @@ class OfferFields(FunPayObject):
 
     @deactivate_after_sale.setter
     def deactivate_after_sale(self, value: bool | None):
-        self.set_field('deactivate_after_sale',
-                       'on' if value else '' if value is not None else None)
+        self.set_field(
+            'deactivate_after_sale',
+            'on' if value else '' if value is not None else None,
+        )

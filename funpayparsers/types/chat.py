@@ -118,4 +118,3 @@ class PrivateChatInfo(FunPayObject):
     """
     Info about the offer currently being viewed by the interlocutor.
     """
-

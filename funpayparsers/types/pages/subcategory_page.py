@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-__all__ = ('SubcategoryPage', )
+__all__ = ('SubcategoryPage',)
 
 from dataclasses import dataclass
 

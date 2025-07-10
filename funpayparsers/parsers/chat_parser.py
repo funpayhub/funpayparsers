@@ -23,7 +23,8 @@ class ChatParsingOptions(ParsingOptions):
     """Options class for ``ChatParser``."""
 
     user_preview_parsing_options: UserPreviewParsingOptions = (
-        UserPreviewParsingOptions())
+        UserPreviewParsingOptions()
+    )
     """
     Options instance for ``UserPreviewParser``, which is used by ``ChatParser``.
     
@@ -58,13 +59,17 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
         interlocutor, notifications, banned = self._parse_chat_header(chat_div)
 
         messages_div = chat_div.css('div.chat-message-list')[0]
-        history = MessagesParser(raw_source=messages_div.html,
-                                 options=self.options.messages_parsing_options).parse()
+        history = MessagesParser(
+            raw_source=messages_div.html, options=self.options.messages_parsing_options
+        ).parse()
 
         return Chat(
             raw_source=chat_div.html,
-            id=(int(chat_div.attributes['data-id'])
-                if chat_div.attributes.get('data-id') else None),
+            id=(
+                int(chat_div.attributes['data-id'])
+                if chat_div.attributes.get('data-id')
+                else None
+            ),
             name=chat_div.attributes.get('data-name'),
             interlocutor=interlocutor,
             is_notifications_enabled=notifications,
@@ -72,9 +77,9 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
             history=history,
         )
 
-
-    def _parse_chat_header(self, div: LexborNode) \
-            -> tuple[UserPreview | None, bool | None, bool | None]:
+    def _parse_chat_header(
+        self, div: LexborNode
+    ) -> tuple[UserPreview | None, bool | None, bool | None]:
         header_div = div.css('div.chat-header')[0]
         interlocutor_div = header_div.css('div.media-user')
 

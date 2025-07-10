@@ -71,8 +71,10 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             currency = money_value.currency
         else:
             currency_text = (
-                header.css('a.dropdown-toggle.menu-item-currencies')[0].
-                text(deep=False).strip().lower()
+                header.css('a.dropdown-toggle.menu-item-currencies')[0]
+                .text(deep=False)
+                .strip()
+                .lower()
             )
 
             currency = _CURRENCIES.get(currency_text, Currency.UNKNOWN)
@@ -93,7 +95,6 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
         else:
             language = Language.UNKNOWN
 
-
         return PageHeader(
             raw_source=header.html,
             user_id=int(
@@ -111,15 +112,16 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
 
     def _parse_anonymous_header(self, header: LexborNode) -> PageHeader:
         currency_text = (
-            header.css('a.dropdown-toggle.menu-item-currencies')[0].
-            text(deep=False).strip().lower()
+            header.css('a.dropdown-toggle.menu-item-currencies')[0]
+            .text(deep=False)
+            .strip()
+            .lower()
         )
         currency = _CURRENCIES.get(currency_text, Currency.UNKNOWN)
 
-        language_class = (
-            header.css('a.dropdown-toggle.menu-item-langs > i.menu-icon')[0].
-            attributes['class']
-        )
+        language_class = header.css('a.dropdown-toggle.menu-item-langs > i.menu-icon')[
+            0
+        ].attributes['class']
 
         for i in _LANGUAGES:
             if i in language_class:
