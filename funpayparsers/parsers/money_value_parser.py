@@ -1,10 +1,14 @@
+from __future__ import annotations
+
+
 __all__ = ('MoneyValueParser', 'MoneyValueParsingOptions', 'MoneyValueParsingMode')
 
 from dataclasses import dataclass
+from enum import Enum
+
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.common import MoneyValue
 from funpayparsers.parsers.utils import parse_money_value_string
-from enum import Enum
 
 
 class MoneyValueParsingMode(Enum):

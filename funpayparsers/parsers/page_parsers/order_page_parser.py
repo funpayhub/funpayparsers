@@ -1,14 +1,21 @@
+from __future__ import annotations
+
+
 __all__ = ('OrderPageParsingOptions', 'OrderPageParser')
 
-from dataclasses import dataclass
 import re
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.parsers.page_header_parser import PageHeaderParser, PageHeaderParsingOptions
-from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
-from funpayparsers.parsers.chat_parser import ChatParser, ChatParsingOptions
-from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParsingOptions
-from funpayparsers.types.pages import OrderPage
+from dataclasses import dataclass
+
 from funpayparsers.types.enums import OrderStatus, SubcategoryType
+from funpayparsers.types.pages import OrderPage
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.parsers.chat_parser import ChatParser, ChatParsingOptions
+from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
+from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParsingOptions
+from funpayparsers.parsers.page_header_parser import (
+    PageHeaderParser,
+    PageHeaderParsingOptions,
+)
 
 
 @dataclass(frozen=True)

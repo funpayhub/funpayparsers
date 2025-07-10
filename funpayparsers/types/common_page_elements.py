@@ -1,10 +1,13 @@
+from __future__ import annotations
+
+
 __all__ = ('AppData', 'WebPush', 'PageHeader')
 
 from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
-from funpayparsers.types.common import MoneyValue
 from funpayparsers.types.enums import Currency, Language
+from funpayparsers.types.common import MoneyValue
 
 
 @dataclass

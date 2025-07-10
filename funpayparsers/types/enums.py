@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+
 __all__ = (
     'Currency',
     'OrderStatus',
@@ -12,11 +13,11 @@ __all__ = (
 )
 
 
+import re
+from typing import Type, TypeVar
 from enum import UNIQUE, Enum, verify
 from types import MappingProxyType
 from functools import cache
-from typing import Type, TypeVar
-import re
 
 
 T = TypeVar('T')

@@ -1,11 +1,15 @@
+from __future__ import annotations
+
+
 __all__ = ('UserRatingParsingOptions', 'UserRatingParser')
 
 
-from dataclasses import dataclass
 import re
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.types.common import UserRating
+from dataclasses import dataclass
 from enum import Enum
+
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.types.common import UserRating
 
 
 class UserRatingParsingMode(Enum):

@@ -1,11 +1,14 @@
+from __future__ import annotations
+
 import random
 import string
 from dataclasses import replace
 
 import pytest
 
-from funpayparsers.parsers import PrivateChatPreviewsParser
 from funpayparsers.types import PrivateChatPreview
+from funpayparsers.parsers import PrivateChatPreviewsParser
+
 
 html = """
 <a href="https://funpay.com/chat/?node={id}" class="contact-item" data-id="{id}" data-node-msg="{last_message_id}" data-user-msg="{last_read_message_id}">

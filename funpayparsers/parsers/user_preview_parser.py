@@ -1,12 +1,15 @@
+from __future__ import annotations
+
+
 __all__ = ('UserPreviewParser', 'UserPreviewParsingOptions', 'UserPreviewParsingMode')
 
 
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.types.common import UserPreview
-from funpayparsers.parsers.utils import extract_css_url
-
 from dataclasses import dataclass
 from enum import Enum
+
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.types.common import UserPreview
+from funpayparsers.parsers.utils import extract_css_url
 
 
 class UserPreviewParsingMode(Enum):

@@ -1,9 +1,13 @@
+from __future__ import annotations
+
+
 __all__ = ('MainPage', )
 
 from dataclasses import dataclass
-from funpayparsers.types.pages.base import FunPayPage
-from funpayparsers.types.categories import Category
+
 from funpayparsers.types.chat import Chat
+from funpayparsers.types.categories import Category
+from funpayparsers.types.pages.base import FunPayPage
 
 
 @dataclass

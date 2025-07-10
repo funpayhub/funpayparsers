@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+
 __all__ = ('AchievementParsingOptions', 'AchievementParser')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
+
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.common import Achievement
 
 

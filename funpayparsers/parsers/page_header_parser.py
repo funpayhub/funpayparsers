@@ -1,12 +1,17 @@
+from __future__ import annotations
+
+
 __all__ = ('PageHeaderParsingOptions', 'PageHeaderParser')
 
 from dataclasses import dataclass
+
 from selectolax.lexbor import LexborNode
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.types.common_page_elements import PageHeader
-from funpayparsers.parsers.utils import parse_money_value_string
+
 from funpayparsers.types.enums import Currency, Language
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.common import MoneyValue
+from funpayparsers.parsers.utils import parse_money_value_string
+from funpayparsers.types.common_page_elements import PageHeader
 
 
 _CURRENCIES = {

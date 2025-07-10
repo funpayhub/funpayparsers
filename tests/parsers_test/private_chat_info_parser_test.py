@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import pytest
 
-from funpayparsers.parsers import PrivateChatInfoParser, PrivateChatInfoParsingOptions
 from funpayparsers.types import PrivateChatInfo, CurrentlyViewingOfferInfo
+from funpayparsers.parsers import PrivateChatInfoParser, PrivateChatInfoParsingOptions
 
 
 OPTIONS = PrivateChatInfoParsingOptions(empty_raw_source=True)

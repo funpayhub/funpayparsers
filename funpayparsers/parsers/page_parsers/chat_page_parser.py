@@ -1,13 +1,26 @@
+from __future__ import annotations
+
+
 __all__ = ('ChatPageParsingOptions', 'ChatPageParser')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.parsers.chat_previews_parser import PrivateChatPreviewsParser, PrivateChatPreviewParsingOptions
+
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.parsers.chat_parser import ChatParser, ChatParsingOptions
-from funpayparsers.parsers.private_chat_info_parser import PrivateChatInfoParser, PrivateChatInfoParsingOptions
-from funpayparsers.parsers.page_header_parser import PageHeaderParser, PageHeaderParsingOptions
-from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
 from funpayparsers.types.pages.chat_page import ChatPage
+from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
+from funpayparsers.parsers.page_header_parser import (
+    PageHeaderParser,
+    PageHeaderParsingOptions,
+)
+from funpayparsers.parsers.chat_previews_parser import (
+    PrivateChatPreviewsParser,
+    PrivateChatPreviewParsingOptions,
+)
+from funpayparsers.parsers.private_chat_info_parser import (
+    PrivateChatInfoParser,
+    PrivateChatInfoParsingOptions,
+)
 
 
 @dataclass(frozen=True)

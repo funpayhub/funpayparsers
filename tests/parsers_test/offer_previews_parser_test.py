@@ -1,6 +1,11 @@
-from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParser, OfferPreviewsParsingOptions
-from funpayparsers.types.offers import OfferPreview, OfferSeller
+from __future__ import annotations
+
 from funpayparsers.types.common import MoneyValue
+from funpayparsers.types.offers import OfferSeller, OfferPreview
+from funpayparsers.parsers.offer_previews_parser import (
+    OfferPreviewsParser,
+    OfferPreviewsParsingOptions,
+)
 
 
 OPTIONS = OfferPreviewsParsingOptions(empty_raw_source=True)

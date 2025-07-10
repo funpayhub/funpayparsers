@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+
 __all__ = ('OrderPreview', 'OrderPreviewsBatch')
 
 
+from typing import TYPE_CHECKING
 from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
-from funpayparsers.types.common import MoneyValue
 from funpayparsers.types.enums import OrderStatus
-from typing import TYPE_CHECKING
+from funpayparsers.types.common import MoneyValue
+
+
 if TYPE_CHECKING:
     from funpayparsers.types.common import UserPreview
 

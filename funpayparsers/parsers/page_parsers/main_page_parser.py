@@ -1,12 +1,22 @@
+from __future__ import annotations
+
+
 __all__ = ('MainPageParser', 'MainPageParsingOptions')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.parsers.categories_parser import CategoriesParser, CategoriesParsingOptions
+
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.parsers.chat_parser import ChatParser, ChatParsingOptions
-from funpayparsers.parsers.page_header_parser import PageHeaderParser, PageHeaderParsingOptions
-from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
 from funpayparsers.types.pages.main_page import MainPage
+from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
+from funpayparsers.parsers.categories_parser import (
+    CategoriesParser,
+    CategoriesParsingOptions,
+)
+from funpayparsers.parsers.page_header_parser import (
+    PageHeaderParser,
+    PageHeaderParsingOptions,
+)
 
 
 @dataclass(frozen=True)

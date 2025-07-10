@@ -1,9 +1,13 @@
+from __future__ import annotations
+
+
 __all__ = ('UserBadgeParser', 'UserBadgeParsingOptions')
 
 
+from dataclasses import dataclass
+
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.common import UserBadge
-from dataclasses import dataclass
 
 
 @dataclass(frozen=True)

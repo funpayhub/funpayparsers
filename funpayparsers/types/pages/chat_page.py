@@ -1,8 +1,12 @@
+from __future__ import annotations
+
+
 __all__ = ('ChatPage', )
 
 from dataclasses import dataclass
+
+from funpayparsers.types.chat import Chat, PrivateChatInfo, PrivateChatPreview
 from funpayparsers.types.pages.base import FunPayPage
-from funpayparsers.types.chat import PrivateChatPreview, Chat, PrivateChatInfo
 
 
 @dataclass

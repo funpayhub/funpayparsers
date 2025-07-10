@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+
 __all__ = ('PrivateChatPreview', 'Chat', 'PrivateChatInfo')
 
-from funpayparsers.types.base import FunPayObject
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
+from dataclasses import dataclass
+
+from funpayparsers.types.base import FunPayObject
+
+
 if TYPE_CHECKING:
-    from funpayparsers.types.updates import CurrentlyViewingOfferInfo
     from funpayparsers.types import Message, UserPreview
+    from funpayparsers.types.updates import CurrentlyViewingOfferInfo
 
 
 @dataclass

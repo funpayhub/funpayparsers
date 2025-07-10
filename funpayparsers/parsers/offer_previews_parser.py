@@ -1,14 +1,22 @@
+from __future__ import annotations
+
+
 __all__ = ('OfferPreviewsParser', 'OfferPreviewsParsingOptions')
 
+import re
+from dataclasses import dataclass
 from copy import deepcopy
 
-from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
-from funpayparsers.types.offers import OfferPreview, OfferSeller
-from funpayparsers.parsers.utils import extract_css_url
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParsingOptions, MoneyValueParsingMode
-from dataclasses import dataclass
-import re
 from selectolax.lexbor import LexborNode
+
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.types.offers import OfferSeller, OfferPreview
+from funpayparsers.parsers.utils import extract_css_url
+from funpayparsers.parsers.money_value_parser import (
+    MoneyValueParser,
+    MoneyValueParsingMode,
+    MoneyValueParsingOptions,
+)
 
 
 @dataclass(frozen=True)

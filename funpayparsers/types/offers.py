@@ -1,6 +1,9 @@
+from __future__ import annotations
+
+
 __all__ = ('OfferPreview', 'OfferSeller', 'OfferFields')
 
-from dataclasses import dataclass, field
+from dataclasses import field, dataclass
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.common import MoneyValue

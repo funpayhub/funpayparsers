@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import pytest
-from funpayparsers.parsers.utils import resolve_messages_senders
+
 from funpayparsers.types import Message, UserBadge
+from funpayparsers.parsers.utils import resolve_messages_senders
 
 
 support_badge = UserBadge(

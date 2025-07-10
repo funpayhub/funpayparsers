@@ -1,19 +1,35 @@
+from __future__ import annotations
+
+
 __all__ = ('ProfilePageParsingOptions', 'ProfilePageParser')
 
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParsingOptions
-from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
-from funpayparsers.parsers.page_header_parser import PageHeaderParser, PageHeaderParsingOptions
-from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParser, OfferPreviewsParsingOptions
-from funpayparsers.parsers.rating_parser import UserRatingParser, UserRatingParsingOptions
+
+from funpayparsers.types.enums import BadgeType, SubcategoryType
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.parsers.chat_parser import ChatParser, ChatParsingOptions
 from funpayparsers.parsers.badge_parser import UserBadgeParser, UserBadgeParsingOptions
-from funpayparsers.parsers.achievement_parser import AchievementParser, AchievementParsingOptions
-from funpayparsers.parsers.utils import extract_css_url
+from funpayparsers.parsers.rating_parser import (
+    UserRatingParser,
+    UserRatingParsingOptions,
+)
+from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
+from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParsingOptions
 from funpayparsers.types.pages.profile_page import ProfilePage
-from funpayparsers.types.enums import BadgeType, SubcategoryType
+from funpayparsers.parsers.achievement_parser import (
+    AchievementParser,
+    AchievementParsingOptions,
+)
+from funpayparsers.parsers.page_header_parser import (
+    PageHeaderParser,
+    PageHeaderParsingOptions,
+)
+from funpayparsers.parsers.offer_previews_parser import (
+    OfferPreviewsParser,
+    OfferPreviewsParsingOptions,
+)
 
 
 @dataclass(frozen=True)
