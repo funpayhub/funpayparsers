@@ -6,7 +6,7 @@ version = "0.1.0dev1"
 readme = "README.md"
 license = "MIT"
 
-requires-python = ">=3.13"
+requires-python = ">=3.9"
 dependencies = [
     "selectolax>=0.3.31",
 ]
