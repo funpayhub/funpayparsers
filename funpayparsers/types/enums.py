@@ -15,7 +15,7 @@ __all__ = (
 
 import re
 from typing import Type, TypeVar
-from enum import UNIQUE, Enum, verify
+from enum import Enum
 from types import MappingProxyType
 from functools import cache
 
@@ -23,7 +23,6 @@ from functools import cache
 T = TypeVar('T')
 
 
-@verify(UNIQUE)
 class UpdateType(Enum):
     ORDERS_COUNTERS = 'orders_counters'
     CHAT_COUNTER = 'chat_counter'
@@ -39,7 +38,6 @@ class UpdateType(Enum):
         return cls(type_str)
 
 
-@verify(UNIQUE)
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
 
@@ -65,7 +63,6 @@ class SubcategoryType(Enum):
         return cls.UNKNOWN
 
 
-@verify(UNIQUE)
 class OrderStatus(Enum):
     """
     Order statuses enumeration.
@@ -99,7 +96,6 @@ class OrderStatus(Enum):
         return cls.UNKNOWN
 
 
-@verify(UNIQUE)
 class Currency(Enum):
     """Currencies enumeration."""
 
@@ -118,7 +114,6 @@ class Currency(Enum):
         return cls(character)
 
 
-@verify(UNIQUE)
 class TransactionStatus(Enum):
     """Transaction statuses enumeration."""
 
@@ -149,11 +144,9 @@ class TransactionStatus(Enum):
         return cls.UNKNOWN
 
 
-@verify(UNIQUE)
 class SystemMessageType(Enum): ...
 
 
-@verify(UNIQUE)
 class BadgeType(Enum):
     """Badge types enumeration."""
 
