@@ -1,12 +1,21 @@
+from __future__ import annotations
+
+
 __all__ = ('ChatParsingOptions', 'ChatParser')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.parsers.user_preview_parser import UserPreviewParser, UserPreviewParsingOptions, UserPreviewParsingMode
-from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParsingOptions
-from funpayparsers.types.chat import Chat
-from funpayparsers.types.common import UserPreview
+
 from selectolax.lexbor import LexborNode
+
+from funpayparsers.types.chat import Chat
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.types.common import UserPreview
+from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParsingOptions
+from funpayparsers.parsers.user_preview_parser import (
+    UserPreviewParser,
+    UserPreviewParsingMode,
+    UserPreviewParsingOptions,
+)
 
 
 @dataclass(frozen=True)

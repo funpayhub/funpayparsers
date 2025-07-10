@@ -1,14 +1,27 @@
+from __future__ import annotations
+
+
 __all__ = ('TransactionsPageParsingOptions', 'TransactionsPageParser')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.parsers.transaction_previews_parser import (TransactionPreviewsParser,
-                                                               TransactionPreviewsParsingOptions)
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParsingOptions, MoneyValueParsingMode
-from funpayparsers.parsers.page_header_parser import PageHeaderParser, PageHeaderParsingOptions
-from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
+
 from funpayparsers.types.enums import Currency
 from funpayparsers.types.pages import TransactionsPage
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
+from funpayparsers.parsers.money_value_parser import (
+    MoneyValueParser,
+    MoneyValueParsingMode,
+    MoneyValueParsingOptions,
+)
+from funpayparsers.parsers.page_header_parser import (
+    PageHeaderParser,
+    PageHeaderParsingOptions,
+)
+from funpayparsers.parsers.transaction_previews_parser import (
+    TransactionPreviewsParser,
+    TransactionPreviewsParsingOptions,
+)
 
 
 @dataclass(frozen=True)

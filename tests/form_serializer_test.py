@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from funpayparsers.parsers.utils import serialize_form
 
 

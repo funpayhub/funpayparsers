@@ -1,12 +1,23 @@
+from __future__ import annotations
+
+
 __all__ = ('OrderPreviewsParsingOptions', 'OrderPreviewsParser',)
 
 from dataclasses import dataclass
 
+from funpayparsers.types.enums import OrderStatus
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.orders import OrderPreview, OrderPreviewsBatch
-from funpayparsers.parsers.user_preview_parser import UserPreviewParser, UserPreviewParsingOptions, UserPreviewParsingMode
-from funpayparsers.types.enums import OrderStatus
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParsingOptions, MoneyValueParsingMode
+from funpayparsers.parsers.money_value_parser import (
+    MoneyValueParser,
+    MoneyValueParsingMode,
+    MoneyValueParsingOptions,
+)
+from funpayparsers.parsers.user_preview_parser import (
+    UserPreviewParser,
+    UserPreviewParsingMode,
+    UserPreviewParsingOptions,
+)
 
 
 @dataclass(frozen=True)

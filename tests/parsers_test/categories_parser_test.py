@@ -1,7 +1,9 @@
-import pytest
-from funpayparsers.parsers import (CategoriesParser, CategoriesParsingOptions)
-from funpayparsers.types import Category, Subcategory, SubcategoryType
+from __future__ import annotations
 
+import pytest
+
+from funpayparsers.types import Category, Subcategory, SubcategoryType
+from funpayparsers.parsers import CategoriesParser, CategoriesParsingOptions
 
 
 OPTIONS = CategoriesParsingOptions(empty_raw_source=True)

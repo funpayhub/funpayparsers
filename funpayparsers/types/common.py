@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 __all__ = ('MoneyValue', 'UserBadge', 'UserPreview', 'UserRating', 'Achievement',)
 
 from dataclasses import dataclass

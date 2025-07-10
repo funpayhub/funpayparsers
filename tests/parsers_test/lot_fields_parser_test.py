@@ -1,5 +1,10 @@
-from funpayparsers.parsers.offer_fields_parser import OfferFieldsParser, OfferFieldsParsingOptions
+from __future__ import annotations
+
 from funpayparsers.types.offers import OfferFields
+from funpayparsers.parsers.offer_fields_parser import (
+    OfferFieldsParser,
+    OfferFieldsParsingOptions,
+)
 
 
 OPTIONS = OfferFieldsParsingOptions(empty_raw_source=True)

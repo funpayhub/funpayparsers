@@ -1,6 +1,8 @@
-from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParsingOptions
-from funpayparsers.types.reviews import Review, ReviewsBatch
+from __future__ import annotations
+
 from funpayparsers.types.common import MoneyValue
+from funpayparsers.types.reviews import Review, ReviewsBatch
+from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParsingOptions
 
 
 OPTIONS = ReviewsParsingOptions(empty_raw_source=True)

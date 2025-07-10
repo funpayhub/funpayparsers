@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 __all__ = ('OrdersCounters',
            'ChatBookmarks',
            'ChatCounter',
@@ -8,13 +11,13 @@ __all__ = ('OrdersCounters',
            'UpdateObject',
            'UpdatesPack')
 
-from dataclasses import dataclass
 from typing import Generic, TypeVar
+from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.chat import PrivateChatPreview
-from funpayparsers.types.messages import Message
 from funpayparsers.types.enums import UpdateType
+from funpayparsers.types.messages import Message
 
 
 UpdateData = TypeVar('UpdateData')

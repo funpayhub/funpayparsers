@@ -1,5 +1,13 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta
-from funpayparsers.parsers.utils import parse_date_string, TODAY_WORDS, YESTERDAY_WORDS, MONTHS
+
+from funpayparsers.parsers.utils import (
+    MONTHS,
+    TODAY_WORDS,
+    YESTERDAY_WORDS,
+    parse_date_string,
+)
 
 
 CURR_DATE = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)

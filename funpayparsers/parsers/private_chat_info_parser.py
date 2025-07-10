@@ -1,9 +1,16 @@
+from __future__ import annotations
+
+
 __all__ = ('PrivateChatInfoParsingOptions', 'PrivateChatInfoParser')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.parsers.cpu_parser import CurrentlyViewingOfferInfoParser, CurrentlyViewingOfferInfoParsingOptions
+
 from funpayparsers.types.chat import PrivateChatInfo
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.parsers.cpu_parser import (
+    CurrentlyViewingOfferInfoParser,
+    CurrentlyViewingOfferInfoParsingOptions,
+)
 
 
 @dataclass(frozen=True)

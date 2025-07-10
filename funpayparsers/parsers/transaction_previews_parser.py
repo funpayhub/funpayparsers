@@ -1,10 +1,18 @@
+from __future__ import annotations
+
+
 __all__ = ('TransactionPreviewsParser', 'TransactionPreviewsParsingOptions')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
+
+from funpayparsers.types.enums import PaymentMethod, TransactionStatus
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.finances import TransactionPreview, TransactionPreviewsBatch
-from funpayparsers.types.enums import TransactionStatus, PaymentMethod
-from funpayparsers.parsers.money_value_parser import MoneyValueParsingOptions, MoneyValueParsingMode, MoneyValueParser
+from funpayparsers.parsers.money_value_parser import (
+    MoneyValueParser,
+    MoneyValueParsingMode,
+    MoneyValueParsingOptions,
+)
 
 
 @dataclass(frozen=True)

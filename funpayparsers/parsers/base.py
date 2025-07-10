@@ -1,16 +1,19 @@
+from __future__ import annotations
+
+
 __all__ = ('FunPayObjectParser', 'ParsingOptions',
            'FunPayHTMLObjectParser', 'FunPayJSONObjectParser')
 
-from abc import ABC, abstractmethod
-from typing import get_args, get_origin
-from dataclasses import dataclass, replace, fields, field
-from typing import Generic, Type, TypeVar, Any, cast
-from collections.abc import Sequence, Mapping
 import json
+from typing import Any, Type, Generic, TypeVar, cast, get_args, get_origin
+from dataclasses import field, fields, replace, dataclass
+from abc import ABC, abstractmethod
+from collections.abc import Mapping, Sequence
 
-from funpayparsers.types.base import FunPayObject
-from funpayparsers.exceptions import ParsingError
 from selectolax.lexbor import LexborHTMLParser
+
+from funpayparsers.exceptions import ParsingError
+from funpayparsers.types.base import FunPayObject
 
 
 R = TypeVar('R', bound=Any)

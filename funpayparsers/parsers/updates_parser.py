@@ -1,20 +1,32 @@
+from __future__ import annotations
+
+
 __all__ = ('UpdatesParser', 'UpdatesParsingOptions')
 
-from funpayparsers.parsers.base import FunPayJSONObjectParser, ParsingOptions
-from funpayparsers.types.updates import (OrdersCounters,
-                                         ChatBookmarks,
-                                         ChatCounter,
-                                         NodeInfo,
-                                         CurrentlyViewingOfferInfo,
-                                         ChatNode,
-                                         ActionResponse,
-                                         UpdateObject,
-                                         UpdatesPack)
-from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParsingOptions
-from funpayparsers.parsers.chat_previews_parser import PrivateChatPreviewsParser, PrivateChatPreviewParsingOptions
-from funpayparsers.parsers.cpu_parser import CurrentlyViewingOfferInfoParser, CurrentlyViewingOfferInfoParsingOptions
-from funpayparsers.types.enums import UpdateType
 from dataclasses import dataclass
+
+from funpayparsers.types.enums import UpdateType
+from funpayparsers.parsers.base import ParsingOptions, FunPayJSONObjectParser
+from funpayparsers.types.updates import (
+    ChatNode,
+    NodeInfo,
+    ChatCounter,
+    UpdatesPack,
+    UpdateObject,
+    ChatBookmarks,
+    ActionResponse,
+    OrdersCounters,
+    CurrentlyViewingOfferInfo,
+)
+from funpayparsers.parsers.cpu_parser import (
+    CurrentlyViewingOfferInfoParser,
+    CurrentlyViewingOfferInfoParsingOptions,
+)
+from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParsingOptions
+from funpayparsers.parsers.chat_previews_parser import (
+    PrivateChatPreviewsParser,
+    PrivateChatPreviewParsingOptions,
+)
 
 
 @dataclass(frozen=True)

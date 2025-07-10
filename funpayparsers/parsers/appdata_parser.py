@@ -1,10 +1,14 @@
+from __future__ import annotations
+
+
 __all__ = ('AppDataParsingOptions', 'AppDataParser')
 
-from dataclasses import dataclass
 import json
-from funpayparsers.parsers.base import FunPayJSONObjectParser, ParsingOptions
-from funpayparsers.types.common_page_elements import AppData, WebPush
+from dataclasses import dataclass
+
 from funpayparsers.types.enums import Language
+from funpayparsers.parsers.base import ParsingOptions, FunPayJSONObjectParser
+from funpayparsers.types.common_page_elements import AppData, WebPush
 
 
 @dataclass(frozen=True)
