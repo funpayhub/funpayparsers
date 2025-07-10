@@ -49,8 +49,6 @@ class UserPreviewParser(FunPayHTMLObjectParser[UserPreview, UserPreviewParsingOp
             return self._parse_from_order_preview()
         return self._parse_from_chat()
 
-
-
     def _parse_from_order_preview(self) -> UserPreview:
         user_div = self.tree.css('div.media-user')[0]
         photo_style = user_div.css('div.avatar-photo')[0].attributes['style']

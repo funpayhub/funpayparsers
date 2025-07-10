@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 
-__all__ = ('OrdersCounters',
-           'ChatBookmarks',
-           'ChatCounter',
-           'NodeInfo',
-           'CurrentlyViewingOfferInfo',
-           'ChatNode',
-           'ActionResponse',
-           'UpdateObject',
-           'UpdatesPack')
+__all__ = (
+    'OrdersCounters',
+    'ChatBookmarks',
+    'ChatCounter',
+    'NodeInfo',
+    'CurrentlyViewingOfferInfo',
+    'ChatNode',
+    'ActionResponse',
+    'UpdateObject',
+    'UpdatesPack',
+)
 
 from typing import Generic, TypeVar
 from dataclasses import dataclass

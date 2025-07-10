@@ -44,7 +44,8 @@ class TransactionsPageParsingOptions(ParsingOptions):
     """
 
     transaction_previews_parsing_options: TransactionPreviewsParsingOptions = (
-        TransactionPreviewsParsingOptions())
+        TransactionPreviewsParsingOptions()
+    )
     """
     Options instance for ``TransactionPreviewsParser``, which is used by 
     ``TransactionsPageParser``.
@@ -79,7 +80,8 @@ class TransactionsPageParser(
                 MoneyValueParser(
                     i.text().strip(),
                     options=self.options.money_value_parsing_options,
-                    parsing_mode=MoneyValueParsingMode.FROM_STRING).parse(),
+                    parsing_mode=MoneyValueParsingMode.FROM_STRING,
+                ).parse(),
             )
 
         rub_balance = [i for i in money_values if i.currency is Currency.RUB]

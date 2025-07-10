@@ -34,7 +34,6 @@ class OfferPreviewsParsingOptions(ParsingOptions):
     """
 
 
-
 class OfferPreviewsParser(
     FunPayHTMLObjectParser[list[OfferPreview], OfferPreviewsParsingOptions],
 ):
@@ -75,8 +74,9 @@ class OfferPreviewsParser(
             # specify the amount of goods.
             amount_div = offer_div.css('div.tc-amount')
             if amount_div:
-                amount_str = (amount_div[0].attributes.get('data-s') or
-                              amount_div[0].text(strip=True))
+                amount_str = amount_div[0].attributes.get('data-s') or amount_div[
+                    0
+                ].text(strip=True)
                 amount = int(amount_str) if amount_str.isnumeric() else None
             else:
                 amount = None
@@ -86,9 +86,9 @@ class OfferPreviewsParser(
                 price_div.html,
                 options=self.options.money_value_parsing_options,
                 parsing_mode=MoneyValueParsingMode.FROM_OFFER_PREVIEW,
-                parse_value_from_attribute=(False
-                                            if 'chips' in offer_div.attributes['href']
-                                            else True),
+                parse_value_from_attribute=(
+                    False if 'chips' in offer_div.attributes['href'] else True
+                ),
             ).parse()
 
             seller = self._parse_user_tag(offer_div, processed_users)
@@ -109,18 +109,20 @@ class OfferPreviewsParser(
                 div = div[0]
                 names[data_key] = div.text(strip=True)
 
-            result.append(OfferPreview(
-                raw_source=offer_div.html,
-                id=int(offer_id_str) if offer_id_str.isnumeric() else offer_id_str,
-                auto_delivery=bool(offer_div.attributes.get('data-auto')),
-                is_pinned=bool(offer_div.attributes.get('data-user')),
-                desc=desc,
-                amount=amount,
-                price=price,
-                seller=seller,
-                other_data=additional_data,
-                other_data_names=names,
-            ))
+            result.append(
+                OfferPreview(
+                    raw_source=offer_div.html,
+                    id=int(offer_id_str) if offer_id_str.isnumeric() else offer_id_str,
+                    auto_delivery=bool(offer_div.attributes.get('data-auto')),
+                    is_pinned=bool(offer_div.attributes.get('data-user')),
+                    desc=desc,
+                    amount=amount,
+                    price=price,
+                    seller=seller,
+                    other_data=additional_data,
+                    other_data_names=names,
+                )
+            )
 
         return result
 
@@ -148,25 +150,29 @@ class OfferPreviewsParser(
         # of reviews next to them.
         stars_amount = len(user_div.css('i.fas'))
         if stars_amount:
-            reviews_amount = int(user_div.css('span.rating-mini-count')[0].
-                                 text(deep=True, strip=True))
+            reviews_amount = int(
+                user_div.css('span.rating-mini-count')[0].text(deep=True, strip=True)
+            )
         else:
-            reviews_amount_txt = (user_div.css('div.media-user-reviews')[0].
-                                  text(deep=True, strip=True))
+            reviews_amount_txt = user_div.css('div.media-user-reviews')[0].text(
+                deep=True, strip=True
+            )
             reviews_amount = re.findall(r'\d+', reviews_amount_txt)
             reviews_amount = int(reviews_amount[0]) if reviews_amount else 0
 
         result = OfferSeller(
             raw_source=user_div.html,
             id=(
-                user_id if user_id is not None
+                user_id
+                if user_id is not None
                 else int(username_span.attributes['data-href'].split('/')[-2])
             ),
             username=username_span.text(strip=True),
             online=bool(offer_tag.attributes.get('data-online')),
             avatar_url=extract_css_url(avatar_tag_style),
-            register_date_text=(user_div.css('div.media-user-info')[0]
-                                .text(deep=True, strip=True)),
+            register_date_text=(
+                user_div.css('div.media-user-info')[0].text(deep=True, strip=True)
+            ),
             rating=stars_amount,
             reviews_amount=reviews_amount,
         )

@@ -178,6 +178,8 @@ class BadgeType(Enum):
 
 
 _PAYMENT_METHOD_CLS_RE = re.compile(r'payment-method-[a-zA-Z0-9_]+')
+
+
 class PaymentMethod(Enum):
     """
     Enumeration of payment methods (withdrawal / deposit types).
@@ -273,11 +275,20 @@ class PaymentMethod(Enum):
     """
 
     CARD_UNKNOWN = (
-        'payment-method-11', 'payment-method-15', 'payment-method-16',
-        'payment-method-25', 'payment-method-26', 'payment-method-27',
-        'payment-method-32', 'payment-method-33', 'payment-method-34',
-        'payment-method-35', 'payment-method-37', 'payment-method-38',
-        'payment-method-39', 'payment-method-40',
+        'payment-method-11',
+        'payment-method-15',
+        'payment-method-16',
+        'payment-method-25',
+        'payment-method-26',
+        'payment-method-27',
+        'payment-method-32',
+        'payment-method-33',
+        'payment-method-34',
+        'payment-method-35',
+        'payment-method-37',
+        'payment-method-38',
+        'payment-method-39',
+        'payment-method-40',
     )
     """
     Unknown card, maybe it will added soon. 
@@ -380,9 +391,9 @@ class PaymentMethod(Enum):
     @classmethod
     @cache
     def css_class_to_method_map(cls: Type[T]) -> MappingProxyType[str, T]:
-        return MappingProxyType({
-            css_class: method for method in cls for css_class in method.value
-        })
+        return MappingProxyType(
+            {css_class: method for method in cls for css_class in method.value}
+        )
 
     @classmethod
     def get_by_css_class(cls: Type[T], css_class: str) -> T:
@@ -391,12 +402,13 @@ class PaymentMethod(Enum):
         if not match:
             return cls.UNKNOWN
 
-        css_class = match.string[match.start():match.end()]
+        css_class = match.string[match.start() : match.end()]
         return cls.css_class_to_method_map().get(css_class) or cls.UNKNOWN
 
 
 class Language(Enum):
     """Page languages enumeration."""
+
     UNKNOWN = ''
     RU = 'ru'
     EN = 'en'

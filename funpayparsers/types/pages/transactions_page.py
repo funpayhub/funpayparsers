@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-__all__ = ('TransactionsPage', )
+__all__ = ('TransactionsPage',)
 
 from dataclasses import dataclass
 

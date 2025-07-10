@@ -34,7 +34,8 @@ class UpdatesParsingOptions(ParsingOptions):
     """Options class for ``UpdatesParser``."""
 
     private_chat_previews_parsing_options: PrivateChatPreviewParsingOptions = (
-        PrivateChatPreviewParsingOptions())
+        PrivateChatPreviewParsingOptions()
+    )
     """
     Options instance for ``CurrentlyViewingOfferInfoParser``, 
     which is used by ``UpdatesParser``.
@@ -51,14 +52,14 @@ class UpdatesParsingOptions(ParsingOptions):
     """
 
     cpu_parsing_options: CurrentlyViewingOfferInfoParsingOptions = (
-        CurrentlyViewingOfferInfoParsingOptions())
+        CurrentlyViewingOfferInfoParsingOptions()
+    )
     """
     Options instance for ``PrivateChatPreviewsParser``, 
     which is used by ``UpdatesParser``.
 
     Defaults to ``CurrentlyViewingOfferInfoParsingOptions()``.
     """
-
 
 
 class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):

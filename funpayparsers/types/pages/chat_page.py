@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-__all__ = ('ChatPage', )
+__all__ = ('ChatPage',)
 
 from dataclasses import dataclass
 

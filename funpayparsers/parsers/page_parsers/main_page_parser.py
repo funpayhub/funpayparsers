@@ -82,21 +82,18 @@ class MainPageParser(FunPayHTMLObjectParser[MainPage, MainPageParsingOptions]):
 
         return MainPage(
             raw_source=self.tree.html,
-
             header=PageHeaderParser(
                 header_div.html,
                 options=self.options.page_header_parsing_options,
             ).parse(),
-
             last_categories=last_categories,
-
             categories=categories,
-
             secret_chat=ChatParser(
                 secret_chat_div[0].html,
                 options=self.options.chat_parsing_options,
-            ).parse() if secret_chat_div else None,
-
+            ).parse()
+            if secret_chat_div
+            else None,
             app_data=AppDataParser(
                 appdata,
                 self.options.app_data_parsing_options,

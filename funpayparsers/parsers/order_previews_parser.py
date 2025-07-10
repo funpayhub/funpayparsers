@@ -48,10 +48,12 @@ class OrderPreviewsParsingOptions(ParsingOptions):
     """
 
 
-class OrderPreviewsParser(FunPayHTMLObjectParser[
-                              list[OrderPreview],
-                              OrderPreviewsParsingOptions,
-                          ]):
+class OrderPreviewsParser(
+    FunPayHTMLObjectParser[
+        list[OrderPreview],
+        OrderPreviewsParsingOptions,
+    ]
+):
     """
     Class for parsing order previews.
 
@@ -79,16 +81,20 @@ class OrderPreviewsParser(FunPayHTMLObjectParser[
                 parsing_mode=UserPreviewParsingMode.FROM_ORDER_PREVIEW,
             ).parse()
 
-            result.append(OrderPreview(
-                raw_source=order.html,
-                id=order.attributes['href'].split('/')[-2],
-                date_text=order.css('div.tc-date-time')[0].text(strip=True),
-                desc=order.css('div.order-desc > div')[0].text(deep=False, strip=True),
-                category_text=order.css('div.text-muted')[0].text(strip=True),
-                status=OrderStatus.get_by_css_class(status_class),
-                total=value,
-                counterparty=counterparty,
-            ))
+            result.append(
+                OrderPreview(
+                    raw_source=order.html,
+                    id=order.attributes['href'].split('/')[-2],
+                    date_text=order.css('div.tc-date-time')[0].text(strip=True),
+                    desc=order.css('div.order-desc > div')[0].text(
+                        deep=False, strip=True
+                    ),
+                    category_text=order.css('div.text-muted')[0].text(strip=True),
+                    status=OrderStatus.get_by_css_class(status_class),
+                    total=value,
+                    counterparty=counterparty,
+                )
+            )
 
         next_id = self.tree.css('input[type="hidden"][name="continue"]')
 

@@ -17,10 +17,12 @@ class CurrentlyViewingOfferInfoParsingOptions(ParsingOptions):
     ...
 
 
-class CurrentlyViewingOfferInfoParser(FunPayHTMLObjectParser[
-                                          CurrentlyViewingOfferInfo,
-                                          CurrentlyViewingOfferInfoParsingOptions,
-                                      ]):
+class CurrentlyViewingOfferInfoParser(
+    FunPayHTMLObjectParser[
+        CurrentlyViewingOfferInfo,
+        CurrentlyViewingOfferInfoParsingOptions,
+    ]
+):
     """
     Class for parsing C-P-U data (which offer specific user is currently viewing).
     Possible locations:

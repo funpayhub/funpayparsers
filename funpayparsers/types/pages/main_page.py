@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-__all__ = ('MainPage', )
+__all__ = ('MainPage',)
 
 from dataclasses import dataclass
 
@@ -13,6 +13,7 @@ from funpayparsers.types.pages.base import FunPayPage
 @dataclass
 class MainPage(FunPayPage):
     """Represents the main page (https://funpay.com)."""
+
     last_categories: list[Category]
     """Last opened categories."""
 

@@ -61,8 +61,11 @@ class PrivateChatInfoParser(
                 result.currently_viewing_offer = cpu
             else:
                 result.language = (
-                    div.css('div')[0].text(separator='\n', strip=True).
-                    strip().split('\n')[-1].strip()
+                    div.css('div')[0]
+                    .text(separator='\n', strip=True)
+                    .strip()
+                    .split('\n')[-1]
+                    .strip()
                 )
 
         return result

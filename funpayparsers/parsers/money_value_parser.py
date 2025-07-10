@@ -27,7 +27,6 @@ class MoneyValueParsingMode(Enum):
     """Raw source is/from an offer preview HTML."""
 
 
-
 @dataclass(frozen=True)
 class MoneyValueParsingOptions(ParsingOptions):
     """Options class for ``MoneyValueParser``."""
@@ -72,8 +71,7 @@ class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParsingOptio
     def _parse(self):
         types = {
             MoneyValueParsingMode.FROM_ORDER_PREVIEW: self._parse_order_preview_type,
-            MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW:
-                self._parse_transaction_preview_type,
+            MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW: self._parse_transaction_preview_type,
             MoneyValueParsingMode.FROM_OFFER_PREVIEW: self._parse_offer_preview_type,
             MoneyValueParsingMode.FROM_STRING: self._parse_string_type,
         }
