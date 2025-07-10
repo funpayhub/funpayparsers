@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 __all__ = ('extract_css_url',
            'resolve_messages_senders',
            'parse_date_string',
@@ -5,14 +8,15 @@ __all__ = ('extract_css_url',
            'serialize_form')
 
 import re
-from collections.abc import Iterable
-from funpayparsers.types.messages import Message
-from datetime import datetime, timedelta
 from copy import deepcopy
-from selectolax.lexbor import LexborHTMLParser, LexborNode
+from datetime import datetime, timedelta
+from collections.abc import Iterable
+
+from selectolax.lexbor import LexborNode, LexborHTMLParser
 
 from funpayparsers.types.enums import BadgeType
 from funpayparsers.types.common import MoneyValue
+from funpayparsers.types.messages import Message
 
 
 CSS_URL_RE = re.compile(r'url\(([^()]+)\)', re.IGNORECASE)

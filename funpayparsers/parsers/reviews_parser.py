@@ -1,14 +1,23 @@
+from __future__ import annotations
+
+
 __all__ = (
     'ReviewsParser',
     'ReviewsParsingOptions'
 )
 
-from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
-from funpayparsers.types.reviews import Review, ReviewsBatch
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParsingOptions, MoneyValueParsingMode
-from funpayparsers.types.common import MoneyValue
 from dataclasses import dataclass
+
 from selectolax.lexbor import LexborNode
+
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.types.common import MoneyValue
+from funpayparsers.types.reviews import Review, ReviewsBatch
+from funpayparsers.parsers.money_value_parser import (
+    MoneyValueParser,
+    MoneyValueParsingMode,
+    MoneyValueParsingOptions,
+)
 
 
 @dataclass(frozen=True)

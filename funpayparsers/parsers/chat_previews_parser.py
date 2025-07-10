@@ -1,10 +1,13 @@
+from __future__ import annotations
+
+
 __all__ = ('PrivateChatPreviewsParser', 'PrivateChatPreviewParsingOptions')
 
 from dataclasses import dataclass
 
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.types.chat import PrivateChatPreview
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.parsers.utils import extract_css_url
 
 
 @dataclass(frozen=True)

@@ -1,13 +1,23 @@
+from __future__ import annotations
+
+
 __all__ = ('SubcategoryPageParsingOptions', 'SubcategoryPageParser')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.parsers.page_header_parser import PageHeaderParser, PageHeaderParsingOptions
-from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
-from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParser, OfferPreviewsParsingOptions
-from funpayparsers.types.categories import Subcategory
+
 from funpayparsers.types.enums import SubcategoryType
 from funpayparsers.types.pages import SubcategoryPage
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.types.categories import Subcategory
+from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
+from funpayparsers.parsers.page_header_parser import (
+    PageHeaderParser,
+    PageHeaderParsingOptions,
+)
+from funpayparsers.parsers.offer_previews_parser import (
+    OfferPreviewsParser,
+    OfferPreviewsParsingOptions,
+)
 
 
 @dataclass(frozen=True)

@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 __all__ = ('TransactionPreview',
            'Transaction',
            'TransactionPreviewsBatch')
@@ -6,8 +9,8 @@ __all__ = ('TransactionPreview',
 from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
-from funpayparsers.types.common import MoneyValue
 from funpayparsers.types.enums import PaymentMethod, TransactionStatus
+from funpayparsers.types.common import MoneyValue
 
 
 @dataclass

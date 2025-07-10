@@ -1,9 +1,13 @@
+from __future__ import annotations
+
+
 __all__ = ('OfferFieldsParser', 'OfferFieldsParsingOptions')
 
 from dataclasses import dataclass
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.parsers.utils import serialize_form
+
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.offers import OfferFields
+from funpayparsers.parsers.utils import serialize_form
 
 
 @dataclass(frozen=True)

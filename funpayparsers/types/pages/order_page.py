@@ -1,14 +1,17 @@
+from __future__ import annotations
+
+
 __all__ = ('OrderPage', )
 
+import re
 from dataclasses import dataclass
 
-from funpayparsers.parsers.utils import parse_money_value_string
-from funpayparsers.types.pages.base import FunPayPage
+from funpayparsers.types.chat import Chat
 from funpayparsers.types.enums import OrderStatus, SubcategoryType
 from funpayparsers.types.common import MoneyValue
+from funpayparsers.parsers.utils import parse_money_value_string
 from funpayparsers.types.reviews import Review
-from funpayparsers.types.chat import Chat
-import re
+from funpayparsers.types.pages.base import FunPayPage
 
 
 @dataclass

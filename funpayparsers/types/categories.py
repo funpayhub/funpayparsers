@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 __all__ = ('Category', 'Subcategory')
 
 from dataclasses import dataclass

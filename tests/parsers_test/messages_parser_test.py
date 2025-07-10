@@ -1,5 +1,7 @@
-from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParsingOptions
+from __future__ import annotations
+
 from funpayparsers.types import Message, UserBadge
+from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParsingOptions
 
 
 OPTIONS = MessagesParsingOptions(empty_raw_source=True)

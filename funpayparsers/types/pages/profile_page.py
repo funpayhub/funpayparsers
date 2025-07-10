@@ -1,14 +1,18 @@
+from __future__ import annotations
+
+
 __all__ = ('ProfilePage', )
 
 
+from typing import Literal
 from dataclasses import dataclass
-from funpayparsers.types.pages.base import FunPayPage
+
+from funpayparsers.types.chat import Chat
+from funpayparsers.types.enums import SubcategoryType
+from funpayparsers.types.common import UserBadge, UserRating, Achievement
 from funpayparsers.types.offers import OfferPreview
 from funpayparsers.types.reviews import ReviewsBatch
-from funpayparsers.types.chat import Chat
-from funpayparsers.types.common import UserRating, UserBadge, Achievement
-from funpayparsers.types.enums import SubcategoryType
-from typing import Literal
+from funpayparsers.types.pages.base import FunPayPage
 
 
 @dataclass

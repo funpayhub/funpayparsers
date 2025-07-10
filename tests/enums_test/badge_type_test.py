@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import pytest
+
 from funpayparsers.types.enums import BadgeType
 
 

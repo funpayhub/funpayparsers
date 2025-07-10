@@ -1,8 +1,12 @@
-from funpayparsers.parsers.order_previews_parser import (OrderPreviewsParser,
-                                                         OrderPreviewsParsingOptions)
-from funpayparsers.types.orders import OrderPreview, OrderPreviewsBatch
+from __future__ import annotations
+
 from funpayparsers.types.enums import OrderStatus
 from funpayparsers.types.common import MoneyValue, UserPreview
+from funpayparsers.types.orders import OrderPreview, OrderPreviewsBatch
+from funpayparsers.parsers.order_previews_parser import (
+    OrderPreviewsParser,
+    OrderPreviewsParsingOptions,
+)
 
 
 OPTIONS = OrderPreviewsParsingOptions(empty_raw_source=True)

@@ -1,8 +1,14 @@
+from __future__ import annotations
+
 import random
 
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParsingOptions, MoneyValueParsingMode
 from funpayparsers.parsers.base import ParsingOptions
 from funpayparsers.types.common import MoneyValue
+from funpayparsers.parsers.money_value_parser import (
+    MoneyValueParser,
+    MoneyValueParsingMode,
+    MoneyValueParsingOptions,
+)
 
 
 OPTIONS = ParsingOptions(empty_raw_source=True)

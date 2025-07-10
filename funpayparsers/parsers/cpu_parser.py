@@ -1,9 +1,13 @@
+from __future__ import annotations
+
+
 __all__ = ('CurrentlyViewingOfferInfoParsingOptions', 'CurrentlyViewingOfferInfoParser')
 
 
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.types.updates import CurrentlyViewingOfferInfo
 from dataclasses import dataclass
+
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.types.updates import CurrentlyViewingOfferInfo
 
 
 @dataclass(frozen=True)

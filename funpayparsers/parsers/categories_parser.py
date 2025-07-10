@@ -1,11 +1,15 @@
+from __future__ import annotations
+
+
 __all__ = ('CategoriesParser', 'CategoriesParsingOptions')
 
 from dataclasses import dataclass
 
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.types.categories import Category, Subcategory
-from funpayparsers.types.enums import SubcategoryType
 from selectolax.lexbor import LexborNode
+
+from funpayparsers.types.enums import SubcategoryType
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.types.categories import Category, Subcategory
 
 
 @dataclass(frozen=True)

@@ -1,7 +1,9 @@
-import pytest
-from funpayparsers.parsers import UserBadgeParser, UserBadgeParsingOptions
-from funpayparsers.types import UserBadge
+from __future__ import annotations
 
+import pytest
+
+from funpayparsers.types import UserBadge
+from funpayparsers.parsers import UserBadgeParser, UserBadgeParsingOptions
 
 
 class TestUserBadgeParser:

@@ -1,8 +1,12 @@
-from funpayparsers.parsers.transaction_previews_parser import (TransactionPreviewsParser,
-                                                               TransactionPreviewsParsingOptions)
+from __future__ import annotations
+
 from funpayparsers.types import PaymentMethod, TransactionStatus
-from funpayparsers.types.finances import TransactionPreview, TransactionPreviewsBatch
 from funpayparsers.types.common import MoneyValue
+from funpayparsers.types.finances import TransactionPreview, TransactionPreviewsBatch
+from funpayparsers.parsers.transaction_previews_parser import (
+    TransactionPreviewsParser,
+    TransactionPreviewsParsingOptions,
+)
 
 
 OPTIONS = TransactionPreviewsParsingOptions(empty_raw_source=True)

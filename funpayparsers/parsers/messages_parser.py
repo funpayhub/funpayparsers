@@ -1,13 +1,17 @@
+from __future__ import annotations
+
+
 __all__ = ('MessagesParsingOptions', 'MessagesParser')
 
 from dataclasses import dataclass
+
 from selectolax.lexbor import LexborNode
 
-from funpayparsers.parsers.base import FunPayHTMLObjectParser, ParsingOptions
-from funpayparsers.types.messages import Message
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.common import UserBadge
 from funpayparsers.parsers.utils import resolve_messages_senders
-from funpayparsers.parsers.badge_parser import UserBadgeParsingOptions, UserBadgeParser
+from funpayparsers.types.messages import Message
+from funpayparsers.parsers.badge_parser import UserBadgeParser, UserBadgeParsingOptions
 
 
 @dataclass(frozen=True)

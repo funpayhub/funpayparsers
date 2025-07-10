@@ -1,4 +1,7 @@
 # Project info
+from __future__ import annotations
+
+
 project = 'FunPay Parsers'
 copyright = '2025, Qvvonk'
 author = 'Qvvonk'
