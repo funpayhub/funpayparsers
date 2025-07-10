@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-__all__ = ('Message', )
+__all__ = ('Message',)
 
 from dataclasses import dataclass
 

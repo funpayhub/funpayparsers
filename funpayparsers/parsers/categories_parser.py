@@ -20,8 +20,7 @@ class CategoriesParsingOptions(ParsingOptions):
 
 
 class CategoriesParser(
-    FunPayHTMLObjectParser[list[Category],
-    CategoriesParsingOptions],
+    FunPayHTMLObjectParser[list[Category], CategoriesParsingOptions],
 ):
     """
     Class for parsing categories and subcategories.
@@ -43,26 +42,31 @@ class CategoriesParser(
                 location = global_cat.css(f'button[data-id="{id_}"]')
                 location = location[0].text(strip=True) if location else None
 
-                result.append(Category(
-                    raw_source=global_cat.html,
-                    id=id_,
-                    name=cat.css('a')[0].text(strip=True),
-                    location=location,
-                    subcategories=self._parse_subcategories(global_cat, id_),
-                ))
+                result.append(
+                    Category(
+                        raw_source=global_cat.html,
+                        id=id_,
+                        name=cat.css('a')[0].text(strip=True),
+                        location=location,
+                        subcategories=self._parse_subcategories(global_cat, id_),
+                    )
+                )
         return result
 
-    def _parse_subcategories(self, global_cat: LexborNode,
-                             data_id: int | str) -> tuple[Subcategory, ...]:
+    def _parse_subcategories(
+        self, global_cat: LexborNode, data_id: int | str
+    ) -> tuple[Subcategory, ...]:
         result = []
         div = global_cat.css(f'ul.list-inline[data-id="{data_id}"]')[0]
         for link in div.css('a'):
-            result.append(Subcategory(
-                raw_source=link.html,
-                id=int(link.attributes['href'].split('/')[-2]),
-                name=link.text(strip=True),
-                type=SubcategoryType.get_by_url(link.attributes['href']),
-                offers_amount=None,
-            ))
+            result.append(
+                Subcategory(
+                    raw_source=link.html,
+                    id=int(link.attributes['href'].split('/')[-2]),
+                    name=link.text(strip=True),
+                    type=SubcategoryType.get_by_url(link.attributes['href']),
+                    offers_amount=None,
+                )
+            )
 
         return tuple(result)

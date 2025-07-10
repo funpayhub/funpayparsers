@@ -123,8 +123,9 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
         badges = []
         for i in profile_header.css('small.user-badges > span'):
             badges.append(
-                UserBadgeParser(i.html,
-                                options=self.options.user_badge_parsing_options).parse(),
+                UserBadgeParser(
+                    i.html, options=self.options.user_badge_parsing_options
+                ).parse(),
             )
 
         for i in badges:
@@ -156,26 +157,21 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
 
         return ProfilePage(
             raw_source=self.tree.html,
-
             header=PageHeaderParser(
                 header.html,
                 options=self.options.page_header_parsing_options,
             ).parse(),
-
             app_data=AppDataParser(
                 app_data,
                 options=self.options.app_data_parsing_options,
             ).parse(),
-
             user_id=int(
-                self.tree.css_first('head > link[rel="canonical"]').attributes['href'].
-                split('/')[-2],
+                self.tree.css_first('head > link[rel="canonical"]')
+                .attributes['href']
+                .split('/')[-2],
             ),
-
             username=profile_header.css_first('span.mr4').text().strip(),
-
             badge=badge,
-
             achievements=[
                 AchievementParser(
                     i.html,
@@ -183,37 +179,39 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
                 ).parse()
                 for i in achievements_divs
             ],
-
             avatar_url=extract_css_url(
                 self.tree.css_first('div.avatar-photo').attributes['style'],
             ),
-
             online='online' in profile_header.css_first('h1.mb40').attributes['class'],
             banned=banned,
             registration_date_text=(
-                reg_date_text_div[0].text(separator='\n', strip=True).
-                strip().split('\n')[-2]
+                reg_date_text_div[0]
+                .text(separator='\n', strip=True)
+                .strip()
+                .split('\n')[-2]
             ),
-
             status_text=(
                 profile_header.css_first('span.media-user-status').text().strip()
-                if not banned else None
+                if not banned
+                else None
             ),
-
             rating=UserRatingParser(
                 rating_div.html,
                 options=self.options.user_rating_parsing_options,
-            ).parse() if rating_div else None,
-
+            ).parse()
+            if rating_div
+            else None,
             offers=offers,
-
             chat=ChatParser(
                 chat_div[0].html,
                 options=self.options.chat_parsing_options,
-            ).parse() if chat_div else None,
-
+            ).parse()
+            if chat_div
+            else None,
             reviews=ReviewsParser(
                 reviews_div[0].html,
                 options=self.options.reviews_parsing_options,
-            ).parse() if reviews_div else [],
+            ).parse()
+            if reviews_div
+            else [],
         )

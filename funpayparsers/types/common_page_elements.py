@@ -51,6 +51,7 @@ class PageHeader(FunPayObject):
     All fields in this dataclass will be ``None`` if the response is parsed
     from a request made without authentication cookies (i.e., as an anonymous user).
     """
+
     user_id: int | None
     """Current user ID."""
 

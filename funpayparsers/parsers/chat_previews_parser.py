@@ -18,7 +18,8 @@ class PrivateChatPreviewParsingOptions(ParsingOptions):
 
 
 class PrivateChatPreviewsParser(
-    FunPayHTMLObjectParser[list[PrivateChatPreview], PrivateChatPreviewParsingOptions]):
+    FunPayHTMLObjectParser[list[PrivateChatPreview], PrivateChatPreviewParsingOptions]
+):
     """
     Class for parsing private chat previews.
 

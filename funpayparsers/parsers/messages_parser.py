@@ -65,12 +65,12 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
         messages = []
         for msg_div in self.tree.css('div.chat-msg-item'):
             userid, username, date, badge = None, None, None, None
-            has_header = "chat-msg-with-head" in msg_div.attributes["class"]
+            has_header = 'chat-msg-with-head' in msg_div.attributes['class']
             if has_header:
                 userid, username, date, badge = self._parse_message_header(msg_div)
 
             if image_tag := msg_div.css('a.chat-img-link'):
-                image_url, text = image_tag[0].attributes["href"], None
+                image_url, text = image_tag[0].attributes['href'], None
             else:
                 image_url = None
 
@@ -80,17 +80,19 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
                 else:
                     text = msg_div.css('div.chat-msg-text')[0].text().strip()
 
-            messages.append(Message(
-                raw_source=msg_div.html,
-                id=int(msg_div.attributes["id"].split("-")[1]),
-                is_heading=has_header,
-                sender_id=userid,
-                sender_username=username,
-                send_date_text=date,
-                badge=badge,
-                text=text,
-                image_url=image_url,
-            ))
+            messages.append(
+                Message(
+                    raw_source=msg_div.html,
+                    id=int(msg_div.attributes['id'].split('-')[1]),
+                    is_heading=has_header,
+                    sender_id=userid,
+                    sender_username=username,
+                    send_date_text=date,
+                    badge=badge,
+                    text=text,
+                    image_url=image_url,
+                )
+            )
 
         if self.options.sort_by_id or self.options.resolve_senders:
             messages.sort(key=lambda m: m.id)
@@ -99,8 +101,9 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
             resolve_messages_senders(messages)
         return messages
 
-    def _parse_message_header(self, msg_tag: LexborNode) \
-            -> tuple[int, str, str, UserBadge | None]:
+    def _parse_message_header(
+        self, msg_tag: LexborNode
+    ) -> tuple[int, str, str, UserBadge | None]:
         """
         Parses the message header to extract the author ID, author nickname,
         and an optional author/message badge.
@@ -113,13 +116,15 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
             - A MessageBadge object if a badge is present, otherwise None.
         """
 
-        id_, name = 0, "FunPay"
+        id_, name = 0, 'FunPay'
 
         if user_tag := msg_tag.css('a.chat-msg-author-link'):
-            id_, name = (int(user_tag[0].attributes["href"].split("/")[-2]),
-                         user_tag[0].text(strip=True))
+            id_, name = (
+                int(user_tag[0].attributes['href'].split('/')[-2]),
+                user_tag[0].text(strip=True),
+            )
 
-        date = msg_tag.css('div.chat-msg-date')[0].attributes["title"]
+        date = msg_tag.css('div.chat-msg-date')[0].attributes['title']
 
         if not (badge := msg_tag.css('span.label')):
             return id_, name, date, None
@@ -128,6 +133,8 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
             id_,
             name,
             date,
-            UserBadgeParser(raw_source=badge[0].html,
-                            options=self.options.user_badge_parsing_options).parse(),
+            UserBadgeParser(
+                raw_source=badge[0].html,
+                options=self.options.user_badge_parsing_options,
+            ).parse(),
         )

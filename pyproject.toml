@@ -79,7 +79,6 @@ indent-style = "space"
 select = [
     "I",
     "N",
-    "COM",
     "C4",
     "E",
     "F",

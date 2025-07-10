@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 
-__all__ = ('TransactionPreview',
-           'Transaction',
-           'TransactionPreviewsBatch')
+__all__ = ('TransactionPreview', 'Transaction', 'TransactionPreviewsBatch')
 
 
 from dataclasses import dataclass

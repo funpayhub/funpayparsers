@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 
-__all__ = ('extract_css_url',
-           'resolve_messages_senders',
-           'parse_date_string',
-           'parse_money_value_string',
-           'serialize_form')
+__all__ = (
+    'extract_css_url',
+    'resolve_messages_senders',
+    'parse_date_string',
+    'parse_money_value_string',
+    'serialize_form',
+)
 
 import re
 from copy import deepcopy
@@ -94,24 +96,25 @@ def parse_date_string(date_string: str, /) -> int:
     Parse date string.
     """
     date_string = date_string.lower().strip()
-    date = datetime.now().replace(second=0,
-                                  microsecond=0)
+    date = datetime.now().replace(second=0, microsecond=0)
 
     if match := TIME_RE.match(date_string):
         h, m, s = map(int, match.groups())
-        return int(date.replace(hour=h,
-                                minute=m,
-                                second=s).timestamp())
+        return int(date.replace(hour=h, minute=m, second=s).timestamp())
 
     if match := SHORT_DATE_RE.match(date_string):
         d, mo, y = map(int, match.groups())
-        return int(datetime(year=y+2000,
-                            month=mo,
-                            day=d,
-                            hour=0,
-                            minute=0,
-                            second=0,
-                            microsecond=0).timestamp())
+        return int(
+            datetime(
+                year=y + 2000,
+                month=mo,
+                day=d,
+                hour=0,
+                minute=0,
+                second=0,
+                microsecond=0,
+            ).timestamp()
+        )
 
     if match := TODAY_OR_YESTERDAY_RE.match(date_string):
         day, h, m = match.groups()
@@ -124,22 +127,22 @@ def parse_date_string(date_string: str, /) -> int:
         day, month, h, m = match.groups()
         year = date.year
         month = MONTHS[month]
-        return int(date.replace(year=int(year),
-                                month=month,
-                                day=int(day),
-                                hour=int(h),
-                                minute=int(m)).timestamp())
+        return int(
+            date.replace(
+                year=int(year), month=month, day=int(day), hour=int(h), minute=int(m)
+            ).timestamp()
+        )
 
     if match := DATE_RE.match(date_string):
         day, month, year, h, m = match.groups()
         month = MONTHS[month]
-        return int(date.replace(year=int(year),
-                                month=month,
-                                day=int(day),
-                                hour=int(h),
-                                minute=int(m)).timestamp())
+        return int(
+            date.replace(
+                year=int(year), month=month, day=int(day), hour=int(h), minute=int(m)
+            ).timestamp()
+        )
 
-    raise ValueError(f'Unable to parse date string \'{date_string}\'.')
+    raise ValueError(f"Unable to parse date string '{date_string}'.")
 
 
 def extract_css_url(source: str, /) -> str:
@@ -182,23 +185,28 @@ def resolve_messages_senders(messages: Iterable[Message], /) -> None:
     Requires at least one heading message in the sequence.
     Typically, the earliest message in a fetched history is a heading message.
     """
-    
+
     username, userid, badge = None, None, None
     for m in messages:
         if m.is_heading:
             username, userid = m.sender_username, m.sender_id
-            badge = deepcopy(m.badge) \
-                if m.badge and m.badge.type is not BadgeType.AUTO_DELIVERY else None
+            badge = (
+                deepcopy(m.badge)
+                if m.badge and m.badge.type is not BadgeType.AUTO_DELIVERY
+                else None
+            )
             continue
 
         m.sender_username, m.sender_id, m.badge = username, userid, badge
 
 
-def parse_money_value_string(money_value_str: str,
-                             /,
-                             *,
-                             raw_source: str | None = None,
-                             raise_on_error: bool = False) -> MoneyValue | None:
+def parse_money_value_string(
+    money_value_str: str,
+    /,
+    *,
+    raw_source: str | None = None,
+    raise_on_error: bool = False,
+) -> MoneyValue | None:
     """
     Parse money value string.
 
@@ -217,7 +225,7 @@ def parse_money_value_string(money_value_str: str,
     to_process = money_value_str.strip().replace(' ', '').replace('\u2212', '-')
     if not (match := MONEY_VALUE_RE.fullmatch(to_process)):
         if raise_on_error:
-            raise Exception(f'Unable to parse money value string \'{money_value_str}\'')
+            raise Exception(f"Unable to parse money value string '{money_value_str}'")
         return None
 
     value, currency = match.groups()

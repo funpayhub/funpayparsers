@@ -99,8 +99,6 @@ class ChatPageParser(FunPayHTMLObjectParser[ChatPage, ChatPageParsingOptions]):
                     options=self.options.private_chat_info_parsing_options,
                 ).parse()
 
-
-
         return ChatPage(
             raw_source=self.raw_source,
             header=PageHeaderParser(
@@ -114,7 +112,9 @@ class ChatPageParser(FunPayHTMLObjectParser[ChatPage, ChatPageParsingOptions]):
             chat_previews=PrivateChatPreviewsParser(
                 chat_preview_div[0].html,
                 options=self.options.private_chat_previews_parsing_options,
-            ).parse() if chat_preview_div else None,
+            ).parse()
+            if chat_preview_div
+            else None,
             chat=chat,
             chat_info=chat_info,
         )
