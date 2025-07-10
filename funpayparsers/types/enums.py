@@ -33,10 +33,10 @@ class UpdateType(Enum):
     @classmethod
     def get_by_type_str(cls: Type[T], type_str: str, /) -> T | None:
         """Determine an update type by its type string."""
-        if type_str not in cls:
-            return None
-        return cls(type_str)
-
+        for i in cls:
+            if i.value == type_str:
+                return i
+        return None
 
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
@@ -109,9 +109,10 @@ class Currency(Enum):
     @classmethod
     def get_by_character(cls: Type[T], character: str, /) -> T:
         """Determine the currency based on a given currency string."""
-        if character not in cls:
-            return cls.UNKNOWN
-        return cls(character)
+        for i in cls:
+            if i.value == character:
+                return i
+        return None
 
 
 class TransactionStatus(Enum):
@@ -409,6 +410,7 @@ class Language(Enum):
 
     @classmethod
     def get_by_lang_code(cls: Type[T], lang_code: str, /) -> T:
-        if lang_code not in cls:
-            return cls.UNKNOWN
-        return cls(lang_code)
+        for i in cls:
+            if i.value == lang_code:
+                return i
+        return None
