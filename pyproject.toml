@@ -37,7 +37,7 @@ Issues = "https://github.com/funpyahub/funpayparsers/issues"
 
 
 [project.optional-dependencies]
-test = [
+tests = [
     "pytest"
 ]
 dev = [

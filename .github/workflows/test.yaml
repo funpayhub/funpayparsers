@@ -17,6 +17,10 @@ jobs:
           - '3.12'
           - '3.13'
 
+    defaults:
+      run:
+        shell: bash
+
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -31,9 +35,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install dependencies
-        run: |
-          pip install uv
-          uv sync --all-extras
+        run: pip install -e .[dev,tests,docs]
 
       - name: Run tests
-        run: python -m pytest --doctest-modules
+        run: pytest --doctest-modules
