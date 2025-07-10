@@ -61,11 +61,16 @@ line-length = 88
 [tool.ruff.format]
 quote-style = "single"
 line-ending = "lf"
+indent-style = "space"
+exclude = ["docs/*"]
+
 
 [tool.ruff.lint]
 select = ["I"]
 
 [tool.ruff.lint.isort]
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+required-imports = ["from __future__ import annotations"]
 length-sort = true
+lines-between-types = 0
 lines-after-imports = 2
