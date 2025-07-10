@@ -112,7 +112,7 @@ class Currency(Enum):
         for i in cls:
             if i.value == character:
                 return i
-        return None
+        return cls.UNKNOWN
 
 
 class TransactionStatus(Enum):
@@ -413,4 +413,4 @@ class Language(Enum):
         for i in cls:
             if i.value == lang_code:
                 return i
-        return None
+        return cls.UNKNOWN
