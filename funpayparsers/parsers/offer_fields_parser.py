@@ -23,7 +23,8 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
 
     Possible locations:
         - Offer creating page (`https://funpay.com/lots/offerEdit?node=<node_id>`)
-        - Offer editing page (`https://funpay.com/lots/offerEdit?node=<node_id>&offer=<offer_id>`)
+        - Offer editing page
+        (`https://funpay.com/lots/offerEdit?node=<node_id>&offer=<offer_id>`)
     """
 
     def _parse(self):

@@ -15,9 +15,7 @@ from funpayparsers.types.common import MoneyValue
 
 @dataclass
 class TransactionPreview(FunPayObject):
-    """
-    Represents a transaction preview.
-    """
+    """Represents a transaction preview."""
 
     id: int
     """Unique transaction ID."""
@@ -60,20 +58,18 @@ class TransactionPreviewsBatch(FunPayObject):
     """List of transaction previews included in this batch."""
 
     user_id: int | None
-    """
-    ID of the user to whom all transactions in this batch belong.
-    """
+    """ID of the user to whom all transactions in this batch belong."""
 
     filter: str | None
     """
     The current filter applied to the review list.
 
     Known values:
-    - '' (empty string): no filter applied
-    - 'payment': payment transactions only
-    - 'withdraw': withdrawal transactions only
-    - 'order': order transactions only
-    - 'other': other transactions only
+        - ``''`` (empty string): no filter applied
+        - ``'payment'``: payment transactions only
+        - ``'withdraw'``: withdrawal transactions only
+        - ``'order'``: order transactions only
+        - ``'other'``: other transactions only
     """
 
     next_transaction_id: int | None
@@ -81,5 +77,7 @@ class TransactionPreviewsBatch(FunPayObject):
     ID of the next transaction to use as a cursor for pagination.
 
     If present, this value should be included in the next request to fetch
-    the following batch of transaction previews. If `None`, there are no more transactions to load.
+    the following batch of transaction previews. 
+    
+    If ``None``, there are no more transactions to load.
     """

@@ -30,12 +30,16 @@ class MessagesParsingOptions(ParsingOptions):
     Determines whether to resolve message senders for non-heading messages.
 
     In FunPay chats, there are two types of messages: heading and non-heading.
-    Heading messages include full information about the sender (ID, username, badge, timestamp, etc.).
-    Non-heading messages are sent by the same user as the previous message and do not include sender information.
+    Heading messages include full information about the sender 
+    (ID, username, badge, timestamp, etc.).
+    Non-heading messages are sent by the same user as the previous message and do not 
+    include sender information.
     
-    If ``resolve_senders`` is ``False``, non-heading messages will have sender-related fields set to ``None``.
+    If ``resolve_senders`` is ``False``, 
+    non-heading messages will have sender-related fields set to ``None``.
     
-    If ``True``, the ``funpayparsers.parsers.utils.resolve_messages_senders`` function will be used to propagate sender information
+    If ``True``, the ``funpayparsers.parsers.utils.resolve_messages_senders`` 
+    function will be used to propagate sender information
     from the preceding heading messages to the subsequent non-heading ones.
     
     Defaults to ``True``.
@@ -95,7 +99,8 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
             resolve_messages_senders(messages)
         return messages
 
-    def _parse_message_header(self, msg_tag: LexborNode) -> tuple[int, str, str, UserBadge | None]:
+    def _parse_message_header(self, msg_tag: LexborNode) \
+            -> tuple[int, str, str, UserBadge | None]:
         """
         Parses the message header to extract the author ID, author nickname,
         and an optional author/message badge.
@@ -111,7 +116,8 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
         id_, name = 0, "FunPay"
 
         if user_tag := msg_tag.css('a.chat-msg-author-link'):
-            id_, name = int(user_tag[0].attributes["href"].split("/")[-2]), user_tag[0].text(strip=True)
+            id_, name = (int(user_tag[0].attributes["href"].split("/")[-2]),
+                         user_tag[0].text(strip=True))
 
         date = msg_tag.css('div.chat-msg-date')[0].attributes["title"]
 
@@ -123,5 +129,5 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
             name,
             date,
             UserBadgeParser(raw_source=badge[0].html,
-                            options=self.options.user_badge_parsing_options).parse()
+                            options=self.options.user_badge_parsing_options).parse(),
         )

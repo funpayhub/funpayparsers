@@ -17,7 +17,7 @@ class Review(FunPayObject):
 
     Reviews can be found on the seller’s page or on the order detail page.
 
-    Note:
+    .. note::
         This dataclass does not include a field for review visibility for two reasons:
 
         1. Reviews appear in two contexts: on seller pages (public)
@@ -25,10 +25,10 @@ class Review(FunPayObject):
            Visibility status is available only on private order pages.
            To maintain consistency, this field was omitted.
 
-        2. The HTML structure of reviews is identical in both contexts,
+        2. The HTML structure of reviews is almost identical in both contexts,
            while the visibility flag is located outside the review’s main div.
            Therefore, visibility is handled in the dataclass representing
-           the private order page.
+           the order page (``funpayparsers.types.pages.OrderPage``).
    """
 
     rating: int | None
@@ -41,7 +41,7 @@ class Review(FunPayObject):
     """
     Approximate total amount of the order this review refers to.
 
-    Note:
+    .. note::
         This value may be significantly rounded and should be considered
         only as an estimate, not the exact order total.
     """
@@ -68,7 +68,7 @@ class Review(FunPayObject):
     Human-readable relative timestamp indicating when the order that review refers to 
     was made.
     
-    Examples: '2 months ago', '3 years ago', etc. (depends on selected language).
+    Examples: `2 months ago`, `3 years ago`, etc. (depends on selected language).
     """
 
     reply: str | None
@@ -78,7 +78,7 @@ class Review(FunPayObject):
 @dataclass
 class ReviewsBatch(FunPayObject):
     """
-    Represents a single batch of reviews returned by FunPay.
+    Represents a single batch of reviews.
 
     This batch contains a portion of all available reviews (typically 25),
     along with metadata required to fetch the next batch.
@@ -100,8 +100,8 @@ class ReviewsBatch(FunPayObject):
     The current filter applied to the review list.
     
     Known values:
-    - '' (empty string): no filter applied
-    - '1' to '5': filters reviews by the given star rating
+        - ``''`` (empty string): no filter applied
+        - ``'1'`` to ``'5'``: filters reviews by the given star rating
     """
 
     next_review_id: str | None
@@ -109,5 +109,5 @@ class ReviewsBatch(FunPayObject):
     ID of the next review to use as a cursor for pagination.
 
     If present, this value should be included in the next request to fetch
-    the following batch of reviews. If `None`, there are no more reviews to load.
+    the following batch of reviews. If ``None``, there are no more reviews to load.
     """

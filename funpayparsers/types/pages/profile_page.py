@@ -4,7 +4,6 @@ from __future__ import annotations
 __all__ = ('ProfilePage', )
 
 
-from typing import Literal
 from dataclasses import dataclass
 
 from funpayparsers.types.chat import Chat
@@ -17,9 +16,7 @@ from funpayparsers.types.pages.base import FunPayPage
 
 @dataclass
 class ProfilePage(FunPayPage):
-    """
-    Represents a user profile page (`https://funpay.com/users/<user_id>`).
-    """
+    """Represents a user profile page (`https://funpay.com/users/<user_id>`)."""
 
     user_id: int
     """User id."""
@@ -51,7 +48,7 @@ class ProfilePage(FunPayPage):
     rating: UserRating | None
     """User rating."""
 
-    offers: dict[Literal[SubcategoryType.COMMON, SubcategoryType.CURRENCY, SubcategoryType.UNKNOWN], dict[int, list[OfferPreview]]] | None
+    offers: dict[SubcategoryType, dict[int, list[OfferPreview]]] | None
     """User offers."""
 
     chat: Chat | None

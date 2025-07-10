@@ -19,7 +19,10 @@ class CategoriesParsingOptions(ParsingOptions):
     ...
 
 
-class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParsingOptions]):
+class CategoriesParser(
+    FunPayHTMLObjectParser[list[Category],
+    CategoriesParsingOptions],
+):
     """
     Class for parsing categories and subcategories.
 
@@ -33,7 +36,8 @@ class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParsingO
         for global_cat in self.tree.css('div.promo-game-item'):
             categories = global_cat.css('div.game-title')
             # Some categories have "clones" with different locations (RU, US/EU, etc.)
-            # FunPay treats them as different categories, but on main page they are in the same div.
+            # FunPay treats them as different categories,
+            # but on main page they are in the same div.
             for cat in categories:
                 id_ = int(cat.attributes['data-id'])
                 location = global_cat.css(f'button[data-id="{id_}"]')
@@ -58,7 +62,7 @@ class CategoriesParser(FunPayHTMLObjectParser[list[Category], CategoriesParsingO
                 id=int(link.attributes['href'].split('/')[-2]),
                 name=link.text(strip=True),
                 type=SubcategoryType.get_by_url(link.attributes['href']),
-                offers_amount=None
+                offers_amount=None,
             ))
 
         return tuple(result)

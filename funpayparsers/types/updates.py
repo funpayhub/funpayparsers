@@ -26,21 +26,17 @@ UpdateData = TypeVar('UpdateData')
 # ------ Simple objects ------
 @dataclass
 class OrdersCounters(FunPayObject):
-    """
-    Represents an order counters data from updates object.
-    """
+    """Represents an order counters data from updates object."""
 
     purchases: int
-    """Active purchases amount (`buyer` field)."""
+    """Active purchases amount (``buyer`` field)."""
     sales: int
-    """Active sales amount (`seller` field)."""
+    """Active sales amount (``seller`` field)."""
 
 
 @dataclass
 class ChatBookmarks(FunPayObject):
-    """
-    Represents a chat bookmarks data from updates object.
-    """
+    """Represents a chat bookmarks data from updates object."""
 
     counter: int
     """Unread chats amount."""
@@ -48,7 +44,9 @@ class ChatBookmarks(FunPayObject):
     message: int
     """
     ID of the latest unread message.
-    If there are new messages in multiple chats, this field contains the ID of the most recent message among all of them.
+    
+    If there are new messages in multiple chats, 
+    this field contains the ID of the most recent message among all of them.
     """
 
     order: list[int]
@@ -60,9 +58,7 @@ class ChatBookmarks(FunPayObject):
 
 @dataclass
 class ChatCounter(FunPayObject):
-    """
-    Represents a chat counter data from updates object.
-    """
+    """Represents a chat counter data from updates object."""
 
     counter: int
     """Unread chats amount."""
@@ -70,7 +66,9 @@ class ChatCounter(FunPayObject):
     message: int
     """
     ID of the latest unread message.
-    If there are new messages in multiple chats, this field contains the ID of the most recent message among all of them.
+    
+    If there are new messages in multiple chats, 
+    this field contains the ID of the most recent message among all of them.
     """
 
 
@@ -99,9 +97,7 @@ class ChatNode(FunPayObject):
 # ------ Response to action ------
 @dataclass
 class ActionResponse(FunPayObject):
-    """
-    Represents an action response data from updates object.
-    """
+    """Represents an action response data from updates object."""
 
     error: str | None
     """Error text, if an error occurred while processing a request."""
@@ -110,9 +106,7 @@ class ActionResponse(FunPayObject):
 # ------ Update obj ------
 @dataclass
 class UpdateObject(FunPayObject, Generic[UpdateData]):
-    """
-    Represents a single update data from updates object.
-    """
+    """Represents a single update data from updates object."""
 
     type: UpdateType
     """Update type."""
@@ -129,9 +123,7 @@ class UpdateObject(FunPayObject, Generic[UpdateData]):
 
 @dataclass
 class UpdatesPack(FunPayObject):
-    """
-    Represents an updates object, returned by runner.
-    """
+    """Represents an updates object, returned by runner."""
 
     orders_counters: UpdateObject[OrdersCounters] | None
     chat_counter: UpdateObject[ChatCounter] | None

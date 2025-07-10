@@ -41,5 +41,5 @@ class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParsingOptions]):
             locale=Language.get_by_lang_code(self.data.get('locale')),
             csrf_token=self.data.get('csrf-token'),
             user_id=self.data.get('userId'),
-            webpush=webpush
+            webpush=webpush,
         )

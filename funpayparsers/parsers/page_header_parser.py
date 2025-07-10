@@ -29,7 +29,7 @@ _CURRENCIES = {
 _LANGUAGES = {
     'menu-icon-lang-uk': Language.UK,
     'menu-icon-lang-en': Language.EN,
-    'menu-icon-lang-ru': Language.RU
+    'menu-icon-lang-ru': Language.RU,
 }
 
 
@@ -53,25 +53,39 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
 
         user_dropdown = header.css('a.dropdown-toggle.user-link')
         if user_dropdown:
-            return self._parse_authorized_header(header, user_dropdown[0])
-        else:
-            return self._parse_anonymous_header(header)
+            return self._parse_authorized_header(header)
+        return self._parse_anonymous_header(header)
 
-    def _parse_authorized_header(self, header: LexborNode, user_dropdown: LexborNode) -> PageHeader:
+    def _parse_authorized_header(self, header: LexborNode) -> PageHeader:
         purchases_div = header.css('a.menu-item-orders > span.badge')
         sales_div = header.css('a.menu-item-trade > span.badge')
         chats_div = header.css('a.menu-item-chat > span.badge')
         balance_div = header.css('a.menu-item-balance > span.badge')
 
-        money_value = parse_money_value_string(balance_div[0].text().strip()) if balance_div else None
+        if balance_div:
+            money_value = parse_money_value_string(balance_div[0].text().strip())
+        else:
+            money_value = None
+
         if money_value is not None:
             currency = money_value.currency
         else:
-            currency_text = header.css('a.dropdown-toggle.menu-item-currencies')[0].text(deep=False).strip().lower()
-            currency = _CURRENCIES.get(currency_text, Currency.UNKNOWN)
-            money_value = MoneyValue(raw_source='', value=0.0, character=currency.value())
+            currency_text = (
+                header.css('a.dropdown-toggle.menu-item-currencies')[0].
+                text(deep=False).strip().lower()
+            )
 
-        language_class = header.css('a.dropdown-toggle.menu-item-langs > i.menu-icon')[0].attributes['class']
+            currency = _CURRENCIES.get(currency_text, Currency.UNKNOWN)
+            money_value = MoneyValue(
+                raw_source='',
+                value=0.0,
+                character=currency.value(),
+            )
+
+        language_class = header.css(
+            'a.dropdown-toggle.menu-item-langs > i.menu-icon',
+        )[0].attributes['class']
+
         for i in _LANGUAGES:
             if i in language_class:
                 language = _LANGUAGES[i]
@@ -82,7 +96,9 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
 
         return PageHeader(
             raw_source=header.html,
-            user_id=int(header.css('a.user-link-dropdown')[0].attributes['href'].split('/')[-2]),
+            user_id=int(
+                header.css('a.user-link-dropdown')[0].attributes['href'].split('/')[-2],
+            ),
             username=header.css('div.user-link-name')[0].text().strip(),
             avatar_url=header.css('img')[0].attributes['src'],
             language=language,
@@ -90,14 +106,21 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             purchases=int(purchases_div[0].text().strip()) if purchases_div else None,
             sales=int(sales_div[0].text().strip()) if sales_div else None,
             chats=int(chats_div[0].text().strip()) if chats_div else None,
-            balance=money_value
+            balance=money_value,
         )
 
     def _parse_anonymous_header(self, header: LexborNode) -> PageHeader:
-        currency_text = header.css('a.dropdown-toggle.menu-item-currencies')[0].text(deep=False).strip().lower()
+        currency_text = (
+            header.css('a.dropdown-toggle.menu-item-currencies')[0].
+            text(deep=False).strip().lower()
+        )
         currency = _CURRENCIES.get(currency_text, Currency.UNKNOWN)
 
-        language_class = header.css('a.dropdown-toggle.menu-item-langs > i.menu-icon')[0].attributes['class']
+        language_class = (
+            header.css('a.dropdown-toggle.menu-item-langs > i.menu-icon')[0].
+            attributes['class']
+        )
+
         for i in _LANGUAGES:
             if i in language_class:
                 language = _LANGUAGES[i]
@@ -115,5 +138,5 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             purchases=None,
             sales=None,
             chats=None,
-            balance=None
+            balance=None,
         )

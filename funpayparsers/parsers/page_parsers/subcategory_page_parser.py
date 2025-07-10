@@ -26,7 +26,8 @@ class SubcategoryPageParsingOptions(ParsingOptions):
 
     page_header_parsing_options: PageHeaderParsingOptions = PageHeaderParsingOptions()
     """
-    Options instance for ``PageHeaderParser``, which is used by ``SubcategoryPageParser``.
+    Options instance for ``PageHeaderParser``, 
+    which is used by ``SubcategoryPageParser``.
 
     Defaults to ``PageHeaderParsingOptions()``.
     """
@@ -38,9 +39,12 @@ class SubcategoryPageParsingOptions(ParsingOptions):
     Defaults to ``AppDataParsingOptions()``.
     """
 
-    offer_previews_parsing_options: OfferPreviewsParsingOptions = OfferPreviewsParsingOptions()
+    offer_previews_parsing_options: OfferPreviewsParsingOptions = (
+        OfferPreviewsParsingOptions()
+    )
     """
-    Options instance for ``OfferPreviewsParser``, which is used by ``SubcategoryPageParser``.
+    Options instance for ``OfferPreviewsParser``, 
+    which is used by ``SubcategoryPageParser``.
 
     Defaults to ``OfferPreviewsParsingOptions()``.
     """
@@ -48,10 +52,11 @@ class SubcategoryPageParsingOptions(ParsingOptions):
 
 class SubcategoryPageParser(FunPayHTMLObjectParser[
                                 SubcategoryPage,
-                                SubcategoryPageParsingOptions
+                                SubcategoryPageParsingOptions,
                             ]):
     """
-    Class for parsing subcategory offer list pages (`https://funpay.com/<lots/chips>/<subcategory_id>/`).
+    Class for parsing subcategory offer list pages
+    (`https://funpay.com/<lots/chips>/<subcategory_id>/`).
     """
 
     def _parse(self):
@@ -86,6 +91,6 @@ class SubcategoryPageParser(FunPayHTMLObjectParser[
             related_subcategories=related_subcategories or None,
             offers=OfferPreviewsParser(
                 showcase.html,
-                options=self.options.offer_previews_parsing_options
-            ).parse() or None
+                options=self.options.offer_previews_parsing_options,
+            ).parse() or None,
         )

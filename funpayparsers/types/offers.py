@@ -11,9 +11,7 @@ from funpayparsers.types.common import MoneyValue
 
 @dataclass
 class OfferSeller(FunPayObject):
-    """
-    Represents the seller of an offer.
-    """
+    """Represents the seller of an offer."""
 
     id: int
     """The seller's user ID."""
@@ -39,9 +37,7 @@ class OfferSeller(FunPayObject):
 
 @dataclass
 class OfferPreview(FunPayObject):
-    """
-    Represents an offer preview.
-    """
+    """Represents an offer preview."""
 
     id: int | str
     """Unique offer ID."""
@@ -67,13 +63,15 @@ class OfferPreview(FunPayObject):
     other_data: dict[str, str | int]
     """
     Additional data related to the offer, such as server ID, side ID, etc., 
-        if applicable.
+    if applicable.
     """
 
     other_data_names: dict[str, str]
     """
-    Human-readable names corresponding to entries in `other_data`, if applicable.
-    Not all entries, that are exists in other_data can be found here.
+    Human-readable names corresponding to entries in ``other_data``, if applicable.
+    
+    Not all entries, that are exists in ``OfferPreview.other_data`` can be found here
+    (not all entries have a name).
     """
 
 
@@ -81,19 +79,22 @@ class OfferPreview(FunPayObject):
 @dataclass
 class OfferFields(FunPayObject):
     """
-    Represents the full set of form fields used to construct or update an offer on FunPay.
+    Represents the full set of form fields used to construct or update
+    an offer on FunPay.
 
-    This class acts as a wrapper around a dictionary of raw form field values and provides
-    properties for commonly used fields.
+    This class acts as a wrapper around a dictionary of raw form field values
+    and provides properties for commonly used fields.
 
-    It is **strongly recommended** to modify offer fields via class properties (e.g. `title_ru`, `active`, `images`),
+    It is **strongly recommended** to modify offer fields via
+    class properties (e.g. ``title_ru``, ``active``, ``images``),
     as they handle proper value formatting and conversions expected by FunPay.
 
-    If no property exists for a particular field, use `set_field(key, value)` to set it manually,
+    If no property exists for a particular field,
+    use ``set_field(key, value)`` to set it manually,
     making sure to pass a value already formatted for FunPay.
 
-    Setting a field to `None` via a property or `set_field()` will automatically remove the corresponding
-    key from `fields_dict`.
+    Setting a field to ``None`` via a property or ``set_field()``
+    will automatically remove the corresponding key from ``fields_dict``.
 
     Examples:
         >>> fields = OfferFields(raw_source='{}', fields_dict={})
@@ -115,12 +116,13 @@ class OfferFields(FunPayObject):
         """
         Manually set or remove a raw field value.
 
-        :param key: The raw field name (e.g. `"fields[summary][ru]"`).
-        :param value: The value to set. If `None`, the field is removed from `fields_dict`.
+        :param key: The raw field name (e.g. ``"fields[summary][ru]"``).
+        :param value: The value to set. If
+            ``None``, the field is removed from `fields_dict`.
 
-        Note:
+        .. note:
             Only use this method if a dedicated property for the field does not exist.
-            Ensure the `value` is formatted exactly as expected by FunPay.
+            Ensure the ``value`` is formatted exactly as expected by FunPay.
         """
         if value is None:
             self.fields_dict.pop(key, None)
@@ -131,91 +133,99 @@ class OfferFields(FunPayObject):
     def csrf_token(self) -> str | None:
         """
         CSRF token of the current user.
-        Field name: `csrf_token`
+
+        Field name: ``csrf_token``
         """
         return self.fields_dict.get('csrf_token')
 
     @csrf_token.setter
-    def csrf_token(self, csrf_token: str | None):
-        self.set_field('csrf_token', csrf_token)
+    def csrf_token(self, value: str | None):
+        self.set_field('csrf_token', value)
 
     @property
     def title_ru(self) -> str | None:
         """
         Offer title (Russian).
-        Field name: `fields[summary][ru]`
+
+        Field name: ``fields[summary][ru]``
         """
         return self.fields_dict.get('fields[summary][ru]')
 
     @title_ru.setter
-    def title_ru(self, title_ru: str | None):
-        self.set_field('fields[summary][ru]', title_ru)
+    def title_ru(self, value: str | None):
+        self.set_field('fields[summary][ru]', value)
 
     @property
     def title_en(self) -> str | None:
         """
         Offer title (English).
-        Field name: `fields[summary][en]`
+
+        Field name: ``fields[summary][en]``
         """
         return self.fields_dict.get('fields[summary][en]')
 
     @title_en.setter
-    def title_en(self, title_en: str | None):
-        self.set_field('fields[summary][en]', title_en)
+    def title_en(self, value: str | None):
+        self.set_field('fields[summary][en]', value)
 
     @property
     def desc_ru(self) -> str | None:
         """
         Offer description (Russian).
-        Field name: `fields[desc][ru]`
+
+        Field name: ``fields[desc][ru]``
         """
         return self.fields_dict.get('fields[desc][ru]')
 
     @desc_ru.setter
-    def desc_ru(self, desc_ru: str | None):
-        self.set_field('fields[desc][ru]', desc_ru)
+    def desc_ru(self, value: str | None):
+        self.set_field('fields[desc][ru]', value)
 
     @property
     def desc_en(self) -> str | None:
         """
         Offer description (English).
-        Field name: `fields[desc][en]`
+
+        Field name: ``fields[desc][en]``
         """
         return self.fields_dict.get('fields[desc][en]')
 
     @desc_en.setter
-    def desc_en(self, desc_en: str | None):
-        self.set_field('fields[desc][en]', desc_en)
+    def desc_en(self, value: str | None):
+        self.set_field('fields[desc][en]', value)
 
     @property
     def payment_msg_ru(self) -> str | None:
         """
         Payment message (Russian).
-        Field name: `fields[payment_msg][ru]`
+
+        Field name: ``fields[payment_msg][ru]``
         """
         return self.fields_dict.get('fields[payment_msg][ru]')
 
     @payment_msg_ru.setter
-    def payment_msg_ru(self, payment_msg_ru: str | None):
-        self.set_field('fields[payment_msg][ru]', payment_msg_ru)
+    def payment_msg_ru(self, value: str | None):
+        self.set_field('fields[payment_msg][ru]', value)
 
     @property
     def payment_msg_en(self) -> str | None:
         """
         Payment message (English).
-        Field name: `fields[payment_msg][en]`
+
+        Field name: ``fields[payment_msg][en]``
         """
         return self.fields_dict.get('fields[payment_msg][en]')
 
     @payment_msg_en.setter
-    def payment_msg_en(self, payment_msg_en: str | None):
-        self.set_field('fields[payment_msg][en]', payment_msg_en)
+    def payment_msg_en(self, value: str | None):
+        self.set_field('fields[payment_msg][en]', value)
 
     @property
     def images(self) -> list[int] | None:
         """
         List of image IDs.
-        Field name: `fields[images]`
+
+        Field name: ``fields[images]``
         """
         images = self.fields_dict.get('fields[images]')
         if images is None:
@@ -223,14 +233,16 @@ class OfferFields(FunPayObject):
         return [int(i) for i in images.split(',')]
 
     @images.setter
-    def images(self, images: list[int] | None):
-        self.set_field('fields[images]', ','.join(str(i) for i in images) if images is not None else None)
+    def images(self, value: list[int] | None):
+        self.set_field('fields[images]',
+                       ','.join(str(i) for i in value) if value is not None else None)
 
     @property
     def secrets(self) -> list[str] | None:
         """
         List of goods in auto delivery.
-        Field name: `fields[secrets]`
+
+        Field name: ``fields[secrets]``
         """
         goods = self.fields_dict.get('fields[secrets]')
         if goods is None:
@@ -238,42 +250,48 @@ class OfferFields(FunPayObject):
         return goods.split('\n')
 
     @secrets.setter
-    def secrets(self, secrets: list[str] | None):
-        self.set_field('fields[secrets]', '\n'.join(secrets) if secrets is not None else None)
+    def secrets(self, value: list[str] | None):
+        self.set_field('fields[secrets]',
+                       '\n'.join(value) if value is not None else None)
 
     @property
     def active(self) -> bool:
         """
         Whether the offer is active or not.
-        Field name: `fields[active]`
+
+        Field name: ``fields[active]``
         """
         return self.fields_dict.get('active') == 'on'
 
     @active.setter
-    def active(self, active: bool | None):
-        self.set_field('active', 'on' if active else '' if active is not None else None)
+    def active(self, value: bool | None):
+        self.set_field('active',
+                       'on' if value else '' if value is not None else None)
 
     @property
     def auto_delivery(self) -> bool:
         """
         Whether the auto_delivery is enabled for this offer or not.
-        Field name: `fields[auto_delivery]`
+
+        Field name: ``fields[auto_delivery]``
         """
         return self.fields_dict.get('auto_delivery') == 'on'
 
     @auto_delivery.setter
-    def auto_delivery(self, auto_delivery: bool | None):
-        self.set_field('auto_delivery', 'on' if auto_delivery else '' if auto_delivery is not None else None)
+    def auto_delivery(self, value: bool | None):
+        self.set_field('auto_delivery',
+                       'on' if value else '' if value is not None else None)
 
     @property
     def deactivate_after_sale(self) -> bool:
         """
         Whether the deactivation after sale is enabled for this offer or not.
-        Field name: `fields[deactivate_after_sale]`
+
+        Field name: ``fields[deactivate_after_sale]``
         """
         return self.fields_dict.get('deactivate_after_sale') == 'on'
 
     @deactivate_after_sale.setter
-    def deactivate_after_sale(self, deactivate_after_sale: bool | None):
+    def deactivate_after_sale(self, value: bool | None):
         self.set_field('deactivate_after_sale',
-                       'on' if deactivate_after_sale else '' if deactivate_after_sale is not None else None)
+                       'on' if value else '' if value is not None else None)

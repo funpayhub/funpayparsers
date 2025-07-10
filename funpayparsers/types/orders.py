@@ -18,9 +18,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class OrderPreview(FunPayObject):
-    """
-    Represents an order preview.
-    """
+    """Represents an order preview."""
 
     id: str
     """Order ID."""
@@ -47,7 +45,7 @@ class OrderPreview(FunPayObject):
 @dataclass
 class OrderPreviewsBatch(FunPayObject):
     """
-    Represents a single batch of order previews returned by FunPay.
+    Represents a single batch of order previews.
 
     This batch contains a portion of all available order previews (typically 100),
     along with metadata required to fetch the next batch.
@@ -60,6 +58,8 @@ class OrderPreviewsBatch(FunPayObject):
     """
     ID of the next order to use as a cursor for pagination.
 
-    If present, this value should be included in the next request to fetch
-    the following batch of order previews. If `None`, there are no more orders to load.
+    If present, this value should be included in the next request to fetch the 
+    following batch of order previews. 
+    
+    If ``None``, there are no more orders to load.
     """
