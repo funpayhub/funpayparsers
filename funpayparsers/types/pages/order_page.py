@@ -16,9 +16,7 @@ from funpayparsers.types.pages.base import FunPayPage
 
 @dataclass
 class OrderPage(FunPayPage):
-    """
-    Represents an order page (`https://funpay.com/orders/<order_id>/`).
-    """
+    """Represents an order page (`https://funpay.com/orders/<order_id>/`)."""
 
     order_id: str
     """Order ID."""
@@ -57,17 +55,23 @@ class OrderPage(FunPayPage):
     def short_description(self) -> str | None:
         """Order short description (title)."""
 
-        return self._first_found(['short description', 'краткое описание', 'короткий опис'])
+        return self._first_found(['short description',
+                                  'краткое описание',
+                                  'короткий опис'])
 
     @property
     def full_description(self) -> str | None:
         """Order full description (detailed description)."""
 
-        return self._first_found(['detailed description', 'подробное описание', 'докладний опис'])
+        return self._first_found(['detailed description',
+                                  'подробное описание',
+                                  'докладний опис'])
 
     @property
     def amount(self) -> int | None:
-        amount_str = self._first_found(['amount', 'количество', 'кількість'])
+        amount_str = self._first_found(['amount',
+                                        'количество',
+                                        'кількість'])
         if not amount_str:
             return None
         return int(re.search(r'\d+', amount_str).group())
@@ -76,7 +80,9 @@ class OrderPage(FunPayPage):
     def open_date_text(self) -> str | None:
         """Order open date."""
 
-        date_str = self._first_found(['open', 'открыт', 'відкрито'])
+        date_str = self._first_found(['open',
+                                      'открыт',
+                                      'відкрито'])
         if not date_str:
             return None
         return date_str.split('\n')[0].strip()
@@ -85,7 +91,9 @@ class OrderPage(FunPayPage):
     def close_date_text(self) -> str | None:
         """Order close date."""
 
-        date_str = self._first_found(['closed', 'закрыт', 'закрито'])
+        date_str = self._first_found(['closed',
+                                      'закрыт',
+                                      'закрито'])
         if not date_str:
             return None
         return date_str.split('\n')[0].strip()
@@ -93,17 +101,26 @@ class OrderPage(FunPayPage):
     @property
     def order_category_name(self) -> str | None:
         """Order category name."""
-        return self._first_found(['game', 'игра', 'гра'])
+
+        return self._first_found(['game',
+                                  'игра',
+                                  'гра'])
 
     @property
     def order_subcategory_name(self) -> str | None:
         """Order subcategory name."""
-        return self._first_found(['category', 'категория', 'категорія'])
+
+        return self._first_found(['category',
+                                  'категория',
+                                  'категорія'])
 
     @property
     def order_total(self) -> MoneyValue | None:
         """Order total."""
-        value = self._first_found(['total', 'сумма', 'сума'])
+
+        value = self._first_found(['total',
+                                   'сумма',
+                                   'сума'])
         if not value:
             return None
         return parse_money_value_string(value)

@@ -17,15 +17,20 @@ from funpayparsers.parsers.cpu_parser import (
 class PrivateChatInfoParsingOptions(ParsingOptions):
     """Options class for ``PrivateChatInfoParser``."""
 
-    cpu_parsing_options: CurrentlyViewingOfferInfoParsingOptions = CurrentlyViewingOfferInfoParsingOptions()
+    cpu_parsing_options: CurrentlyViewingOfferInfoParsingOptions = (
+        CurrentlyViewingOfferInfoParsingOptions()
+    )
     """
-    Options instance for ``CurrentlyViewingOfferInfoParser``, which is used by ``PrivateChatInfoParser``.
+    Options instance for ``CurrentlyViewingOfferInfoParser``,
+    which is used by ``PrivateChatInfoParser``.
 
     Defaults to ``CurrentlyViewingOfferInfoParsingOptions()``.
     """
 
 
-class PrivateChatInfoParser(FunPayHTMLObjectParser[PrivateChatInfo, PrivateChatInfoParsingOptions]):
+class PrivateChatInfoParser(
+    FunPayHTMLObjectParser[PrivateChatInfo, PrivateChatInfoParsingOptions],
+):
     """
     Class for parsing private chat info block.
 
@@ -39,18 +44,25 @@ class PrivateChatInfoParser(FunPayHTMLObjectParser[PrivateChatInfo, PrivateChatI
 
         result = PrivateChatInfo(
             raw_source=info_div.html,
-            registration_date_text=blocks[0].text(separator='\n', strip=True).strip().split('\n')[-2],
+            registration_date_text=(
+                blocks[0].text(separator='\n', strip=True).strip().split('\n')[-2]
+            ),
             language=None,
-            currently_viewing_offer=None
+            currently_viewing_offer=None,
         )
         blocks.pop(0)
 
         for div in blocks:
             if div.attributes.get('data-type') == 'c-p-u':
-                cpu = CurrentlyViewingOfferInfoParser(raw_source=div.html,
-                                                      options=self.options.cpu_parsing_options).parse()
+                cpu = CurrentlyViewingOfferInfoParser(
+                    raw_source=div.html,
+                    options=self.options.cpu_parsing_options,
+                ).parse()
                 result.currently_viewing_offer = cpu
             else:
-                result.language = div.css('div')[0].text(separator='\n', strip=True).strip().split('\n')[-1].strip()
+                result.language = (
+                    div.css('div')[0].text(separator='\n', strip=True).
+                    strip().split('\n')[-1].strip()
+                )
 
         return result

@@ -41,9 +41,12 @@ class ChatPageParsingOptions(ParsingOptions):
     Defaults to ``AppDataParsingOptions()``.
     """
 
-    private_chat_previews_parsing_options: PrivateChatPreviewParsingOptions = PrivateChatPreviewParsingOptions()
+    private_chat_previews_parsing_options: PrivateChatPreviewParsingOptions = (
+        PrivateChatPreviewParsingOptions()
+    )
     """
-    Options instance for ``PrivateChatPreviewsParser``, which is used by ``ChatPageParser``.
+    Options instance for ``PrivateChatPreviewsParser``, 
+    which is used by ``ChatPageParser``.
 
     Defaults to ``PrivateChatPreviewParsingOptions()``.
     """
@@ -55,7 +58,9 @@ class ChatPageParsingOptions(ParsingOptions):
     Defaults to ``ChatParsingOptions()``.
     """
 
-    private_chat_info_parsing_options: PrivateChatInfoParsingOptions = PrivateChatInfoParsingOptions()
+    private_chat_info_parsing_options: PrivateChatInfoParsingOptions = (
+        PrivateChatInfoParsingOptions()
+    )
     """
     Options instance for ``PrivateChatInfoParser``, which is used by ``ChatPageParser``.
 
@@ -79,7 +84,7 @@ class ChatPageParser(FunPayHTMLObjectParser[ChatPage, ChatPageParsingOptions]):
         else:
             chat = ChatParser(
                 raw_source=chat_div[0].html,
-                options=self.options.chat_parsing_options
+                options=self.options.chat_parsing_options,
             ).parse()
 
         if not chat_div:
@@ -91,16 +96,25 @@ class ChatPageParser(FunPayHTMLObjectParser[ChatPage, ChatPageParsingOptions]):
             else:
                 chat_info = PrivateChatInfoParser(
                     raw_source=chat_info_div[0].html,
-                    options=self.options.private_chat_info_parsing_options
+                    options=self.options.private_chat_info_parsing_options,
                 ).parse()
 
 
 
         return ChatPage(
             raw_source=self.raw_source,
-            header=PageHeaderParser(header_div.html, options=self.options.page_header_parsing_options).parse(),
-            app_data=AppDataParser(app_data, self.options.app_data_parsing_options).parse(),
-            chat_previews=PrivateChatPreviewsParser(chat_preview_div[0].html, self.options.private_chat_previews_parsing_options).parse() if chat_preview_div else None,
+            header=PageHeaderParser(
+                header_div.html,
+                options=self.options.page_header_parsing_options,
+            ).parse(),
+            app_data=AppDataParser(
+                app_data,
+                options=self.options.app_data_parsing_options,
+            ).parse(),
+            chat_previews=PrivateChatPreviewsParser(
+                chat_preview_div[0].html,
+                options=self.options.private_chat_previews_parsing_options,
+            ).parse() if chat_preview_div else None,
             chat=chat,
-            chat_info=chat_info
+            chat_info=chat_info,
         )

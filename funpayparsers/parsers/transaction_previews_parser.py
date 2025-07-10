@@ -23,8 +23,8 @@ class TransactionPreviewsParsingOptions(ParsingOptions):
     """
     Options instance for ``MoneyValueParser``, which is used by ``ReviewsParser``.
     
-    ``parsing_mode`` option is hardcoded in ``TransactionPreviewsParser`` and is therefore ignored 
-    if provided externally.
+    ``parsing_mode`` option is hardcoded in ``TransactionPreviewsParser`` 
+    and is therefore ignored if provided externally.
 
     Defaults to ``UserPreviewParsingOptions()``.
     """
@@ -32,7 +32,7 @@ class TransactionPreviewsParsingOptions(ParsingOptions):
 
 class TransactionPreviewsParser(FunPayHTMLObjectParser[
     TransactionPreviewsBatch,
-    TransactionPreviewsParsingOptions
+    TransactionPreviewsParsingOptions,
 ]):
     """
     Class for parsing transaction previews.
@@ -47,12 +47,14 @@ class TransactionPreviewsParser(FunPayHTMLObjectParser[
             value = MoneyValueParser(
                 raw_source=i.css('div.tc-price')[0].html,
                 options=self.options.money_value_parsing_options,
-                parsing_mode=MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW
+                parsing_mode=MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW,
             ).parse()
             recipient_div = i.css('span.tc-payment-number')
 
             payment_method = i.css('span.payment-logo')
-            payment_method = PaymentMethod.get_by_css_class(payment_method[0].attributes['class']) if payment_method else None
+            payment_method = PaymentMethod.get_by_css_class(
+                payment_method[0].attributes['class'],
+            ) if payment_method else None
 
             result.append(TransactionPreview(
                 raw_source=i.html,
@@ -62,7 +64,8 @@ class TransactionPreviewsParser(FunPayHTMLObjectParser[
                 status=TransactionStatus.get_by_css_class(i.attributes['class']),
                 amount=value,
                 payment_method=payment_method,
-                withdrawal_number=recipient_div[0].text(strip=True) if recipient_div else None,
+                withdrawal_number=(recipient_div[0].text(strip=True)
+                                   if recipient_div else None),
             ))
 
         user_id = self.tree.css('input[type="hidden"][name="user_id"]')
@@ -72,7 +75,9 @@ class TransactionPreviewsParser(FunPayHTMLObjectParser[
         return TransactionPreviewsBatch(
             raw_source=self.raw_source,
             transactions=result,
-            user_id = int(user_id[0].attributes.get('value')) if user_id else None,
-            filter = filter_[0].attributes.get('value') if filter_ else None,
-            next_transaction_id= int(next_id[0].attributes.get('value')) if next_id else None
+            user_id=int(user_id[0].attributes.get('value')) if user_id else None,
+            filter=filter_[0].attributes.get('value') if filter_ else None,
+            next_transaction_id=(
+                int(next_id[0].attributes.get('value')) if next_id else None
+            ),
         )

@@ -12,9 +12,7 @@ from funpayparsers.types.pages.base import FunPayPage
 
 @dataclass
 class TransactionsPage(FunPayPage):
-    """
-    Represents the transactions page (https://funpay.com/account/balance).
-    """
+    """Represents the transactions page (https://funpay.com/account/balance)."""
 
     rub_balance: MoneyValue | None
     """RUB balance."""

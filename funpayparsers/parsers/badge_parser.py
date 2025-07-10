@@ -31,5 +31,5 @@ class UserBadgeParser(FunPayHTMLObjectParser[UserBadge, UserBadgeParsingOptions]
         return UserBadge(
             raw_source=badge_span.html,
             text=badge_span.text(strip=True),
-            css_class=badge_span.attributes["class"]
+            css_class=badge_span.attributes["class"],
         )

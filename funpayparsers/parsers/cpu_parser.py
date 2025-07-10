@@ -19,7 +19,7 @@ class CurrentlyViewingOfferInfoParsingOptions(ParsingOptions):
 
 class CurrentlyViewingOfferInfoParser(FunPayHTMLObjectParser[
                                           CurrentlyViewingOfferInfo,
-                                          CurrentlyViewingOfferInfoParsingOptions
+                                          CurrentlyViewingOfferInfoParsingOptions,
                                       ]):
     """
     Class for parsing C-P-U data (which offer specific user is currently viewing).
@@ -36,5 +36,5 @@ class CurrentlyViewingOfferInfoParser(FunPayHTMLObjectParser[
         return CurrentlyViewingOfferInfo(
             raw_source=self.raw_source,
             id=int(id_) if id_.isnumeric() else id_,
-            name=link.text(strip=True)
+            name=link.text(strip=True),
         )

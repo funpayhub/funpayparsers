@@ -33,23 +33,28 @@ from funpayparsers.parsers.chat_previews_parser import (
 class UpdatesParsingOptions(ParsingOptions):
     """Options class for ``UpdatesParser``."""
 
-    private_chat_previews_parsing_options: PrivateChatPreviewParsingOptions = PrivateChatPreviewParsingOptions()
+    private_chat_previews_parsing_options: PrivateChatPreviewParsingOptions = (
+        PrivateChatPreviewParsingOptions())
     """
-    Options instance for ``CurrentlyViewingOfferInfoParser``, which is used by ``UpdatesParser``.
+    Options instance for ``CurrentlyViewingOfferInfoParser``, 
+    which is used by ``UpdatesParser``.
 
     Defaults to ``PrivateChatPreviewParsingOptions()``.
     """
 
     messages_parsing_options: MessagesParsingOptions = MessagesParsingOptions()
     """
-    Options instance for ``MessagesParser``, which is used by ``UpdatesParser``.
+    Options instance for ``MessagesParser``, 
+    which is used by ``UpdatesParser``.
 
     Defaults to ``MessagesParsingOptions()``.
     """
 
-    cpu_parsing_options: CurrentlyViewingOfferInfoParsingOptions = CurrentlyViewingOfferInfoParsingOptions()
+    cpu_parsing_options: CurrentlyViewingOfferInfoParsingOptions = (
+        CurrentlyViewingOfferInfoParsingOptions())
     """
-    Options instance for ``PrivateChatPreviewsParser``, which is used by ``UpdatesParser``.
+    Options instance for ``PrivateChatPreviewsParser``, 
+    which is used by ``UpdatesParser``.
 
     Defaults to ``CurrentlyViewingOfferInfoParsingOptions()``.
     """
@@ -73,7 +78,7 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
             cpu=None,
             nodes=[],
             unknown_objects=[],
-            response=None
+            response=None,
         )
 
         action_response = self.data.get('response')
@@ -103,24 +108,26 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
         return OrdersCounters(
             raw_source=str(obj),
             purchases=int(obj.get('buyer')) if obj.get('seller') else 0,
-            sales=int(obj.get('seller')) if obj.get('seller') else 0
+            sales=int(obj.get('seller')) if obj.get('seller') else 0,
         )
 
     def _parse_chat_counter(self, obj: dict) -> ChatCounter:
         return ChatCounter(
             raw_source=str(obj),
             counter=int(obj['counter']),
-            message=int(obj['message'])
+            message=int(obj['message']),
         )
 
     def _parse_chat_bookmarks(self, obj: dict) -> ChatBookmarks:
-        previews = PrivateChatPreviewsParser(obj['html'], options=self.options.private_chat_previews_parsing_options).parse()
         return ChatBookmarks(
             raw_source=str(obj),
             counter=int(obj['counter']),
             message=int(obj['message']),
             order=obj['order'],
-            chat_previews=previews
+            chat_previews=PrivateChatPreviewsParser(
+                obj['html'],
+                options=self.options.private_chat_previews_parsing_options,
+            ).parse(),
         )
 
     def _parse_cpu(self, obj: dict) -> CurrentlyViewingOfferInfo:
@@ -154,7 +161,7 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
     def _parse_action_response(self, obj: dict) -> ActionResponse:
         return ActionResponse(
             raw_source=str(obj),
-            error=obj.get('error')
+            error=obj.get('error'),
         )
 
     def _parse_update(self, update_dict: dict) -> UpdateObject | None:
@@ -170,7 +177,7 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
             type=update_type,
             id=update_dict['id'],
             tag=update_dict['tag'],
-            data=obj
+            data=obj,
         )
 
     __parsing_methods__ = {

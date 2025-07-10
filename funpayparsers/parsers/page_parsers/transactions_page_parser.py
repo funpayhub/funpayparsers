@@ -30,7 +30,8 @@ class TransactionsPageParsingOptions(ParsingOptions):
 
     page_header_parsing_options: PageHeaderParsingOptions = PageHeaderParsingOptions()
     """
-    Options instance for ``PageHeaderParser``, which is used by ``TransactionsPageParser``.
+    Options instance for ``PageHeaderParser``, 
+    which is used by ``TransactionsPageParser``.
 
     Defaults to ``PageHeaderParsingOptions()``.
     """
@@ -53,16 +54,19 @@ class TransactionsPageParsingOptions(ParsingOptions):
 
     money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions()
     """
-    Options instance for ``MoneyValueParser``, which is used by ``TransactionsPageParser``.
+    Options instance for ``MoneyValueParser``, 
+    which is used by ``TransactionsPageParser``.
     
-    ``parsing_mode`` option is hardcoded in ``TransactionsPageParser`` and is therefore ignored 
-    if provided externally.
+    ``parsing_mode`` option is hardcoded in ``TransactionsPageParser`` 
+    and is therefore ignored if provided externally.
 
     Defaults to ``MoneyValueParsingOptions()``.
     """
 
 
-class TransactionsPageParser(FunPayHTMLObjectParser[TransactionsPage, TransactionsPageParsingOptions]):
+class TransactionsPageParser(
+    FunPayHTMLObjectParser[TransactionsPage, TransactionsPageParsingOptions],
+):
     """Class for parsing the transactions page (https://funpay.com/account/balance)."""
 
     def _parse(self):
@@ -75,7 +79,7 @@ class TransactionsPageParser(FunPayHTMLObjectParser[TransactionsPage, Transactio
                 MoneyValueParser(
                     i.text().strip(),
                     options=self.options.money_value_parsing_options,
-                    parsing_mode=MoneyValueParsingMode.FROM_STRING).parse()
+                    parsing_mode=MoneyValueParsingMode.FROM_STRING).parse(),
             )
 
         rub_balance = [i for i in money_values if i.currency is Currency.RUB]
@@ -93,8 +97,14 @@ class TransactionsPageParser(FunPayHTMLObjectParser[TransactionsPage, Transactio
 
         return TransactionsPage(
             raw_source=self.raw_source,
-            header=PageHeaderParser(header_div.html, options=self.options.page_header_parsing_options).parse(),
-            app_data=AppDataParser(app_data, self.options.app_data_parsing_options).parse(),
+            header=PageHeaderParser(
+                header_div.html,
+                options=self.options.page_header_parsing_options,
+            ).parse(),
+            app_data=AppDataParser(
+                app_data,
+                options=self.options.app_data_parsing_options,
+            ).parse(),
             rub_balance=rub_balance[0] if rub_balance else None,
             usd_balance=usd_balance[0] if usd_balance else None,
             eur_balance=eur_balance[0] if eur_balance else None,

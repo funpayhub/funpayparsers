@@ -12,9 +12,7 @@ from funpayparsers.types.common import MoneyValue
 
 @dataclass
 class WebPush(FunPayObject):
-    """
-    Represents a WebPush data extracted from an AppData dict.
-    """
+    """Represents a WebPush data extracted from an AppData dict."""
 
     app: str
     """App ID."""
@@ -23,7 +21,7 @@ class WebPush(FunPayObject):
     """Is WebPush enabled?"""
 
     hwid_required: bool
-    """Does it requires HWID?"""
+    """Whether HWID is required or not."""
 
 
 @dataclass
@@ -50,7 +48,7 @@ class PageHeader(FunPayObject):
     """
     Represents the header section of a FunPay page.
 
-    All fields in this dataclass will be `None` if the response is parsed
+    All fields in this dataclass will be ``None`` if the response is parsed
     from a request made without authentication cookies (i.e., as an anonymous user).
     """
     user_id: int | None

@@ -47,8 +47,7 @@ class UserPreviewParser(FunPayHTMLObjectParser[UserPreview, UserPreviewParsingOp
     def _parse(self):
         if self.options.parsing_mode is UserPreviewParsingMode.FROM_ORDER_PREVIEW:
             return self._parse_from_order_preview()
-        else:
-            return self._parse_from_chat()
+        return self._parse_from_chat()
 
 
 
@@ -65,7 +64,7 @@ class UserPreviewParser(FunPayHTMLObjectParser[UserPreview, UserPreviewParsingOp
             online='online' in user_div.attributes['class'],
             avatar_url=extract_css_url(photo_style),
             banned='banned' in user_div.attributes['class'],
-            status_text=user_status_text
+            status_text=user_status_text,
         )
 
     def _parse_from_chat(self) -> UserPreview:
@@ -79,5 +78,5 @@ class UserPreviewParser(FunPayHTMLObjectParser[UserPreview, UserPreviewParsingOp
             online='online' in user_div.attributes['class'],
             avatar_url=user_div.css_first('img.img-circle').attributes['src'],
             banned='banned' in user_div.attributes['class'],
-            status_text=user_div.css_first('div.media-user-status').text().strip()
+            status_text=user_div.css_first('div.media-user-status').text().strip(),
         )

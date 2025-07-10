@@ -12,9 +12,7 @@ from funpayparsers.types.common_page_elements import AppData, PageHeader
 
 @dataclass
 class FunPayPage(FunPayObject):
-    """
-    Base class for FunPay pages.
-    """
+    """Base class for FunPay pages."""
 
     header: PageHeader
     """Page header."""

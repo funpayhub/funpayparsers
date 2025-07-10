@@ -16,9 +16,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class PrivateChatPreview(FunPayObject):
-    """
-    Represents a private chat preview.
-    """
+    """Represents a private chat preview."""
 
     id: int
     """Chat ID."""
@@ -41,35 +39,42 @@ class PrivateChatPreview(FunPayObject):
     last_message_preview: str
     """
     Preview of the last message (max 250 characters).  
+    
     Excess text (after 250th character) is truncated.  
+    
     Images are displayed as a text message with "Image" text (varies by page language) 
-        and do not include a link.
+    and do not include a link.
     """
 
     last_message_time_text: str
     """
-    Time of the last message. Formats:
-    - `HH:MM` if the message was sent today.
-    - `Yesterday` (depends on the page language) if the message was sent yesterday.
-    - `DD.MM` if the message was sent the day before yesterday or earlier.
+    Time of the last message. 
+    
+    Formats:
+        - ``HH:MM`` if the message was sent today.
+        - ``'Yesterday'`` (depends on the page language) if the message 
+        was sent yesterday.
+        
+        - ``DD.MM`` if the message was sent the day before yesterday or earlier.
     """
 
 
 @dataclass
 class Chat(FunPayObject):
-    """
-    Represents a chat.
-    """
+    """Represents a chat."""
+
     id: int | None
     """
     Chat ID.
-    Will be None if parsing anonymous request response.
+    
+    Will be ``None`` if parsing anonymous request response.
     """
 
     name: str
     """
     Chat name.
-    Will be None if parsing anonymous request response.
+
+    Will be ``None`` if parsing anonymous request response.
     """
 
     interlocutor: UserPreview | None
@@ -94,6 +99,7 @@ class Chat(FunPayObject):
 class PrivateChatInfo(FunPayObject):
     """
     Represents a private chat info.
+
     Located near private chat.
     """
 
@@ -104,8 +110,8 @@ class PrivateChatInfo(FunPayObject):
     """
     Interlocutors language.
     
-    Warning:
-        Not `None` only if interlocutors language is english.
+    .. warning::
+        Not ``None`` only if interlocutors language is english.
     """
 
     currently_viewing_offer: CurrentlyViewingOfferInfo | None

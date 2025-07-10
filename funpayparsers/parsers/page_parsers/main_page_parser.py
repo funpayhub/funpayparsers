@@ -62,13 +62,19 @@ class MainPageParser(FunPayHTMLObjectParser[MainPage, MainPageParsingOptions]):
         categories_divs = self.tree.css('div.promo-game-list')
         if len(categories_divs) == 1:
             last_categories = []
-            categories = CategoriesParser(categories_divs[0].html,
-                                          options=self.options.categories_parsing_options).parse()
+            categories = CategoriesParser(
+                categories_divs[0].html,
+                options=self.options.categories_parsing_options,
+            ).parse()
         else:
-            last_categories = CategoriesParser(categories_divs[0].html,
-                                               options=self.options.categories_parsing_options).parse()
-            categories = CategoriesParser(categories_divs[1].html,
-                                          options=self.options.categories_parsing_options).parse()
+            last_categories = CategoriesParser(
+                categories_divs[0].html,
+                options=self.options.categories_parsing_options,
+            ).parse()
+            categories = CategoriesParser(
+                categories_divs[1].html,
+                options=self.options.categories_parsing_options,
+            ).parse()
 
         secret_chat_div = self.tree.css('div.chat')
 
@@ -76,9 +82,23 @@ class MainPageParser(FunPayHTMLObjectParser[MainPage, MainPageParsingOptions]):
 
         return MainPage(
             raw_source=self.tree.html,
-            header=PageHeaderParser(header_div.html, options=self.options.page_header_parsing_options).parse(),
+
+            header=PageHeaderParser(
+                header_div.html,
+                options=self.options.page_header_parsing_options,
+            ).parse(),
+
             last_categories=last_categories,
+
             categories=categories,
-            secret_chat=ChatParser(secret_chat_div[0].html, options=self.options.chat_parsing_options).parse() if secret_chat_div else None,
-            app_data=AppDataParser(appdata, self.options.app_data_parsing_options).parse()
+
+            secret_chat=ChatParser(
+                secret_chat_div[0].html,
+                options=self.options.chat_parsing_options,
+            ).parse() if secret_chat_div else None,
+
+            app_data=AppDataParser(
+                appdata,
+                self.options.app_data_parsing_options,
+            ).parse(),
         )

@@ -12,9 +12,7 @@ SelfT = TypeVar('SelfT', bound='FunPayObject[Any]')
 
 @dataclass
 class FunPayObject:
-    """
-    Base class for all FunPay-parsed objects.
-    """
+    """Base class for all FunPay-parsed objects."""
 
     raw_source: str
     """
