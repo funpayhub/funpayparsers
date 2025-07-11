@@ -38,6 +38,7 @@ class UpdateType(Enum):
                 return i
         return None
 
+
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
 

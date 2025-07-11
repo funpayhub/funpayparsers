@@ -1,7 +1,14 @@
 from __future__ import annotations
 
 
-__all__ = ('MoneyValue', 'UserBadge', 'UserPreview', 'UserRating', 'Achievement')
+__all__ = (
+    'MoneyValue',
+    'UserBadge',
+    'UserPreview',
+    'UserRating',
+    'Achievement',
+    'CurrentlyViewingOfferInfo',
+)
 
 from dataclasses import dataclass
 
@@ -130,3 +137,9 @@ class Achievement(FunPayObject):
 
     text: str
     """Achievement text."""
+
+
+@dataclass
+class CurrentlyViewingOfferInfo(FunPayObject):
+    id: int | str
+    name: str
