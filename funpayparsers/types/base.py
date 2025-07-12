@@ -4,7 +4,7 @@ from __future__ import annotations
 __all__ = ('FunPayObject',)
 
 from typing import Any, Type, TypeVar
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 
 
 SelfT = TypeVar('SelfT', bound='FunPayObject[Any]')
@@ -14,7 +14,7 @@ SelfT = TypeVar('SelfT', bound='FunPayObject[Any]')
 class FunPayObject:
     """Base class for all FunPay-parsed objects."""
 
-    raw_source: str
+    raw_source: str = field(compare=False)
     """
     Raw source of an object.
     Typically a HTML string, but in rare cases can be a JSON string.
