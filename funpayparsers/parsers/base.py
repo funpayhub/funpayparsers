@@ -60,7 +60,25 @@ class ParsingOptions:
     """
 
     empty_raw_source: bool = False
+    """
+    Whether to keep ``raw_source`` field empty or not.
+    Works recursively for all nested ``FunPayObject`` instances.
+    
+    Defaults to ``False``.
+    """
+
+
     context: dict[Any, Any] = field(default_factory=dict)
+    """
+    Parsing context.
+
+    Some fields in certain objects can only be populated using external context.
+    For example: ``Message.chat_id``, ``Message.chat_name``, and similar fields
+    are not present in the source data and must be supplied via context.
+
+    When merging option classes using ``&`` or ``|``, their ``context`` dictionaries
+    are combined using ``dict.update()``.
+    """
 
     def __merge_options__(
         self: OptionsClass, other, non_explicit: bool = False
@@ -77,7 +95,10 @@ class ParsingOptions:
         other_explicit_fields = getattr(other, '__passed_kwargs__', {})
         for k in self_fields:
             if k in other_fields and (non_explicit or k in other_explicit_fields):
-                self_fields[k] = other_fields[k]
+                if k == 'context':
+                    self_fields[k] = other_fields[k] | other_fields[k]
+                else:
+                    self_fields[k] = other_fields[k]
 
         return self.__class__(**self_fields)
 
