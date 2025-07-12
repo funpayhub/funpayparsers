@@ -7,7 +7,7 @@ from typing import Any, Type, TypeVar
 from dataclasses import asdict, dataclass, field
 
 
-SelfT = TypeVar('SelfT', bound='FunPayObject[Any]')
+SelfT = TypeVar('SelfT', bound='FunPayObject')
 
 
 @dataclass
