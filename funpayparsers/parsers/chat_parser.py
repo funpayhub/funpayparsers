@@ -58,19 +58,20 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
         chat_div = self.tree.css('div.chat')[0]
         interlocutor, notifications, banned = self._parse_chat_header(chat_div)
 
+        chat_id = int(chat_div.attributes['data-id']) if chat_div.attributes.get('data-id') else None
+        chat_name = chat_div.attributes.get('data-name')
+
         messages_div = chat_div.css('div.chat-message-list')[0]
         history = MessagesParser(
-            raw_source=messages_div.html, options=self.options.messages_parsing_options
+            raw_source=messages_div.html,
+            options=self.options.messages_parsing_options,
+            context={'chat_id': chat_id, 'chat_name': chat_name}
         ).parse()
 
         return Chat(
             raw_source=chat_div.html,
-            id=(
-                int(chat_div.attributes['data-id'])
-                if chat_div.attributes.get('data-id')
-                else None
-            ),
-            name=chat_div.attributes.get('data-name'),
+            id=chat_id,
+            name=chat_name,
             interlocutor=interlocutor,
             is_notifications_enabled=notifications,
             is_blocked=banned,

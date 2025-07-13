@@ -27,7 +27,10 @@ heading_message_obj = Message(raw_source='',
                               badge=None,
                               send_date_text='26 мая, 11:21:41',
                               text='MessageText',
-                              image_url=None)
+                              image_url=None,
+                              chat_id=None,
+                              chat_name=None
+                              )
 
 
 non_heading_message_html = """<div class="chat-msg-item" id="message-12346">
@@ -46,7 +49,10 @@ non_heading_message_obj = Message(raw_source='',
                                   badge=None,
                                   send_date_text=None,
                                   text='MessageText',
-                                  image_url=None)
+                                  image_url=None,
+                                  chat_id=None,
+                                  chat_name=None
+                                  )
 
 
 notification_message_html = """<div class="chat-msg-item chat-msg-with-head" id="message-12347">
@@ -64,33 +70,41 @@ notification_message_html = """<div class="chat-msg-item chat-msg-with-head" id=
     </div>
 </div>"""
 
-notification_message_obj = Message(raw_source='',
-                                   id=12347,
-                                   is_heading=True,
-                                   sender_id=0,
-                                   sender_username='FunPay',
-                                   send_date_text='4 мая, 10:41:16',
-                                   text='Продавец SellerUsername вернул деньги покупателю BuyerUsername по заказу #AAAAAAAA.',
-                                   image_url=None,
-                                   badge=UserBadge(
-                                       raw_source='',
-                                       css_class='chat-msg-author-label label label-primary',
-                                       text='оповещение'
-                                   ))
+notification_message_obj = Message(
+    raw_source='',
+    id=12347,
+    is_heading=True,
+    sender_id=0,
+    sender_username='FunPay',
+    send_date_text='4 мая, 10:41:16',
+    text='Продавец SellerUsername вернул деньги покупателю BuyerUsername по заказу #AAAAAAAA.',
+    image_url=None,
+    badge=UserBadge(
+        raw_source='',
+        css_class='chat-msg-author-label label label-primary',
+        text='оповещение'
+    ),
+    chat_id=None,
+    chat_name=None
+)
 
 
 multiple_messages = f'{heading_message_html}\n{non_heading_message_html}'
 multiple_messages_obj = [
     heading_message_obj,
-    Message(raw_source='',
-            id=12346,
-            is_heading=False,
-            sender_id=heading_message_obj.sender_id,
-            sender_username=heading_message_obj.sender_username,
-            badge=heading_message_obj.badge,
-            send_date_text=None,
-            text='MessageText',
-            image_url=None)
+    Message(
+        raw_source='',
+        id=12346,
+        is_heading=False,
+        sender_id=heading_message_obj.sender_id,
+        sender_username=heading_message_obj.sender_username,
+        badge=heading_message_obj.badge,
+        send_date_text=None,
+        text='MessageText',
+        image_url=None,
+        chat_id=None,
+        chat_name=None
+    )
 ]
 
 
