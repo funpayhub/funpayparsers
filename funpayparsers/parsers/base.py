@@ -191,8 +191,11 @@ class FunPayObjectParser(ABC, Generic[ReturnType, OptionsClass]):
         overrides = {
             k: v
             for k, v in overrides.items()
-            if k in getattr(base, '__dataclass_fields__', {})
+            if k in getattr(base, '__dataclass_fields__', {}) and k != 'context'
         }
+        if 'context' in overrides:
+            overrides['context'] = base.context | overrides['context']
+
         return replace(base, **overrides)
 
     @classmethod
