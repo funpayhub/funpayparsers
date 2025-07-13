@@ -23,7 +23,9 @@ processed_messages = [
         badge=support_badge,
         send_date_text='01.01.2077',
         text='MessageText1',
-        image_url=None
+        image_url=None,
+        chat_id=None,
+        chat_name=None
     ),
     Message(
         raw_source='',
@@ -34,7 +36,9 @@ processed_messages = [
         badge=support_badge,
         send_date_text='01.01.2077',
         text='MessageText2',
-        image_url=None
+        image_url=None,
+        chat_id=None,
+        chat_name=None
     )
 ]
 
@@ -51,7 +55,9 @@ def original_messages():
             badge=support_badge,
             send_date_text='01.01.2077',
             text='MessageText1',
-            image_url=None
+            image_url=None,
+            chat_id=None,
+            chat_name=None
         ),
         Message(
             raw_source='',
@@ -62,7 +68,9 @@ def original_messages():
             badge=None,
             send_date_text='01.01.2077',
             text='MessageText2',
-            image_url=None
+            image_url=None,
+            chat_id=None,
+            chat_name=None
         )
     ]
 

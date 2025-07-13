@@ -57,3 +57,21 @@ class Message(FunPayObject):
     
     Will be ``None`` if the message contains text.
     """
+
+    chat_id: int | str | None
+    """
+    Chat ID where the message was sent.
+
+    Parsers obtain this value from the `context` field of the provided options only.
+
+    Context key: ``chat_id``.
+    """
+
+    chat_name: str | None
+    """
+    Chat name where the message was sent.
+
+    This value is available only via the options context during parsing.
+
+    Context key: ``chat_name``.
+    """

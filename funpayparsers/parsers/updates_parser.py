@@ -150,6 +150,7 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
         messages = MessagesParser(
             '\n'.join(i['html'] for i in obj['messages']),
             options=self.options.messages_parsing_options,
+            context={'chat_id': NodeInfo.id, 'chat_name': NodeInfo.name},
         ).parse()
 
         return ChatNode(
