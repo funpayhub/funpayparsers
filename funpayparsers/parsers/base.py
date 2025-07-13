@@ -188,15 +188,15 @@ class FunPayObjectParser(ABC, Generic[ReturnType, OptionsClass]):
     @classmethod
     def _build_options(cls, options: OptionsClass | None, **overrides) -> OptionsClass:
         base = options or cls.get_options_cls()()
-        overrides = {
+        to_override = {
             k: v
             for k, v in overrides.items()
             if k in getattr(base, '__dataclass_fields__', {}) and k != 'context'
         }
         if 'context' in overrides:
-            overrides['context'] = base.context | overrides['context']
+            to_override['context'] = base.context | overrides['context']
 
-        return replace(base, **overrides)
+        return replace(base, **to_override)
 
     @classmethod
     def get_options_cls(cls) -> Type[OptionsClass]:
