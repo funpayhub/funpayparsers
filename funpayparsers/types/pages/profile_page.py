@@ -42,7 +42,7 @@ class ProfilePage(FunPayPage):
     registration_date_text: str
     """User registration date text."""
 
-    status_text: str
+    status_text: str | None
     """User status text."""
 
     rating: UserRating | None
