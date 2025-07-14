@@ -16,6 +16,7 @@ from funpayparsers.parsers.user_preview_parser import (
     UserPreviewParsingMode,
     UserPreviewParsingOptions,
 )
+from typing import cast
 
 
 @dataclass(frozen=True)
@@ -82,21 +83,21 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
         self, div: LexborNode
     ) -> tuple[UserPreview | None, bool | None, bool | None]:
         header_div = div.css('div.chat-header')[0]
-        interlocutor_div = header_div.css('div.media-user')
+        interlocutor_divs = header_div.css('div.media-user')
 
-        if not interlocutor_div:
+        if not interlocutor_divs:
             return None, None, None
 
         interlocutor = UserPreviewParser(
-            raw_source=interlocutor_div[0].html,
+            raw_source=cast(str, interlocutor_divs[0].html),
             options=self.options.user_preview_parsing_options,
             parsing_mode=UserPreviewParsingMode.FROM_CHAT,
         ).parse()
 
-        btn_div = header_div.css('button')
-        if not btn_div:
+        btn_divs = header_div.css('button')
+        if not btn_divs:
             return interlocutor, None, None
-        btn_div = btn_div[0]
+        btn_div = btn_divs[0]
 
         notifications, banned = False, False
         if 'btn-success' in btn_div.attributes['class']:

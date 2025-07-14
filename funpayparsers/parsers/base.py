@@ -133,7 +133,7 @@ class FunPayObjectParser(ABC, Generic[ReturnType, OptionsClass]):
         ``FunPayJSONObjectParser`` (for JSON-string/python collection sources)
     """
 
-    __options_cls__: Type[ParsingOptions] | None = None
+    __options_cls__: Type[OptionsClass] | None = None
 
     def __init__(
         self, raw_source: Any, options: OptionsClass | None = None, **overrides
@@ -225,7 +225,7 @@ class FunPayObjectParser(ABC, Generic[ReturnType, OptionsClass]):
 
             for arg in args:
                 if isinstance(arg, type) and issubclass(arg, ParsingOptions):
-                    return arg
+                    return arg  # type: ignore[return-value]
         raise LookupError('No suitable options class found.')
 
 
@@ -237,7 +237,7 @@ class FunPayHTMLObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
         :param raw_source: raw source of an object (HTML / JSON string)
         """
         super().__init__(raw_source=raw_source, options=options, **overrides)
-        self._tree = None
+        self._tree: LexborHTMLParser | None = None
 
     @property
     def tree(self) -> LexborHTMLParser:
@@ -260,10 +260,10 @@ class FunPayJSONObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
         **overrides,
     ):
         super().__init__(raw_source=raw_source, options=options, **overrides)
-        self._data = None
+        self._data: dict | list | None = None
 
     @property
-    def data(self) -> dict[str, Any] | list[Any]:
+    def data(self) -> dict[str, Any] | list:
         if self._data is not None:
             return self._data
 
