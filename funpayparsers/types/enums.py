@@ -14,13 +14,11 @@ __all__ = (
 
 
 import re
-from typing import Type, TypeVar
+from typing import Type
 from enum import Enum
 from types import MappingProxyType
 from functools import cache
-
-
-T = TypeVar('T')
+from typing import cast
 
 
 class UpdateType(Enum):
@@ -31,7 +29,7 @@ class UpdateType(Enum):
     CPU = 'c-p-u'
 
     @classmethod
-    def get_by_type_str(cls: Type[T], type_str: str, /) -> T | None:
+    def get_by_type_str(cls, type_str: str, /) -> UpdateType | None:
         """Determine an update type by its type string."""
         for i in cls:
             if i.value == type_str:
@@ -52,14 +50,14 @@ class SubcategoryType(Enum):
     """Unknown type. Just in case, for future FunPay updates."""
 
     @classmethod
-    def get_by_url(cls: Type[T], url: str, /) -> T:
+    def get_by_url(cls, url: str, /) -> SubcategoryType:
         """
         Determine a subcategory type by URL.
         """
         for i in cls:
             if i is cls.UNKNOWN:
                 continue
-            if i.value in url:
+            if cast(str, i.value) in url:
                 return i
         return cls.UNKNOWN
 
@@ -84,7 +82,7 @@ class OrderStatus(Enum):
     """Unknown status. Just in case, for future FunPay updates."""
 
     @classmethod
-    def get_by_css_class(cls: Type[T], css_class: str, /) -> T:
+    def get_by_css_class(cls, css_class: str, /) -> OrderStatus:
         """
         Determine the order status based on a given CSS class string.
         """
@@ -92,7 +90,7 @@ class OrderStatus(Enum):
             if i is cls.UNKNOWN:
                 continue
 
-            if i.value in css_class:
+            if cast(str, i.value) in css_class:
                 return i
         return cls.UNKNOWN
 
@@ -108,7 +106,7 @@ class Currency(Enum):
     EUR = '€'
 
     @classmethod
-    def get_by_character(cls: Type[T], character: str, /) -> T:
+    def get_by_character(cls, character: str, /) -> Currency:
         """Determine the currency based on a given currency string."""
         for i in cls:
             if i.value == character:
@@ -132,7 +130,7 @@ class TransactionStatus(Enum):
     """Unknown transaction status. Just in case, for future FunPay updates."""
 
     @classmethod
-    def get_by_css_class(cls: Type[T], css_class: str, /) -> T:
+    def get_by_css_class(cls, css_class: str, /) -> TransactionStatus:
         """
         Determine the transaction type based on a given CSS class string.
         """
@@ -141,7 +139,7 @@ class TransactionStatus(Enum):
             if i is cls.UNKNOWN:
                 continue
 
-            if i.value in css_class:
+            if cast(str, i.value) in css_class:
                 return i
         return cls.UNKNOWN
 
@@ -159,7 +157,7 @@ class BadgeType(Enum):
     UNKNOWN = ''
 
     @classmethod
-    def get_by_css_class(cls: Type[T], css_class: str, /) -> T:
+    def get_by_css_class(cls, css_class: str, /) -> BadgeType:
         """
         Determine the badge type based on a given CSS class string.
         """
@@ -167,7 +165,7 @@ class BadgeType(Enum):
             if i is cls.UNKNOWN:
                 continue
 
-            if i.value in css_class:
+            if cast(str, i.value) in css_class:
                 return i
         return cls.UNKNOWN
 
@@ -385,20 +383,23 @@ class PaymentMethod(Enum):
 
     @classmethod
     @cache
-    def css_class_to_method_map(cls: Type[T]) -> MappingProxyType[str, T]:
+    def css_class_to_method_map(cls) -> MappingProxyType[str, PaymentMethod]:
         return MappingProxyType(
             {css_class: method for method in cls for css_class in method.value}
         )
 
     @classmethod
-    def get_by_css_class(cls: Type[T], css_class: str) -> T:
+    def get_by_css_class(cls, css_class: str) -> PaymentMethod:
         """Determine the payment method based on a given CSS class string."""
         match = _PAYMENT_METHOD_CLS_RE.search(css_class)
         if not match:
             return cls.UNKNOWN
 
         css_class = match.string[match.start() : match.end()]
-        return cls.css_class_to_method_map().get(css_class) or cls.UNKNOWN
+        return cast(
+            PaymentMethod,
+            cls.css_class_to_method_map().get(css_class) or cls.UNKNOWN
+        )
 
 
 class Language(Enum):
@@ -410,7 +411,7 @@ class Language(Enum):
     UK = 'uk'
 
     @classmethod
-    def get_by_lang_code(cls: Type[T], lang_code: str, /) -> T:
+    def get_by_lang_code(cls, lang_code: str, /) -> Language:
         for i in cls:
             if i.value == lang_code:
                 return i
