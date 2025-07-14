@@ -130,11 +130,11 @@ class OfferPreviewsParser(
     def _parse_user_tag(offer_tag: LexborNode, processed_users) -> OfferSeller | None:
         # If this offer preview is from sellers page,
         # and not from subcategory offers page, there is no user div.
-        user_div = offer_tag.css('div.tc-user')
-        if not user_div:
+        user_divs = offer_tag.css('div.tc-user')
+        if not user_divs:
             return None
 
-        user_div = user_div[0]
+        user_div = user_divs[0]
         username_span = user_div.css('div.media-user-name > span')[0]
         user_id = int(username_span.attributes['data-href'].split('/')[-2])
 
