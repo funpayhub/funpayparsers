@@ -70,10 +70,7 @@ class TransactionsPageParser(
 ):
     """Class for parsing the transactions page (https://funpay.com/account/balance)."""
 
-    def _parse(self):
-        header_div = self.tree.css_first('header')
-        app_data = self.tree.css_first('body').attributes['data-app-data']
-
+    def _parse(self) -> TransactionsPage:
         money_values = []
         for i in self.tree.css('span.balances-value'):
             money_values.append(
@@ -93,18 +90,18 @@ class TransactionsPageParser(
             transactions = None
         else:
             transactions = TransactionPreviewsParser(
-                transactions_div[0].html,
+                transactions_div[0].html or '',
                 options=self.options.transaction_previews_parsing_options,
             ).parse()
 
         return TransactionsPage(
             raw_source=self.raw_source,
             header=PageHeaderParser(
-                header_div.html,
+                self.tree.css_first('header').html or '',
                 options=self.options.page_header_parsing_options,
             ).parse(),
             app_data=AppDataParser(
-                app_data,
+                self.tree.css_first('body').attributes['data-app-data'] or '',
                 options=self.options.app_data_parsing_options,
             ).parse(),
             rub_balance=rub_balance[0] if rub_balance else None,
