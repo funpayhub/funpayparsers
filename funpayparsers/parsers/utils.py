@@ -19,7 +19,7 @@ from selectolax.lexbor import LexborNode, LexborHTMLParser
 from funpayparsers.types.enums import BadgeType
 from funpayparsers.types.common import MoneyValue
 from funpayparsers.types.messages import Message
-
+from typing import cast
 
 CSS_URL_RE = re.compile(r'url\(([^()]+)\)', re.IGNORECASE)
 MONEY_VALUE_RE = re.compile(r'^([+\-]?\d+(?:\.\d+)?)(.)$')
@@ -117,14 +117,14 @@ def parse_date_string(date_string: str, /) -> int:
         )
 
     if match := TODAY_OR_YESTERDAY_RE.match(date_string):
-        day, h, m = match.groups()
+        day, h, m = match.groups()  # type: ignore[assignment]
         date = date.replace(hour=int(h), minute=int(m))
         if day in TODAY_WORDS:
             return int(date.timestamp())
         return int((date - timedelta(days=1)).timestamp())
 
     if match := CURR_YEAR_DATE_RE.match(date_string):
-        day, month, h, m = match.groups()
+        day, month, h, m = match.groups()  # type: ignore[assignment]
         year = date.year
         month = MONTHS[month]
         return int(
@@ -134,7 +134,7 @@ def parse_date_string(date_string: str, /) -> int:
         )
 
     if match := DATE_RE.match(date_string):
-        day, month, year, h, m = match.groups()
+        day, month, year, h, m = match.groups()  # type: ignore[assignment]
         month = MONTHS[month]
         return int(
             date.replace(
@@ -145,7 +145,7 @@ def parse_date_string(date_string: str, /) -> int:
     raise ValueError(f"Unable to parse date string '{date_string}'.")
 
 
-def extract_css_url(source: str, /) -> str:
+def extract_css_url(source: str, /) -> str | None:
     """
     Extract the URL from a CSS ``'url(*)'`` pattern in the given string.
 
@@ -237,32 +237,32 @@ def parse_money_value_string(
     )
 
 
-def serialize_form(source: str | LexborNode) -> dict[str, str]:
-    result = {}
+def serialize_form(source: str | LexborNode | LexborHTMLParser) -> dict[str, str]:
+    result: dict[str, str] = {}
     if isinstance(source, str):
         if not source:
             return {}
         source = LexborHTMLParser(source)
 
-    form = source.css('form')
-    if not form:
+    forms = source.css('form')
+    if not forms:
         return {}
-    form = form[0]
+    form = forms[0]
 
     fields = form.css('*[name]:not([disabled])')
     for field in fields:
-        name = field.attributes.get('name')
+        name = field.attributes.get('name') or ''
         value = field.attributes.get('value', '')
 
         if field.tag == 'textarea':
             value = field.text() or ''
 
         elif field.tag == 'select':
-            value = field.css('option[selected]')
-            value = value[0].attributes.get('value', '') if value else ''
+            selected = field.css('option[selected]')
+            value = selected[0].attributes.get('value', '') if selected else ''
 
         elif field.tag == 'input':
-            input_type = field.attributes.get('type', '').lower()
+            input_type = cast(str, field.attributes.get('type', '')).lower()
             if input_type == 'checkbox':
                 value = 'on' if 'checked' in field.attributes else ''
             elif input_type == 'radio':
