@@ -4,7 +4,7 @@ from __future__ import annotations
 __all__ = ('FunPayObject',)
 
 from typing import Any, Type, TypeVar
-from dataclasses import asdict, dataclass, field
+from dataclasses import field, asdict, dataclass
 
 
 SelfT = TypeVar('SelfT', bound='FunPayObject')

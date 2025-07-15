@@ -92,7 +92,7 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
                     text=text,
                     image_url=image_url,
                     chat_id=self.options.context.get('chat_id'),
-                    chat_name=self.options.context.get('chat_name')
+                    chat_name=self.options.context.get('chat_name'),
                 )
             )
 
