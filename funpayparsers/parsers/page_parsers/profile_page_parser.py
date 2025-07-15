@@ -4,10 +4,12 @@ from __future__ import annotations
 __all__ = ('ProfilePageParsingOptions', 'ProfilePageParser')
 
 
+from typing import cast
 from dataclasses import dataclass
 
 from funpayparsers.types.enums import BadgeType, SubcategoryType
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.types.offers import OfferPreview
 from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.parsers.chat_parser import ChatParser, ChatParsingOptions
 from funpayparsers.parsers.badge_parser import UserBadgeParser, UserBadgeParsingOptions
@@ -101,10 +103,7 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
     Class for parsing user profile pages (`https://funpay.com/users/<user_id>/`).
     """
 
-    def _parse(self):
-        header = self.tree.css_first('header')
-        app_data = self.tree.css_first('body').attributes['data-app-data']
-
+    def _parse(self) -> ProfilePage:
         profile_header = self.tree.css_first('div.profile-header')
         reg_date_text_div = profile_header.css('div.param-item')
         offer_divs = self.tree.css('div.mb20 div.offer')
@@ -124,14 +123,14 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
         for i in profile_header.css('small.user-badges > span'):
             badges.append(
                 UserBadgeParser(
-                    i.html, options=self.options.user_badge_parsing_options
+                    i.html or '', options=self.options.user_badge_parsing_options
                 ).parse(),
             )
 
-        for i in badges:
-            if i.type is BadgeType.BANNED:
+        for j in badges:
+            if j.type is BadgeType.BANNED:
                 banned = True
-                badges.remove(i)
+                badges.remove(j)
                 badge = badges[0] if badges else None
                 break
         else:
@@ -139,34 +138,38 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
             badge = badges[0] if badges else None
 
         if offer_divs:
-            offers = {
+            offers: dict[SubcategoryType, dict[int, list[OfferPreview]]] | None = {
                 SubcategoryType.COMMON: {},
                 SubcategoryType.CURRENCY: {},
                 SubcategoryType.UNKNOWN: {},
             }
             for offer_div in offer_divs:
-                url = offer_div.css_first('div.offer-list-title a').attributes['href']
+                url: str = offer_div.css_first('div.offer-list-title a').attributes[
+                    'href'
+                ]  # type: ignore[assignment]  # 'a' always contains href.
                 id_ = int(url.split('/')[-2])
                 offers_objs = OfferPreviewsParser(
-                    offer_div.html,
+                    offer_div.html or '',
                     options=self.options.offer_previews_parsing_options,
                 ).parse()
-                offers[SubcategoryType.get_by_url(url)][id_] = offers_objs
+                offers[SubcategoryType.get_by_url(url)][id_] = offers_objs  # type: ignore[index] # it is indexable, stupid mypy.
         else:
             offers = None
 
         return ProfilePage(
-            raw_source=self.tree.html,
+            raw_source=self.tree.html or '',
             header=PageHeaderParser(
-                header.html,
+                self.tree.css_first('header').html or '',
                 options=self.options.page_header_parsing_options,
             ).parse(),
             app_data=AppDataParser(
-                app_data,
+                self.tree.css_first('body').attributes['data-app-data'] or '',
                 options=self.options.app_data_parsing_options,
             ).parse(),
             user_id=int(
-                self.tree.css_first('head > link[rel="canonical"]')
+                self.tree.css_first(
+                    'head > link[rel="canonical"]'
+                )  # type: ignore[union-attr] # need to raise an exception if None.
                 .attributes['href']
                 .split('/')[-2],
             ),
@@ -174,15 +177,17 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
             badge=badge,
             achievements=[
                 AchievementParser(
-                    i.html,
+                    i.html or '',
                     options=self.options.achievement_parsing_options,
                 ).parse()
                 for i in achievements_divs
             ],
             avatar_url=extract_css_url(
-                self.tree.css_first('div.avatar-photo').attributes['style'],
-            ),
-            online='online' in profile_header.css_first('h1.mb40').attributes['class'],
+                cast(str, self.tree.css_first('div.avatar-photo').attributes['style']),
+            ),  # type: ignore[arg-type] # div.avatar-photo always has a style with url
+            online='online' in profile_header.css_first(
+                'h1.mb40'
+            ).attributes['class'],  # type: ignore[operator] # always has a class
             banned=banned,
             registration_date_text=(
                 reg_date_text_div[0]
@@ -196,22 +201,22 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
                 else None
             ),
             rating=UserRatingParser(
-                rating_div.html,
+                rating_div.html or '',
                 options=self.options.user_rating_parsing_options,
             ).parse()
             if rating_div
             else None,
             offers=offers,
             chat=ChatParser(
-                chat_div[0].html,
+                chat_div[0].html or '',
                 options=self.options.chat_parsing_options,
             ).parse()
             if chat_div
             else None,
             reviews=ReviewsParser(
-                reviews_div[0].html,
+                reviews_div[0].html or '',
                 options=self.options.reviews_parsing_options,
             ).parse()
             if reviews_div
-            else [],
+            else None,
         )
