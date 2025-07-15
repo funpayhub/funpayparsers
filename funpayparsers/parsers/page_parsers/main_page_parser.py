@@ -57,45 +57,43 @@ class MainPageParser(FunPayHTMLObjectParser[MainPage, MainPageParsingOptions]):
     Class for parsing the main page (https://funpay.com).
     """
 
-    def _parse(self):
+    def _parse(self) -> MainPage:
         header_div = self.tree.css('header')[0]
         categories_divs = self.tree.css('div.promo-game-list')
         if len(categories_divs) == 1:
             last_categories = []
             categories = CategoriesParser(
-                categories_divs[0].html,
+                categories_divs[0].html or '',
                 options=self.options.categories_parsing_options,
             ).parse()
         else:
             last_categories = CategoriesParser(
-                categories_divs[0].html,
+                categories_divs[0].html or '',
                 options=self.options.categories_parsing_options,
             ).parse()
             categories = CategoriesParser(
-                categories_divs[1].html,
+                categories_divs[1].html or '',
                 options=self.options.categories_parsing_options,
             ).parse()
 
         secret_chat_div = self.tree.css('div.chat')
 
-        appdata = self.tree.css('body')[0].attributes.get('data-app-data')
-
         return MainPage(
-            raw_source=self.tree.html,
+            raw_source=self.tree.html or '',
             header=PageHeaderParser(
-                header_div.html,
+                header_div.html or '',
                 options=self.options.page_header_parsing_options,
             ).parse(),
             last_categories=last_categories,
             categories=categories,
             secret_chat=ChatParser(
-                secret_chat_div[0].html,
+                secret_chat_div[0].html or '',
                 options=self.options.chat_parsing_options,
             ).parse()
             if secret_chat_div
             else None,
             app_data=AppDataParser(
-                appdata,
+                self.tree.css('body')[0].attributes.get('data-app-data') or '',
                 self.options.app_data_parsing_options,
             ).parse(),
         )
