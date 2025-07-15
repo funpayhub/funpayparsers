@@ -73,44 +73,41 @@ class ChatPageParser(FunPayHTMLObjectParser[ChatPage, ChatPageParsingOptions]):
     Class for parsing chat pages (`https://funpay.com/chat/?node=<chat_id>`).
     """
 
-    def _parse(self):
-        header_div = self.tree.css_first('header')
-        app_data = self.tree.css_first('body').attributes['data-app-data']
-
+    def _parse(self) -> ChatPage:
         chat_preview_div = self.tree.css('div.contact-list')
-        chat_div = self.tree.css('div.chat:not(.chat-not-selected)')
-        if not chat_div:
+        chat_divs = self.tree.css('div.chat:not(.chat-not-selected)')
+        if not chat_divs:
             chat = None
         else:
             chat = ChatParser(
-                raw_source=chat_div[0].html,
+                raw_source=chat_divs[0].html or '',
                 options=self.options.chat_parsing_options,
             ).parse()
 
-        if not chat_div:
+        if not chat_divs:
             chat_info = None
         else:
-            chat_info_div = self.tree.css('div.chat-detail-list:has(*)')
-            if not chat_info_div:
+            chat_info_divs = self.tree.css('div.chat-detail-list:has(*)')
+            if not chat_info_divs:
                 chat_info = None
             else:
                 chat_info = PrivateChatInfoParser(
-                    raw_source=chat_info_div[0].html,
+                    raw_source=chat_info_divs[0].html or '',
                     options=self.options.private_chat_info_parsing_options,
                 ).parse()
 
         return ChatPage(
             raw_source=self.raw_source,
             header=PageHeaderParser(
-                header_div.html,
+                self.tree.css_first('header').html or '',
                 options=self.options.page_header_parsing_options,
             ).parse(),
             app_data=AppDataParser(
-                app_data,
+                self.tree.css_first('body').attributes['data-app-data'] or '',
                 options=self.options.app_data_parsing_options,
             ).parse(),
             chat_previews=PrivateChatPreviewsParser(
-                chat_preview_div[0].html,
+                chat_preview_div[0].html or '',
                 options=self.options.private_chat_previews_parsing_options,
             ).parse()
             if chat_preview_div
