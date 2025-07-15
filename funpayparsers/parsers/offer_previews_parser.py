@@ -10,6 +10,7 @@ from copy import deepcopy
 from selectolax.lexbor import LexborNode
 
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.types.common import UserPreview
 from funpayparsers.types.offers import OfferSeller, OfferPreview
 from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.parsers.money_value_parser import (
@@ -57,13 +58,13 @@ class OfferPreviewsParser(
         # cz there are specific fields in OfferPreview class for them.
         skip_match_data = ['user', 'online', 'auto']
 
-        processed_users = {}
+        processed_users: dict[int, UserPreview] = {}
 
         for offer_div in self.tree.css('a.tc-item'):
             offer_id_str = offer_div.attributes['href'].split('id=')[1]
-            desc = offer_div.css('div.tc-desc-text')
+            desc_divs = offer_div.css('div.tc-desc-text')
             # currency offers don't have description.
-            desc = desc[0].text(strip=True) if desc else None
+            desc = desc_divs[0].text(strip=True) if desc_divs else None
 
             # Currency offers have 'data-s' attribute in tc-amount div,
             # where amount is stored.
@@ -83,7 +84,7 @@ class OfferPreviewsParser(
 
             price_div = offer_div.css('div.tc-price')[0]
             price = MoneyValueParser(
-                price_div.html,
+                price_div.html or '',
                 options=self.options.money_value_parsing_options,
                 parsing_mode=MoneyValueParsingMode.FROM_OFFER_PREVIEW,
                 parse_value_from_attribute=(
@@ -111,7 +112,7 @@ class OfferPreviewsParser(
 
             result.append(
                 OfferPreview(
-                    raw_source=offer_div.html,
+                    raw_source=offer_div.html or '',
                     id=int(offer_id_str) if offer_id_str.isnumeric() else offer_id_str,
                     auto_delivery=bool(offer_div.attributes.get('data-auto')),
                     is_pinned=bool(offer_div.attributes.get('data-user')),

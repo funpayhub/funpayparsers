@@ -58,19 +58,22 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
         interlocutor, notifications, banned = self._parse_chat_header(chat_div)
 
         chat_id = (
-            int(chat_div.attributes['data-id']) if chat_div.attributes.get('data-id') else None
+            int(cast(str, chat_div.attributes['data-id']))
+            if chat_div.attributes.get('data-id')
+            else None
         )
-        chat_name = chat_div.attributes.get('data-name')
+
+        chat_name: str = cast(str, chat_div.attributes.get('data-name'))
 
         messages_div = chat_div.css('div.chat-message-list')[0]
         history = MessagesParser(
-            raw_source=messages_div.html,
+            raw_source=messages_div.html or '',
             options=self.options.messages_parsing_options,
             context={'chat_id': chat_id, 'chat_name': chat_name},
         ).parse()
 
         return Chat(
-            raw_source=chat_div.html,
+            raw_source=chat_div.html or '',
             id=chat_id,
             name=chat_name,
             interlocutor=interlocutor,
@@ -100,9 +103,9 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
         btn_div = btn_divs[0]
 
         notifications, banned = False, False
-        if 'btn-success' in btn_div.attributes['class']:  # type: ignore
+        if 'btn-success' in btn_div.attributes['class']:  # type: ignore[operator]
             notifications, banned = True, False
-        elif 'btn-danger' in btn_div.attributes['class']:  # type: ignore
+        elif 'btn-danger' in btn_div.attributes['class']:  # type: ignore[operator]
             notifications, banned = False, True
 
         return interlocutor, notifications, banned

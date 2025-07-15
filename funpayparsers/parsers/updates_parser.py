@@ -3,10 +3,13 @@ from __future__ import annotations
 
 __all__ = ('UpdatesParser', 'UpdatesParsingOptions')
 
+import json
+from typing import Any, cast
 from dataclasses import dataclass
 
 from funpayparsers.types.enums import UpdateType
 from funpayparsers.parsers.base import ParsingOptions, FunPayJSONObjectParser
+from funpayparsers.types.common import CurrentlyViewingOfferInfo
 from funpayparsers.types.updates import (
     ChatNode,
     NodeInfo,
@@ -16,7 +19,6 @@ from funpayparsers.types.updates import (
     ChatBookmarks,
     ActionResponse,
     OrdersCounters,
-    CurrentlyViewingOfferInfo,
 )
 from funpayparsers.parsers.cpu_parser import (
     CurrentlyViewingOfferInfoParser,
@@ -82,44 +84,43 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
             response=None,
         )
 
-        action_response = self.data.get('response')
+        action_response = self.data.get('response')  # type: ignore[union-attr]  # raise if not dict
         if action_response:
             updates_obj.response = self._parse_action_response(action_response)
 
-        objects = self.data.get('objects')
+        objects = self.data.get('objects')  # type: ignore[union-attr]  # raise if not dict
         if not objects:
             return updates_obj
 
-        unknown_objects = []
-        nodes = {}
         for obj in objects:
             result = self._parse_update(obj)
             if result is None:
-                unknown_objects.append(obj)
+                updates_obj.unknown_objects.append(obj)  # type: ignore[union-attr]
             elif result.type is UpdateType.CHAT_NODE:
-                updates_obj.nodes.append(result)
+                updates_obj.nodes.append(result)  # type: ignore[union-attr]
             else:
                 setattr(updates_obj, self.__update_fields__[result.type], result)
 
-        updates_obj.unknown_objects = unknown_objects or updates_obj.unknown_objects
-        updates_obj.nodes = nodes or updates_obj.nodes
+        updates_obj.nodes = updates_obj.nodes or None
+        updates_obj.unknown_objects = updates_obj.unknown_objects or None
+
         return updates_obj
 
-    def _parse_orders_counters(self, obj: dict) -> OrdersCounters:
+    def _parse_orders_counters(self, obj: dict[str, Any]) -> OrdersCounters:
         return OrdersCounters(
-            raw_source=str(obj),
-            purchases=int(obj.get('buyer')) if obj.get('seller') else 0,
-            sales=int(obj.get('seller')) if obj.get('seller') else 0,
+            raw_source=json.dumps(obj, ensure_ascii=False),
+            purchases=int(cast(str, obj.get('buyer'))) if obj.get('seller') else 0,
+            sales=int(cast(str, obj.get('seller'))) if obj.get('seller') else 0,
         )
 
-    def _parse_chat_counter(self, obj: dict) -> ChatCounter:
+    def _parse_chat_counter(self, obj: dict[str, Any]) -> ChatCounter:
         return ChatCounter(
             raw_source=str(obj),
             counter=int(obj['counter']),
             message=int(obj['message']),
         )
 
-    def _parse_chat_bookmarks(self, obj: dict) -> ChatBookmarks:
+    def _parse_chat_bookmarks(self, obj: dict[str, Any]) -> ChatBookmarks:
         return ChatBookmarks(
             raw_source=str(obj),
             counter=int(obj['counter']),
@@ -131,14 +132,14 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
             ).parse(),
         )
 
-    def _parse_cpu(self, obj: dict) -> CurrentlyViewingOfferInfo:
+    def _parse_cpu(self, obj: dict[str, Any]) -> CurrentlyViewingOfferInfo:
         html_ = obj['html']['desktop']
         return CurrentlyViewingOfferInfoParser(
             html_,
             options=self.options.cpu_parsing_options,
         ).parse()
 
-    def _parse_node(self, obj: dict) -> ChatNode:
+    def _parse_node(self, obj: dict[str, Any]) -> ChatNode:
         node_obj = obj['node']
         node_info = NodeInfo(
             raw_source=str(node_obj),
@@ -160,14 +161,14 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
             has_history=obj['hasHistory'],
         )
 
-    def _parse_action_response(self, obj: dict) -> ActionResponse:
+    def _parse_action_response(self, obj: dict[str, Any]) -> ActionResponse:
         return ActionResponse(
             raw_source=str(obj),
             error=obj.get('error'),
         )
 
-    def _parse_update(self, update_dict: dict) -> UpdateObject | None:
-        update_type = UpdateType.get_by_type_str(update_dict.get('type'))
+    def _parse_update(self, update_dict: dict[str, Any]) -> UpdateObject[Any] | None:
+        update_type = UpdateType.get_by_type_str(cast(str, update_dict.get('type')))
         if update_type not in self.__parsing_methods__:
             return None
 
