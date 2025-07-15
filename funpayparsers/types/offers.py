@@ -108,10 +108,10 @@ class OfferFields(FunPayObject):
         {'active': 'on'}
     """
 
-    fields_dict: dict[str, str | int] = field(default_factory=dict)
+    fields_dict: dict[str, str] = field(default_factory=dict)
     """All fields as dict."""
 
-    def set_field(self, key: str, value: str):
+    def set_field(self, key: str, value: str | None) -> None:
         """
         Manually set or remove a raw field value.
 
@@ -126,7 +126,7 @@ class OfferFields(FunPayObject):
         if value is None:
             self.fields_dict.pop(key, None)
         else:
-            self.fields_dict[key] = value
+            self.fields_dict[key] = str(value)
 
     @property
     def csrf_token(self) -> str | None:
@@ -138,7 +138,7 @@ class OfferFields(FunPayObject):
         return self.fields_dict.get('csrf_token')
 
     @csrf_token.setter
-    def csrf_token(self, value: str | None):
+    def csrf_token(self, value: str | None) -> None:
         self.set_field('csrf_token', value)
 
     @property
@@ -151,7 +151,7 @@ class OfferFields(FunPayObject):
         return self.fields_dict.get('fields[summary][ru]')
 
     @title_ru.setter
-    def title_ru(self, value: str | None):
+    def title_ru(self, value: str | None) -> None:
         self.set_field('fields[summary][ru]', value)
 
     @property
@@ -164,7 +164,7 @@ class OfferFields(FunPayObject):
         return self.fields_dict.get('fields[summary][en]')
 
     @title_en.setter
-    def title_en(self, value: str | None):
+    def title_en(self, value: str | None) -> None:
         self.set_field('fields[summary][en]', value)
 
     @property
@@ -177,7 +177,7 @@ class OfferFields(FunPayObject):
         return self.fields_dict.get('fields[desc][ru]')
 
     @desc_ru.setter
-    def desc_ru(self, value: str | None):
+    def desc_ru(self, value: str | None) -> None:
         self.set_field('fields[desc][ru]', value)
 
     @property
@@ -190,7 +190,7 @@ class OfferFields(FunPayObject):
         return self.fields_dict.get('fields[desc][en]')
 
     @desc_en.setter
-    def desc_en(self, value: str | None):
+    def desc_en(self, value: str | None) -> None:
         self.set_field('fields[desc][en]', value)
 
     @property
@@ -203,7 +203,7 @@ class OfferFields(FunPayObject):
         return self.fields_dict.get('fields[payment_msg][ru]')
 
     @payment_msg_ru.setter
-    def payment_msg_ru(self, value: str | None):
+    def payment_msg_ru(self, value: str | None) -> None:
         self.set_field('fields[payment_msg][ru]', value)
 
     @property
@@ -216,7 +216,7 @@ class OfferFields(FunPayObject):
         return self.fields_dict.get('fields[payment_msg][en]')
 
     @payment_msg_en.setter
-    def payment_msg_en(self, value: str | None):
+    def payment_msg_en(self, value: str | None) -> None:
         self.set_field('fields[payment_msg][en]', value)
 
     @property
@@ -232,7 +232,7 @@ class OfferFields(FunPayObject):
         return [int(i) for i in images.split(',')]
 
     @images.setter
-    def images(self, value: list[int] | None):
+    def images(self, value: list[int] | None) -> None:
         self.set_field(
             'fields[images]',
             ','.join(str(i) for i in value) if value is not None else None,
@@ -251,7 +251,7 @@ class OfferFields(FunPayObject):
         return goods.split('\n')
 
     @secrets.setter
-    def secrets(self, value: list[str] | None):
+    def secrets(self, value: list[str] | None) -> None:
         self.set_field('fields[secrets]', '\n'.join(value) if value is not None else None)
 
     @property
@@ -264,7 +264,7 @@ class OfferFields(FunPayObject):
         return self.fields_dict.get('active') == 'on'
 
     @active.setter
-    def active(self, value: bool | None):
+    def active(self, value: bool | None) -> None:
         self.set_field('active', 'on' if value else '' if value is not None else None)
 
     @property
@@ -277,7 +277,7 @@ class OfferFields(FunPayObject):
         return self.fields_dict.get('auto_delivery') == 'on'
 
     @auto_delivery.setter
-    def auto_delivery(self, value: bool | None):
+    def auto_delivery(self, value: bool | None) -> None:
         self.set_field('auto_delivery', 'on' if value else '' if value is not None else None)
 
     @property
@@ -290,7 +290,7 @@ class OfferFields(FunPayObject):
         return self.fields_dict.get('deactivate_after_sale') == 'on'
 
     @deactivate_after_sale.setter
-    def deactivate_after_sale(self, value: bool | None):
+    def deactivate_after_sale(self, value: bool | None) -> None:
         self.set_field(
             'deactivate_after_sale',
             'on' if value else '' if value is not None else None,

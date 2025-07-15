@@ -43,7 +43,7 @@ class TransactionPreviewsParser(
         - Transactions page (https://funpay.com/account/balance).
     """
 
-    def _parse(self):
+    def _parse(self) -> TransactionPreviewsBatch:
         result = []
         for i in self.tree.css('div.tc-item'):
             value = MoneyValueParser(

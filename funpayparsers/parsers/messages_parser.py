@@ -61,7 +61,7 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
         - In runners response.
     """
 
-    def _parse(self):
+    def _parse(self) -> list[Message]:
         messages = []
         for msg_div in self.tree.css('div.chat-msg-item'):
             userid, username, date, badge = None, None, None, None

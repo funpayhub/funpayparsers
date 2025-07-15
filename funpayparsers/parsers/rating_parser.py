@@ -49,7 +49,7 @@ class UserRatingParser(FunPayHTMLObjectParser[UserRating, UserRatingParsingOptio
         - User profile pages (`https://funpay.com/<userid>/`).
     """
 
-    def _parse(self):
+    def _parse(self) -> UserRating:
         if self.options.parsing_mode == UserRatingParsingMode.FROM_PROFILE_HEADER:
             return self._parse_from_profile_header()
         return self._parse_from_reviews_section()

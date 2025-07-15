@@ -9,7 +9,7 @@ __all__ = (
 )
 
 import json
-from typing import Any, Type, Generic, TypeVar, cast, get_args, get_origin
+from typing import Any, Type, Generic, TypeVar, get_args, get_origin
 from dataclasses import field, fields, replace, dataclass
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, Sequence
@@ -99,15 +99,15 @@ class ParsingOptions:
 
         return self.__class__(**self_fields)
 
-    def __and__(self: OptionsClass, other) -> OptionsClass:
+    def __and__(self: OptionsClass, other: OptionsClass) -> OptionsClass:
         return self.__merge_options__(other, non_explicit=False)
 
-    def __or__(self: OptionsClass, other) -> OptionsClass:
+    def __or__(self: OptionsClass, other: OptionsClass) -> OptionsClass:
         return self.__merge_options__(other, non_explicit=True)
 
 
 def _new(cls: Type[OptionsClass], *args: Any, **kwargs: Any) -> OptionsClass:
-    instance = cast(OptionsClass, super(ParsingOptions, cls).__new__(cls))
+    instance = super(ParsingOptions, cls).__new__(cls)
     super(ParsingOptions, cls).__setattr__(instance, '__passed_args__', args)
     super(ParsingOptions, cls).__setattr__(instance, '__passed_kwargs__', kwargs)
     return instance
@@ -132,7 +132,7 @@ class FunPayObjectParser(ABC, Generic[ReturnType, OptionsClass]):
 
     __options_cls__: Type[OptionsClass] | None = None
 
-    def __init__(self, raw_source: Any, options: OptionsClass | None = None, **overrides):
+    def __init__(self, raw_source: Any, options: OptionsClass | None = None, **overrides: Any):
         """
         :param raw_source: raw source of an object (HTML / JSON string)
         """
@@ -179,7 +179,7 @@ class FunPayObjectParser(ABC, Generic[ReturnType, OptionsClass]):
         return self._options
 
     @classmethod
-    def _build_options(cls, options: OptionsClass | None, **overrides) -> OptionsClass:
+    def _build_options(cls, options: OptionsClass | None, **overrides: Any) -> OptionsClass:
         base = options or cls.get_options_cls()()
         to_override = {
             k: v
@@ -223,7 +223,7 @@ class FunPayObjectParser(ABC, Generic[ReturnType, OptionsClass]):
 
 
 class FunPayHTMLObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
-    def __init__(self, raw_source: str, options: OptionsClass | None = None, **overrides):
+    def __init__(self, raw_source: str, options: OptionsClass | None = None, **overrides: Any):
         """
         :param raw_source: raw source of an object (HTML / JSON string)
         """
@@ -240,21 +240,21 @@ class FunPayHTMLObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
 
     @property
     def raw_source(self) -> str:
-        return self._raw_source
+        return self._raw_source  # type: ignore[no-any-return] # raw_source type in __init__
 
 
 class FunPayJSONObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
     def __init__(
         self,
-        raw_source: str | dict | list,
+        raw_source: str | dict[str, Any] | list[Any],
         options: OptionsClass | None = None,
-        **overrides,
+        **overrides: Any,
     ):
         super().__init__(raw_source=raw_source, options=options, **overrides)
-        self._data: dict | list | None = None
+        self._data: dict[str, Any] | list[Any] | None = None
 
     @property
-    def data(self) -> dict[str, Any] | list:
+    def data(self) -> dict[str, Any] | list[Any]:
         if self._data is not None:
             return self._data
 
@@ -264,5 +264,5 @@ class FunPayJSONObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
         return self._data
 
     @property
-    def raw_source(self) -> str | dict | list:
-        return self._raw_source
+    def raw_source(self) -> str | dict[str, Any] | list[Any]:
+        return self._raw_source  # type: ignore[no-any-return] # raw_source type in __init__

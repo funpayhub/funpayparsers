@@ -29,7 +29,7 @@ class CategoriesParser(
         - Main page (https://funpay.com).
     """
 
-    def _parse(self):
+    def _parse(self) -> list[Category]:
         result = []
 
         for global_cat in self.tree.css('div.promo-game-item'):

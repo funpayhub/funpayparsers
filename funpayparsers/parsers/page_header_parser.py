@@ -48,7 +48,7 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
         - Any FunPay page.
     """
 
-    def _parse(self):
+    def _parse(self) -> PageHeader:
         header = self.tree.css('header')[0]
 
         user_dropdown = header.css('a.dropdown-toggle.user-link')

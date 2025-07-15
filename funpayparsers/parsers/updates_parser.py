@@ -70,7 +70,7 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
         - Runner response.
     """
 
-    def _parse(self):
+    def _parse(self) -> UpdatesPack:
         updates_obj = UpdatesPack(
             raw_source=str(self.raw_source),
             orders_counters=None,

@@ -27,9 +27,9 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
         (`https://funpay.com/lots/offerEdit?node=<node_id>&offer=<offer_id>`)
     """
 
-    def _parse(self):
+    def _parse(self) -> OfferFields:
         form = self.tree.css('form')[0]
         return OfferFields(
-            raw_source=form.html,
+            raw_source=form.html or '',
             fields_dict=serialize_form(form),
         )

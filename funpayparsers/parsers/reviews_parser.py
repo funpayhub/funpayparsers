@@ -44,7 +44,7 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
         - Order pages (`https://funpay.com/orders/<orderid>/`)
     """
 
-    def _parse(self):
+    def _parse(self) -> ReviewsBatch:
         result = []
 
         for review_div in self.tree.css('div.review-container'):

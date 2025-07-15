@@ -4,6 +4,7 @@ from __future__ import annotations
 __all__ = ('UserBadgeParser', 'UserBadgeParsingOptions')
 
 
+from typing import cast
 from dataclasses import dataclass
 
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
@@ -26,10 +27,10 @@ class UserBadgeParser(FunPayHTMLObjectParser[UserBadge, UserBadgeParsingOptions]
         - Chats.
     """
 
-    def _parse(self):
+    def _parse(self) -> UserBadge:
         badge_span = self.tree.css('span.label')[0]
         return UserBadge(
-            raw_source=badge_span.html,
+            raw_source=badge_span.html or '',
             text=badge_span.text(strip=True),
-            css_class=badge_span.attributes['class'],
+            css_class=cast(str, badge_span.attributes['class']),  # badge_span always has a class
         )

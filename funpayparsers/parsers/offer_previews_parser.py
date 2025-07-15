@@ -46,7 +46,7 @@ class OfferPreviewsParser(
         (https://funpay.com/<lots/chips>/<subcategory_id>).
     """
 
-    def _parse(self):
+    def _parse(self) -> list[OfferPreview]:
         result = []
 
         # don't add these data-fields to OfferPreview.other_data,
