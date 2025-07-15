@@ -47,7 +47,7 @@ class TransactionPreviewsParser(
         result = []
         for i in self.tree.css('div.tc-item'):
             value = MoneyValueParser(
-                raw_source=i.css('div.tc-price')[0].html,
+                raw_source=i.css('div.tc-price')[0].html or '',
                 options=self.options.money_value_parsing_options,
                 parsing_mode=MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW,
             ).parse()

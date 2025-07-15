@@ -43,7 +43,7 @@ class PrivateChatInfoParser(
         blocks = info_div.css('div.param-item:not(.hidden)')
 
         result = PrivateChatInfo(
-            raw_source=info_div.html,
+            raw_source=info_div.html or '',
             registration_date_text=(
                 blocks[0].text(separator='\n', strip=True).strip().split('\n')[-2]
             ),
@@ -55,7 +55,7 @@ class PrivateChatInfoParser(
         for div in blocks:
             if div.attributes.get('data-type') == 'c-p-u':
                 cpu = CurrentlyViewingOfferInfoParser(
-                    raw_source=div.html,
+                    raw_source=div.html or '',
                     options=self.options.cpu_parsing_options,
                 ).parse()
                 result.currently_viewing_offer = cpu

@@ -81,7 +81,7 @@ class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParsingOptio
         val = self.tree.css_first('div.tc-price')
         return parse_money_value_string(
             val.text().strip(),
-            raw_source=val.html,
+            raw_source=val.html or '',
             raise_on_error=True,
         )
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 __all__ = ('CategoriesParser', 'CategoriesParsingOptions')
 
+from typing import cast
 from dataclasses import dataclass
 
 from selectolax.lexbor import LexborNode
@@ -38,13 +39,13 @@ class CategoriesParser(
             # FunPay treats them as different categories,
             # but on main page they are in the same div.
             for cat in categories:
-                id_ = int(cat.attributes['data-id'])
-                location = global_cat.css(f'button[data-id="{id_}"]')
-                location = location[0].text(strip=True) if location else None
+                id_ = int(cast(str, cat.attributes['data-id']))
+                locations = global_cat.css(f'button[data-id="{id_}"]')
+                location = locations[0].text(strip=True) if locations else None
 
                 result.append(
                     Category(
-                        raw_source=global_cat.html,
+                        raw_source=global_cat.html or '',
                         id=id_,
                         name=cat.css('a')[0].text(strip=True),
                         location=location,
@@ -59,12 +60,13 @@ class CategoriesParser(
         result = []
         div = global_cat.css(f'ul.list-inline[data-id="{data_id}"]')[0]
         for link in div.css('a'):
+            url: str = link.attributes['href']  # type: ignore[assignment] # always has href
             result.append(
                 Subcategory(
-                    raw_source=link.html,
-                    id=int(link.attributes['href'].split('/')[-2]),
+                    raw_source=link.html or '',
+                    id=int(url.split('/')[-2]),
                     name=link.text(strip=True),
-                    type=SubcategoryType.get_by_url(link.attributes['href']),
+                    type=SubcategoryType.get_by_url(url),
                     offers_amount=None,
                 )
             )
