@@ -252,9 +252,7 @@ class OfferFields(FunPayObject):
 
     @secrets.setter
     def secrets(self, value: list[str] | None):
-        self.set_field(
-            'fields[secrets]', '\n'.join(value) if value is not None else None
-        )
+        self.set_field('fields[secrets]', '\n'.join(value) if value is not None else None)
 
     @property
     def active(self) -> bool:
@@ -280,9 +278,7 @@ class OfferFields(FunPayObject):
 
     @auto_delivery.setter
     def auto_delivery(self, value: bool | None):
-        self.set_field(
-            'auto_delivery', 'on' if value else '' if value is not None else None
-        )
+        self.set_field('auto_delivery', 'on' if value else '' if value is not None else None)
 
     @property
     def deactivate_after_sale(self) -> bool:

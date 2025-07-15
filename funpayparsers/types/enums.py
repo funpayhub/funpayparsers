@@ -395,9 +395,7 @@ class PaymentMethod(Enum):
             return cls.UNKNOWN
 
         css_class = match.string[match.start() : match.end()]
-        return cast(
-            PaymentMethod, cls.css_class_to_method_map().get(css_class) or cls.UNKNOWN
-        )
+        return cast(PaymentMethod, cls.css_class_to_method_map().get(css_class) or cls.UNKNOWN)
 
 
 class Language(Enum):

@@ -79,9 +79,7 @@ class ParsingOptions:
     are combined using ``dict.update()``.
     """
 
-    def __merge_options__(
-        self: OptionsClass, other, non_explicit: bool = False
-    ) -> OptionsClass:
+    def __merge_options__(self: OptionsClass, other, non_explicit: bool = False) -> OptionsClass:
         self_fields = {
             i.name: getattr(self, i.name)
             for i in getattr(self, '__dataclass_fields__', {}).values()
@@ -134,9 +132,7 @@ class FunPayObjectParser(ABC, Generic[ReturnType, OptionsClass]):
 
     __options_cls__: Type[OptionsClass] | None = None
 
-    def __init__(
-        self, raw_source: Any, options: OptionsClass | None = None, **overrides
-    ):
+    def __init__(self, raw_source: Any, options: OptionsClass | None = None, **overrides):
         """
         :param raw_source: raw source of an object (HTML / JSON string)
         """
@@ -158,9 +154,7 @@ class FunPayObjectParser(ABC, Generic[ReturnType, OptionsClass]):
         except Exception as e:
             raise ParsingError(raw_source=self.raw_source) from e
 
-    def empty_raw_source(
-        self, obj: FunPayObject | Sequence[Any] | Mapping[Any, Any]
-    ) -> None:
+    def empty_raw_source(self, obj: FunPayObject | Sequence[Any] | Mapping[Any, Any]) -> None:
         if hasattr(type(obj), '__dataclass_fields__') and isinstance(obj, FunPayObject):
             if hasattr(obj, 'raw_source'):
                 setattr(obj, 'raw_source', '')
@@ -229,9 +223,7 @@ class FunPayObjectParser(ABC, Generic[ReturnType, OptionsClass]):
 
 
 class FunPayHTMLObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
-    def __init__(
-        self, raw_source: str, options: OptionsClass | None = None, **overrides
-    ):
+    def __init__(self, raw_source: str, options: OptionsClass | None = None, **overrides):
         """
         :param raw_source: raw source of an object (HTML / JSON string)
         """
@@ -267,9 +259,7 @@ class FunPayJSONObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
             return self._data
 
         self._data = (
-            json.loads(self.raw_source)
-            if isinstance(self.raw_source, str)
-            else self.raw_source
+            json.loads(self.raw_source) if isinstance(self.raw_source, str) else self.raw_source
         )
         return self._data
 

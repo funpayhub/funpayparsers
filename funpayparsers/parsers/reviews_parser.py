@@ -92,9 +92,7 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
         order_id_div = review_div.css('div.review-item-order')
 
         # "Order #ORDERID"
-        order_id = (
-            None if not order_id_div else order_id_div[0].text().strip().split()[1][1:]
-        )
+        order_id = None if not order_id_div else order_id_div[0].text().strip().split()[1][1:]
 
         user_tag = review_div.css('div.review-item-user')[0]
         username = user_tag.css('div.media-user-name')
@@ -151,9 +149,7 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
             reply=self._parse_reply(review_div),
         )
 
-    def _parse_review_meta(
-        self, review_div: LexborNode
-    ) -> tuple[str, str, str, MoneyValue]:
+    def _parse_review_meta(self, review_div: LexborNode) -> tuple[str, str, str, MoneyValue]:
         date_str = review_div.css('div.review-item-date')[0].text().strip()
         text = review_div.css('div.review-item-text')[0].text().strip()
 

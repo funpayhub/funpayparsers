@@ -42,9 +42,7 @@ class PrivateChatPreviewsParser(
                 last_message_id=int(chat.attributes['data-node-msg']),
                 last_read_message_id=int(chat.attributes['data-user-msg']),
                 last_message_preview=chat.css('div.contact-item-message')[0].text(),
-                last_message_time_text=(
-                    chat.css('div.contact-item-time')[0].text(strip=True)
-                ),
+                last_message_time_text=(chat.css('div.contact-item-time')[0].text(strip=True)),
             )
             previews.append(preview)
         return previews

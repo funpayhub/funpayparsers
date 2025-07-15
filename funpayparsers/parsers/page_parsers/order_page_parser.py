@@ -75,9 +75,7 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
         if not goods:
             delivered_goods = None
         else:
-            delivered_goods = [
-                i.attributes['data-copy'] or '' for i in goods[0].css('a.btn-copy')
-            ]
+            delivered_goods = [i.attributes['data-copy'] or '' for i in goods[0].css('a.btn-copy')]
 
         data = {}
         for i in self.tree.css('div.param-item:has(h5):not(:has(ul, ol))'):
@@ -110,10 +108,7 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
             order_id=order_id,
             order_status=order_status,
             delivered_goods=delivered_goods,
-            images=[
-                cast(str, i.attributes['href'])
-                for i in self.tree.css('a.attachments-thumb')
-            ]
+            images=[cast(str, i.attributes['href']) for i in self.tree.css('a.attachments-thumb')]
             or None,
             order_subcategory_id=int(subcategory_url.split('/')[-2]),
             order_subcategory_type=SubcategoryType.get_by_url(subcategory_url),

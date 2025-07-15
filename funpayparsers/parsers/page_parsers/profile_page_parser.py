@@ -59,9 +59,7 @@ class ProfilePageParsingOptions(ParsingOptions):
     Defaults to ``UserRatingParsingOptions()``.
     """
 
-    offer_previews_parsing_options: OfferPreviewsParsingOptions = (
-        OfferPreviewsParsingOptions()
-    )
+    offer_previews_parsing_options: OfferPreviewsParsingOptions = OfferPreviewsParsingOptions()
     """
     Options instance for ``OfferPreviewsParser``, 
     which is used by ``ProfilePageParser``.
@@ -115,9 +113,7 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
         # and then there is no full rating block in profile header,
         # but in the reviews block it is always present when there are any reviews.
         rating_div = self.tree.css_first('div.param-item.mb10')
-        reviews_div = (
-            self.tree.css('div.offer:has(div.dyn-table-body)') if rating_div else None
-        )
+        reviews_div = self.tree.css('div.offer:has(div.dyn-table-body)') if rating_div else None
 
         badges = []
         for i in profile_header.css('small.user-badges > span'):
@@ -144,9 +140,7 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
                 SubcategoryType.UNKNOWN: {},
             }
             for offer_div in offer_divs:
-                url: str = offer_div.css_first('div.offer-list-title a').attributes[
-                    'href'
-                ]  # type: ignore[assignment]  # 'a' always contains href.
+                url: str = offer_div.css_first('div.offer-list-title a').attributes['href']  # type: ignore[assignment]  # 'a' always contains href.
                 id_ = int(url.split('/')[-2])
                 offers_objs = OfferPreviewsParser(
                     offer_div.html or '',
@@ -167,9 +161,7 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
                 options=self.options.app_data_parsing_options,
             ).parse(),
             user_id=int(
-                self.tree.css_first(
-                    'head > link[rel="canonical"]'
-                )  # type: ignore[union-attr] # need to raise an exception if None.
+                self.tree.css_first('head > link[rel="canonical"]')  # type: ignore[union-attr] # need to raise an exception if None.
                 .attributes['href']
                 .split('/')[-2],
             ),
@@ -185,15 +177,10 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
             avatar_url=extract_css_url(
                 cast(str, self.tree.css_first('div.avatar-photo').attributes['style']),
             ),  # type: ignore[arg-type] # div.avatar-photo always has a style with url
-            online='online' in profile_header.css_first(
-                'h1.mb40'
-            ).attributes['class'],  # type: ignore[operator] # always has a class
+            online='online' in profile_header.css_first('h1.mb40').attributes['class'],  # type: ignore[operator] # always has a class
             banned=banned,
             registration_date_text=(
-                reg_date_text_div[0]
-                .text(separator='\n', strip=True)
-                .strip()
-                .split('\n')[-2]
+                reg_date_text_div[0].text(separator='\n', strip=True).strip().split('\n')[-2]
             ),
             status_text=(
                 profile_header.css_first('span.media-user-status').text().strip()

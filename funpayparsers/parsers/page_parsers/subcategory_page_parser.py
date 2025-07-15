@@ -39,9 +39,7 @@ class SubcategoryPageParsingOptions(ParsingOptions):
     Defaults to ``AppDataParsingOptions()``.
     """
 
-    offer_previews_parsing_options: OfferPreviewsParsingOptions = (
-        OfferPreviewsParsingOptions()
-    )
+    offer_previews_parsing_options: OfferPreviewsParsingOptions = OfferPreviewsParsingOptions()
     """
     Options instance for ``OfferPreviewsParser``, 
     which is used by ``SubcategoryPageParser``.
@@ -61,18 +59,19 @@ class SubcategoryPageParser(
     (`https://funpay.com/<lots/chips>/<subcategory_id>/`).
     """
 
-    def _parse(self):
-        header = self.tree.css_first('header')
-        app_data = self.tree.css_first('body').attributes['data-app-data']
-
+    def _parse(self) -> SubcategoryPage:
         showcase = self.tree.css_first('div.showcase')
-        subcategory_id_str = showcase.attributes['data-section']  # lot-ID / chips-ID
+
+        # lot-ID / chips-ID
+        subcategory_id_str: str = showcase.attributes['data-section']  # type: ignore[assignment]
+                                                                       # always has 'data-section'
         related_subcategories = []
         for i in self.tree.css('a.counter-item'):
-            url = i.attributes['href']
+            url: str = i.attributes['href']  # type: ignore[assignment]
+            # 'a' always has 'href'.
             related_subcategories.append(
                 Subcategory(
-                    raw_source=i.html,
+                    raw_source=i.html or '',
                     id=int(url.split('/')[-2]),
                     type=SubcategoryType.get_by_url(url),
                     name=i.css_first('div.counter-param').text().strip(),
@@ -83,17 +82,21 @@ class SubcategoryPageParser(
         return SubcategoryPage(
             raw_source=self.raw_source,
             header=PageHeaderParser(
-                header.html, options=self.options.page_header_parsing_options
+                self.tree.css_first('header').html or '',
+                options=self.options.page_header_parsing_options,
             ).parse(),
             app_data=AppDataParser(
-                app_data, options=self.options.app_data_parsing_options
+                self.tree.css_first('body').attributes['data-app-data'] or '',
+                options=self.options.app_data_parsing_options,
             ).parse(),
             category_id=int(subcategory_id_str.split('-')[-1]),
-            subcategory_id=int(showcase.attributes['data-game']),
+            subcategory_id=int(
+                showcase.attributes['data-game'] # type: ignore[arg-type] # always has data-game
+            ),
             subcategory_type=SubcategoryType.get_by_url(subcategory_id_str),
             related_subcategories=related_subcategories or None,
             offers=OfferPreviewsParser(
-                showcase.html,
+                showcase.html or '',
                 options=self.options.offer_previews_parsing_options,
             ).parse()
             or None,

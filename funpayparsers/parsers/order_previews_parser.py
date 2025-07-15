@@ -34,9 +34,7 @@ class OrderPreviewsParsingOptions(ParsingOptions):
     Defaults to ``UserPreviewParsingOptions()``.
     """
 
-    user_preview_parsing_options: UserPreviewParsingOptions = (
-        UserPreviewParsingOptions()
-    )
+    user_preview_parsing_options: UserPreviewParsingOptions = UserPreviewParsingOptions()
     """
     Options instance for ``UserPreviewParsingOptions``, 
     which is used by ``OrderPreviewsParser``.
@@ -86,9 +84,7 @@ class OrderPreviewsParser(
                     raw_source=order.html,
                     id=order.attributes['href'].split('/')[-2],
                     date_text=order.css('div.tc-date-time')[0].text(strip=True),
-                    desc=order.css('div.order-desc > div')[0].text(
-                        deep=False, strip=True
-                    ),
+                    desc=order.css('div.order-desc > div')[0].text(deep=False, strip=True),
                     category_text=order.css('div.text-muted')[0].text(strip=True),
                     status=OrderStatus.get_by_css_class(status_class),
                     total=value,

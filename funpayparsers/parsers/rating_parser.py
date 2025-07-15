@@ -73,9 +73,7 @@ class UserRatingParser(FunPayHTMLObjectParser[UserRating, UserRatingParsingOptio
             )
             percentage.append(float(value.group()))
 
-        reviews_text = (
-            rating_div.css('div.rating-full-count')[0].text().replace(' ', '')
-        )
+        reviews_text = rating_div.css('div.rating-full-count')[0].text().replace(' ', '')
         match = re.search(r'\d+', reviews_text)
         reviews_amount = int(match.group())
 
