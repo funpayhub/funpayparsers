@@ -100,9 +100,9 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
         btn_div = btn_divs[0]
 
         notifications, banned = False, False
-        if 'btn-success' in btn_div.attributes['class']:
+        if 'btn-success' in btn_div.attributes['class']:  # type: ignore
             notifications, banned = True, False
-        elif 'btn-danger' in btn_div.attributes['class']:
+        elif 'btn-danger' in btn_div.attributes['class']:  # type: ignore
             notifications, banned = False, True
 
         return interlocutor, notifications, banned
