@@ -26,8 +26,8 @@ class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParsingOptions]):
         - Any FunPay page.
     """
 
-    def _parse(self):
-        webpush = self.data.get('webpush')
+    def _parse(self) -> AppData:
+        webpush = self.data.get('webpush')  # type: ignore[union-attr] # raise Exception if not dict
         if webpush is not None:
             webpush = WebPush(
                 raw_source=json.dumps(webpush, ensure_ascii=False),
@@ -37,7 +37,9 @@ class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParsingOptions]):
             )
 
         return AppData(
-            raw_source=self.raw_source,
+            raw_source=json.dumps(self.raw_source)
+            if not isinstance(self.raw_source, str)
+            else self.raw_source,
             locale=Language.get_by_lang_code(self.data.get('locale')),
             csrf_token=self.data.get('csrf-token'),
             user_id=self.data.get('userId'),

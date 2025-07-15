@@ -14,7 +14,7 @@ __all__ = (
 
 
 import re
-from typing import cast
+from typing import Any, cast
 from enum import Enum
 from types import MappingProxyType
 from functools import cache
@@ -395,7 +395,7 @@ class PaymentMethod(Enum):
             return cls.UNKNOWN
 
         css_class = match.string[match.start() : match.end()]
-        return cast(PaymentMethod, cls.css_class_to_method_map().get(css_class) or cls.UNKNOWN)
+        return cls.css_class_to_method_map().get(css_class) or cls.UNKNOWN
 
 
 class Language(Enum):
@@ -407,7 +407,7 @@ class Language(Enum):
     UK = 'uk'
 
     @classmethod
-    def get_by_lang_code(cls, lang_code: str, /) -> Language:
+    def get_by_lang_code(cls, lang_code: Any, /) -> Language:
         for i in cls:
             if i.value == lang_code:
                 return i

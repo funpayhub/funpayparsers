@@ -30,9 +30,9 @@ class CurrentlyViewingOfferInfoParser(
         - Runner response.
     """
 
-    def _parse(self):
+    def _parse(self) -> CurrentlyViewingOfferInfo:
         link = self.tree.css('a')[0]
-        url = link.attributes['href']
+        url: str = link.attributes['href']  # type: ignore[assignment] # always has href
         id_ = url.split('id=')[-1]
 
         return CurrentlyViewingOfferInfo(

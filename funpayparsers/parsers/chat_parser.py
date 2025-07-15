@@ -53,7 +53,7 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
         (`https://funpay.com/<lots/chips>/<subcategory_id>/`)
     """
 
-    def _parse(self):
+    def _parse(self) -> Chat:
         chat_div = self.tree.css('div.chat')[0]
         interlocutor, notifications, banned = self._parse_chat_header(chat_div)
 

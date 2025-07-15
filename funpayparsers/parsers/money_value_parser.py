@@ -68,7 +68,7 @@ class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParsingOptio
         - etc.
     """
 
-    def _parse(self):
+    def _parse(self) -> MoneyValue:
         types = {
             MoneyValueParsingMode.FROM_ORDER_PREVIEW: self._parse_order_preview_type,
             MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW: self._parse_transaction_preview_type,

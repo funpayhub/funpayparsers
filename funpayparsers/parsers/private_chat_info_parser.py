@@ -38,7 +38,7 @@ class PrivateChatInfoParser(
         - Private chat pages (`https://funpay.com/chat/?node=<chat_id>`)
     """
 
-    def _parse(self):
+    def _parse(self) -> PrivateChatInfo:
         info_div = self.tree.css('div.chat-detail-list')[0]
         blocks = info_div.css('div.param-item:not(.hidden)')
 

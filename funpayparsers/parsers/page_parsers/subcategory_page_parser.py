@@ -64,7 +64,7 @@ class SubcategoryPageParser(
 
         # lot-ID / chips-ID
         subcategory_id_str: str = showcase.attributes['data-section']  # type: ignore[assignment]
-                                                                       # always has 'data-section'
+        # always has 'data-section'
         related_subcategories = []
         for i in self.tree.css('a.counter-item'):
             url: str = i.attributes['href']  # type: ignore[assignment]
@@ -91,7 +91,7 @@ class SubcategoryPageParser(
             ).parse(),
             category_id=int(subcategory_id_str.split('-')[-1]),
             subcategory_id=int(
-                showcase.attributes['data-game'] # type: ignore[arg-type] # always has data-game
+                showcase.attributes['data-game']  # type: ignore[arg-type] # always has data-game
             ),
             subcategory_type=SubcategoryType.get_by_url(subcategory_id_str),
             related_subcategories=related_subcategories or None,

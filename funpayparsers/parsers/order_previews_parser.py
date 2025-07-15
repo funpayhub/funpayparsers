@@ -48,7 +48,7 @@ class OrderPreviewsParsingOptions(ParsingOptions):
 
 class OrderPreviewsParser(
     FunPayHTMLObjectParser[
-        list[OrderPreview],
+        OrderPreviewsBatch,
         OrderPreviewsParsingOptions,
     ]
 ):
@@ -60,29 +60,30 @@ class OrderPreviewsParser(
         - Purchases page (https://funpay.com/orders/).
     """
 
-    def _parse(self):
+    def _parse(self) -> OrderPreviewsBatch:
         result = []
 
         for order in self.tree.css('a.tc-item'):
-            status_class = order.css('div.tc-status')[0].attributes['class']
+            status_class: str = order.css('div.tc-status')[0].attributes['class']  # type: ignore[assignment] # always has a class
 
             value = MoneyValueParser(
-                order.css('div.tc-price')[0].html,
+                order.css('div.tc-price')[0].html or '',
                 options=self.options.money_value_parsing_options,
                 parsing_mode=MoneyValueParsingMode.FROM_ORDER_PREVIEW,
             ).parse()
 
             user_tag = order.css('div.media-user')[0]
             counterparty = UserPreviewParser(
-                user_tag.html,
+                user_tag.html or '',
                 options=self.options.user_preview_parsing_options,
                 parsing_mode=UserPreviewParsingMode.FROM_ORDER_PREVIEW,
             ).parse()
 
             result.append(
                 OrderPreview(
-                    raw_source=order.html,
-                    id=order.attributes['href'].split('/')[-2],
+                    raw_source=order.html or '',
+                    id=order.attributes['href'].split('/')[-2],  # type: ignore[union-attr]
+                    # always has href
                     date_text=order.css('div.tc-date-time')[0].text(strip=True),
                     desc=order.css('div.order-desc > div')[0].text(deep=False, strip=True),
                     category_text=order.css('div.text-muted')[0].text(strip=True),
