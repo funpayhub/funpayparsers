@@ -16,6 +16,8 @@ FunPay Parser использует [Selectolax](https://github.com/rushter/selec
 ### 🛠️ Надёжность
 Для большинства парсеров написано по несколько тест-кейсов, основанных на реальном HTML [FunPay](https://funpay.com).
 
+<img src="https://emojis.slackmojis.com/emojis/images/1678783063/64643/mypy.png?1678783063">
+
 ## Установка
 ```commandline
 pip install funpayparsers
