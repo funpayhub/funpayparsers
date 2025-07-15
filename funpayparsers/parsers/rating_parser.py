@@ -8,6 +8,8 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 
+from selectolax.lexbor import LexborNode
+
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.common import UserRating
 
@@ -57,28 +59,20 @@ class UserRatingParser(FunPayHTMLObjectParser[UserRating, UserRatingParsingOptio
     def _parse_from_profile_header(self) -> UserRating:
         rating_div = self.tree.css('div.profile-header-col-rating')[0]
 
-        stars = rating_div.css('div.rating-value > span.big')[0].text().strip()
+        stars_text = rating_div.css('div.rating-value > span.big')[0].text().strip()
         try:
-            stars = float(stars)
+            stars = float(stars_text)
         except ValueError:
             stars = 0.0
 
-        percentage = []
-        for i in range(1, 6):
-            value = re.search(
-                r'\d+',
-                rating_div.css(
-                    f'div.rating-full-item{i} > div.rating-progress > div',
-                )[0].attributes['style'],
-            )
-            percentage.append(float(value.group()))
+        percentage = self._parse_percentage(rating_div)
 
         reviews_text = rating_div.css('div.rating-full-count')[0].text().replace(' ', '')
         match = re.search(r'\d+', reviews_text)
-        reviews_amount = int(match.group())
+        reviews_amount = int(match.group())  # type: ignore[union-attr] # always has \d+
 
         return UserRating(
-            raw_source=rating_div.html,
+            raw_source=rating_div.html or '',
             stars=stars,
             reviews_amount=reviews_amount,
             five_star_reviews_percentage=percentage[4],
@@ -88,30 +82,22 @@ class UserRatingParser(FunPayHTMLObjectParser[UserRating, UserRatingParsingOptio
             one_star_reviews_percentage=percentage[0],
         )
 
-    def _parse_from_reviews_section(self):
+    def _parse_from_reviews_section(self) -> UserRating:
         rating_div = self.tree.css_first('div.param-item.mb10')
-        stars = rating_div.css('div.rating-value > span.big')[0].text().strip()
+        stars_text = rating_div.css('div.rating-value > span.big')[0].text().strip()
         try:
-            stars = float(stars)
+            stars = float(stars_text)
         except ValueError:
             stars = 0.0
 
-        percentage = []
-        for i in range(1, 6):
-            value = re.search(
-                r'\d+',
-                rating_div.css(
-                    f'div.rating-full-item{i} > div.rating-progress > div',
-                )[0].attributes['style'],
-            )
-            percentage.append(float(value.group()))
+        percentage = self._parse_percentage(rating_div)
 
         reviews_text = rating_div.css_first('div.mb5').text().replace(' ', '')
         match = re.search(r'\d+', reviews_text)
-        reviews_amount = int(match.group())
+        reviews_amount = int(match.group())  # type: ignore[union-attr] # always has \d+
 
         return UserRating(
-            raw_source=rating_div.html,
+            raw_source=rating_div.html or '',
             stars=stars,
             reviews_amount=reviews_amount,
             five_star_reviews_percentage=percentage[4],
@@ -120,3 +106,14 @@ class UserRatingParser(FunPayHTMLObjectParser[UserRating, UserRatingParsingOptio
             two_star_reviews_percentage=percentage[1],
             one_star_reviews_percentage=percentage[0],
         )
+
+    def _parse_percentage(self, rating_div: LexborNode) -> list[float]:
+        percentage: list[float] = []
+        for i in range(1, 6):
+            style: str = rating_div.css(f'div.rating-full-item{i} > div.rating-progress > div')[
+                0
+            ].attributes['style']  # type: ignore[assignment]  # always has a style
+            value = re.search(r'\d+', style)
+            percentage.append(float(value.group()))  # type: ignore[union-attr] # always has \d+
+
+        return percentage

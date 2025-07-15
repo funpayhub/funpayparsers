@@ -3,6 +3,7 @@ from __future__ import annotations
 
 __all__ = ('MessagesParsingOptions', 'MessagesParser')
 
+from typing import cast
 from dataclasses import dataclass
 
 from selectolax.lexbor import LexborNode
@@ -65,7 +66,9 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
         messages = []
         for msg_div in self.tree.css('div.chat-msg-item'):
             userid, username, date, badge = None, None, None, None
-            has_header = 'chat-msg-with-head' in msg_div.attributes['class']
+            has_header = 'chat-msg-with-head' in msg_div.attributes['class']  # type: ignore[operator]
+            # always has a class
+
             if has_header:
                 userid, username, date, badge = self._parse_message_header(msg_div)
 
@@ -82,8 +85,11 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
 
             messages.append(
                 Message(
-                    raw_source=msg_div.html,
-                    id=int(msg_div.attributes['id'].split('-')[1]),
+                    raw_source=msg_div.html or '',
+                    id=int(
+                        msg_div.attributes['id'].split('-')[1]  # type: ignore[union-attr]
+                        # always has an id
+                    ),
                     is_heading=has_header,
                     sender_id=userid,
                     sender_username=username,
@@ -119,12 +125,11 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
         id_, name = 0, 'FunPay'
 
         if user_tag := msg_tag.css('a.chat-msg-author-link'):
-            id_, name = (
-                int(user_tag[0].attributes['href'].split('/')[-2]),
-                user_tag[0].text(strip=True),
-            )
+            id_ = int(user_tag[0].attributes['href'].split('/')[-2])  # type: ignore[union-attr]
+            # always has href
+            name = user_tag[0].text(strip=True)
 
-        date = msg_tag.css('div.chat-msg-date')[0].attributes['title']
+        date = cast(str, msg_tag.css('div.chat-msg-date')[0].attributes['title'])
 
         if not (badge := msg_tag.css('span.label')):
             return id_, name, date, None
@@ -134,7 +139,7 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
             name,
             date,
             UserBadgeParser(
-                raw_source=badge[0].html,
+                raw_source=badge[0].html or '',
                 options=self.options.user_badge_parsing_options,
             ).parse(),
         )

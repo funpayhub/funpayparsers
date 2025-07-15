@@ -12,7 +12,7 @@ __all__ = (
     'UpdatesPack',
 )
 
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
@@ -125,5 +125,5 @@ class UpdatesPack(FunPayObject):
     chat_bookmarks: UpdateObject[ChatBookmarks] | None
     cpu: UpdateObject[CurrentlyViewingOfferInfo] | None
     nodes: list[UpdateObject[ChatNode]] | None
-    unknown_objects: list[dict] | None
+    unknown_objects: list[dict[str, Any]] | None
     response: ActionResponse | None

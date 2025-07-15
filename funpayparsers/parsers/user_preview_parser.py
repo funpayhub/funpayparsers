@@ -4,7 +4,6 @@ from __future__ import annotations
 __all__ = ('UserPreviewParser', 'UserPreviewParsingOptions', 'UserPreviewParsingMode')
 
 
-from typing import cast
 from dataclasses import dataclass
 from enum import Enum
 
@@ -62,7 +61,7 @@ class UserPreviewParser(FunPayHTMLObjectParser[UserPreview, UserPreviewParsingOp
             username=username_tag.text(strip=True),
             # user div always has a class
             online='online' in user_div.attributes['class'],  # type: ignore[operator]
-            avatar_url=cast(str, extract_css_url(photo_style)),
+            avatar_url=extract_css_url(photo_style),
             # user div always has a class
             banned='banned' in user_div.attributes['class'],  # type: ignore[operator]
             status_text=user_status_text,

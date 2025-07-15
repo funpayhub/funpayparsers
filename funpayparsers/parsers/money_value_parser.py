@@ -3,6 +3,7 @@ from __future__ import annotations
 
 __all__ = ('MoneyValueParser', 'MoneyValueParsingOptions', 'MoneyValueParsingMode')
 
+from typing import cast
 from dataclasses import dataclass
 from enum import Enum
 
@@ -102,7 +103,7 @@ class MoneyValueParser(FunPayHTMLObjectParser[MoneyValue, MoneyValueParsingOptio
             raise_on_error=True,
         )
         if self.options.parse_value_from_attribute:
-            value.value = float(div.attributes.get('data-s'))
+            value.value = float(cast(str, div.attributes.get('data-s')))
         return value
 
     def _parse_string_type(self) -> MoneyValue:

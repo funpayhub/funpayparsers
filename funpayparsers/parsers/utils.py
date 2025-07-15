@@ -10,7 +10,7 @@ __all__ = (
 )
 
 import re
-from typing import cast
+from typing import Literal, cast, overload
 from copy import deepcopy
 from datetime import datetime, timedelta
 from collections.abc import Iterable
@@ -146,7 +146,15 @@ def parse_date_string(date_string: str, /) -> int:
     raise ValueError(f"Unable to parse date string '{date_string}'.")
 
 
-def extract_css_url(source: str, /) -> str | None:
+@overload
+def extract_css_url(source: str, /, *, raise_if_not_found: Literal[True] = ...) -> str: ...
+
+
+@overload
+def extract_css_url(source: str, /, *, raise_if_not_found: Literal[False] = ...) -> str | None: ...
+
+
+def extract_css_url(source: str, /, *, raise_if_not_found: bool = True) -> str | None:
     """
     Extract the URL from a CSS ``'url(*)'`` pattern in the given string.
 
@@ -156,22 +164,26 @@ def extract_css_url(source: str, /) -> str | None:
     Note that it does **not** validate whether the extracted content is a valid URL —
     it simply extracts whatever text is inside ``'url()'``.
 
-    Examples:
+    Example:
         >>> extract_css_url('url(https://sfunpay.com/s/avatar/7q/6b/someimg.jpg)')
         'https://sfunpay.com/s/avatar/7q/6b/someimg.jpg'
 
         >>> extract_css_url('some text url(not url text)')
         'not url text'
 
-        >>> extract_css_url('not a css url') is None
-        True
-
     :param source: The source string potentially containing a CSS ``'url()'`` pattern.
+    :param raise_if_not_found: Raise an exception if the pattern does not contain a URL.
+        If ``False``, returns ``None`` insted.
 
-    :return: The extracted text inside ``'url()'`` if found; otherwise, ``None``.
+    :return: The extracted text inside ``'url()'`` if found; otherwise, ``None``,
+    if ``raise_if_not_found`` = ``False``.
     """
     match = CSS_URL_RE.search(source)
-    return match.group(1) if match else None
+    if match:
+        return match.group(1)
+    if raise_if_not_found:
+        raise LookupError('No suitable URL found.')
+    return None
 
 
 def resolve_messages_senders(messages: Iterable[Message], /) -> None:
@@ -199,6 +211,18 @@ def resolve_messages_senders(messages: Iterable[Message], /) -> None:
             continue
 
         m.sender_username, m.sender_id, m.badge = username, userid, badge
+
+
+@overload
+def parse_money_value_string(
+    money_value_str: str, /, *, raw_source: str | None = ..., raise_on_error: Literal[True] = ...
+) -> MoneyValue: ...
+
+
+@overload
+def parse_money_value_string(
+    money_value_str: str, /, *, raw_source: str | None = ..., raise_on_error: Literal[False] = ...
+) -> MoneyValue | None: ...
 
 
 def parse_money_value_string(

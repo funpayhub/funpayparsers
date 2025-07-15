@@ -8,5 +8,5 @@ class ParsingError(Exception):
     def __init__(self, raw_source: str):
         self.raw_source = raw_source
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'An error occurred while parsing {self.raw_source}'

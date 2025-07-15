@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from funpayparsers.types.updates import CurrentlyViewingOfferInfo
+from funpayparsers.types.common import CurrentlyViewingOfferInfo
 from funpayparsers.parsers.cpu_parser import (
     CurrentlyViewingOfferInfoParser,
     CurrentlyViewingOfferInfoParsingOptions,

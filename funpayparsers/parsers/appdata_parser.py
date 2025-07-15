@@ -4,6 +4,7 @@ from __future__ import annotations
 __all__ = ('AppDataParsingOptions', 'AppDataParser')
 
 import json
+from typing import cast
 from dataclasses import dataclass
 
 from funpayparsers.types.enums import Language
@@ -27,7 +28,9 @@ class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParsingOptions]):
     """
 
     def _parse(self) -> AppData:
-        webpush = self.data.get('webpush')  # type: ignore[union-attr] # raise Exception if not dict
+        assert isinstance(self.data, dict)
+
+        webpush = self.data.get('webpush')
         if webpush is not None:
             webpush = WebPush(
                 raw_source=json.dumps(webpush, ensure_ascii=False),
@@ -41,7 +44,7 @@ class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParsingOptions]):
             if not isinstance(self.raw_source, str)
             else self.raw_source,
             locale=Language.get_by_lang_code(self.data.get('locale')),
-            csrf_token=self.data.get('csrf-token'),
+            csrf_token=cast(str, self.data.get('csrf-token')),
             user_id=self.data.get('userId'),
             webpush=webpush,
         )

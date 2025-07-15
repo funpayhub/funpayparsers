@@ -10,7 +10,6 @@ from copy import deepcopy
 from selectolax.lexbor import LexborNode
 
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
-from funpayparsers.types.common import UserPreview
 from funpayparsers.types.offers import OfferSeller, OfferPreview
 from funpayparsers.parsers.utils import extract_css_url
 from funpayparsers.parsers.money_value_parser import (
@@ -58,10 +57,11 @@ class OfferPreviewsParser(
         # cz there are specific fields in OfferPreview class for them.
         skip_match_data = ['user', 'online', 'auto']
 
-        processed_users: dict[int, UserPreview] = {}
+        processed_users: dict[int, OfferSeller] = {}
 
         for offer_div in self.tree.css('a.tc-item'):
-            offer_id_str = offer_div.attributes['href'].split('id=')[1]
+            url: str = offer_div.attributes['href']  # type: ignore[assignment] # always has href
+            offer_id_str = url.split('id=')[1]
             desc_divs = offer_div.css('div.tc-desc-text')
             # currency offers don't have description.
             desc = desc_divs[0].text(strip=True) if desc_divs else None
@@ -88,27 +88,30 @@ class OfferPreviewsParser(
                 options=self.options.money_value_parsing_options,
                 parsing_mode=MoneyValueParsingMode.FROM_OFFER_PREVIEW,
                 parse_value_from_attribute=(
-                    False if 'chips' in offer_div.attributes['href'] else True
+                    False if 'chips' in offer_div.attributes['href'] else True  # type: ignore[operator]
                 ),
             ).parse()
 
             seller = self._parse_user_tag(offer_div, processed_users)
 
-            additional_data = {
-                key.replace('data-', ''): int(data) if data.isnumeric() else data
-                for key, data in offer_div.attributes.items()
-                if key.startswith('data-') and key not in skip_data
-            }
+            additional_data: dict[str, str | int] = {}
+            for key, data in offer_div.attributes.items():
+                if not key.startswith('data-') or key in skip_data:
+                    continue
+                if data is None:
+                    continue
+                additional_data[key.replace('data-', '')] = (
+                    (int(data)) if data.isnumeric() else data
+                )
 
             names = {}
             for data_key in additional_data:
                 if data_key in skip_match_data:
                     continue
-                div = offer_div.css(f'div.tc-{data_key}')
-                if not div:
+                divs = offer_div.css(f'div.tc-{data_key}')
+                if not divs:
                     continue
-                div = div[0]
-                names[data_key] = div.text(strip=True)
+                names[data_key] = divs[0].text(strip=True)
 
             result.append(
                 OfferPreview(
@@ -128,7 +131,9 @@ class OfferPreviewsParser(
         return result
 
     @staticmethod
-    def _parse_user_tag(offer_tag: LexborNode, processed_users) -> OfferSeller | None:
+    def _parse_user_tag(
+        offer_tag: LexborNode, processed_users: dict[int, OfferSeller]
+    ) -> OfferSeller | None:
         # If this offer preview is from sellers page,
         # and not from subcategory offers page, there is no user div.
         user_divs = offer_tag.css('div.tc-user')
@@ -137,12 +142,14 @@ class OfferPreviewsParser(
 
         user_div = user_divs[0]
         username_span = user_div.css('div.media-user-name > span')[0]
-        user_id = int(username_span.attributes['data-href'].split('/')[-2])
+        user_id = int(
+            username_span.attributes['data-href'].split('/')[-2]  # type: ignore[union-attr] # always has data-href
+        )
 
         if user_id in processed_users:
             return deepcopy(processed_users[user_id])
 
-        avatar_tag_style = user_div.css('div.avatar-photo')[0].attributes['style']
+        avatar_tag_style: str = user_div.css('div.avatar-photo')[0].attributes['style']  # type: ignore[assignment]  # always has style
 
         # If the user has fewer than 10 reviews or registered less than a month ago,
         # the rating stars are not shown. The number of reviews is displayed
@@ -158,11 +165,11 @@ class OfferPreviewsParser(
             reviews_amount_txt = user_div.css('div.media-user-reviews')[0].text(
                 deep=True, strip=True
             )
-            reviews_amount = re.findall(r'\d+', reviews_amount_txt)
-            reviews_amount = int(reviews_amount[0]) if reviews_amount else 0
+            reviews_amount_find = re.findall(r'\d+', reviews_amount_txt)
+            reviews_amount = int(reviews_amount_find[0]) if reviews_amount_find else 0
 
         result = OfferSeller(
-            raw_source=user_div.html,
+            raw_source=user_div.html or '',
             id=(
                 user_id
                 if user_id is not None

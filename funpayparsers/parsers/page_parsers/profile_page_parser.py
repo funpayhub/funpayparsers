@@ -176,7 +176,7 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
             ],
             avatar_url=extract_css_url(
                 cast(str, self.tree.css_first('div.avatar-photo').attributes['style']),
-            ),  # type: ignore[arg-type] # div.avatar-photo always has a style with url
+            ),
             online='online' in profile_header.css_first('h1.mb40').attributes['class'],  # type: ignore[operator] # always has a class
             banned=banned,
             registration_date_text=(

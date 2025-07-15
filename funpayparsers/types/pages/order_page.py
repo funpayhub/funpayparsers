@@ -68,7 +68,8 @@ class OrderPage(FunPayPage):
         amount_str = self._first_found(['amount', 'количество', 'кількість'])
         if not amount_str:
             return None
-        return int(re.search(r'\d+', amount_str).group())
+        return int(re.search(r'\d+', amount_str).group())  # type: ignore[union-attr]
+        # always has \d+
 
     @property
     def open_date_text(self) -> str | None:
