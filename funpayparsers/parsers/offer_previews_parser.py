@@ -74,9 +74,9 @@ class OfferPreviewsParser(
             # specify the amount of goods.
             amount_div = offer_div.css('div.tc-amount')
             if amount_div:
-                amount_str = amount_div[0].attributes.get('data-s') or amount_div[
-                    0
-                ].text(strip=True)
+                amount_str = amount_div[0].attributes.get('data-s') or amount_div[0].text(
+                    strip=True
+                )
                 amount = int(amount_str) if amount_str.isnumeric() else None
             else:
                 amount = None

@@ -23,9 +23,7 @@ from funpayparsers.parsers.user_preview_parser import (
 class ChatParsingOptions(ParsingOptions):
     """Options class for ``ChatParser``."""
 
-    user_preview_parsing_options: UserPreviewParsingOptions = (
-        UserPreviewParsingOptions()
-    )
+    user_preview_parsing_options: UserPreviewParsingOptions = UserPreviewParsingOptions()
     """
     Options instance for ``UserPreviewParser``, which is used by ``ChatParser``.
     
@@ -60,9 +58,7 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
         interlocutor, notifications, banned = self._parse_chat_header(chat_div)
 
         chat_id = (
-            int(chat_div.attributes['data-id'])
-            if chat_div.attributes.get('data-id')
-            else None
+            int(chat_div.attributes['data-id']) if chat_div.attributes.get('data-id') else None
         )
         chat_name = chat_div.attributes.get('data-name')
 

@@ -86,7 +86,5 @@ class TransactionPreviewsParser(
             transactions=result,
             user_id=int(user_id[0].attributes.get('value')) if user_id else None,
             filter=filter_[0].attributes.get('value') if filter_ else None,
-            next_transaction_id=(
-                int(next_id[0].attributes.get('value')) if next_id else None
-            ),
+            next_transaction_id=(int(next_id[0].attributes.get('value')) if next_id else None),
         )

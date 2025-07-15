@@ -103,9 +103,7 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
             resolve_messages_senders(messages)
         return messages
 
-    def _parse_message_header(
-        self, msg_tag: LexborNode
-    ) -> tuple[int, str, str, UserBadge | None]:
+    def _parse_message_header(self, msg_tag: LexborNode) -> tuple[int, str, str, UserBadge | None]:
         """
         Parses the message header to extract the author ID, author nickname,
         and an optional author/message badge.

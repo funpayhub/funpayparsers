@@ -70,7 +70,7 @@ strict = false
 
 
 [tool.ruff]
-line-length = 88
+line-length = 99
 exclude = [
     ".git",
     "build",
