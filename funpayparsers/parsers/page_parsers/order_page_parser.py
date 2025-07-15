@@ -4,6 +4,7 @@ from __future__ import annotations
 __all__ = ('OrderPageParsingOptions', 'OrderPageParser')
 
 import re
+from typing import cast
 from dataclasses import dataclass
 
 from funpayparsers.types.enums import OrderStatus, SubcategoryType
@@ -56,12 +57,9 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
     Class for parsing order pages (`https://funpay.com/users/<user_id>/`).
     """
 
-    def _parse(self):
-        header_div = self.tree.css_first('header')
-        app_data = self.tree.css_first('body').attributes['data-app-data']
-
+    def _parse(self) -> OrderPage:
         order_header = self.tree.css_first('h1.page-header')
-        order_id = re.search(
+        order_id = re.search(  # type: ignore[union-attr]
             r'#[A-Z0-9]{8}',
             order_header.text(deep=False).strip(),
         ).group()[1:]
@@ -78,10 +76,8 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
             delivered_goods = None
         else:
             delivered_goods = [
-                i.attributes['data-copy'] for i in goods[0].css('a.btn-copy')
+                i.attributes['data-copy'] or '' for i in goods[0].css('a.btn-copy')
             ]
-
-        review_div = self.tree.css_first('div.review-container')
 
         data = {}
         for i in self.tree.css('div.param-item:has(h5):not(:has(ul, ol))'):
@@ -96,7 +92,7 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
 
             data[name[0].text().strip().lower()] = value[-1].text().strip()
 
-        subcategory_url = self.tree.css_first(
+        subcategory_url: str = self.tree.css_first(  # type: ignore[assignment,union-attr]
             'div.param-item:has(h5):not(:has(ul, ol)) a',
             strict=False,
         ).attributes['href']
@@ -104,28 +100,31 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
         return OrderPage(
             raw_source=self.raw_source,
             header=PageHeaderParser(
-                header_div.html,
+                self.tree.css_first('header').html or '',
                 options=self.options.page_header_parsing_options,
             ).parse(),
             app_data=AppDataParser(
-                app_data,
+                self.tree.css_first('body').attributes['data-app-data'] or '',
                 self.options.app_data_parsing_options,
             ).parse(),
             order_id=order_id,
             order_status=order_status,
             delivered_goods=delivered_goods,
-            images=[i.attributes['href'] for i in self.tree.css('a.attachments-thumb')]
+            images=[
+                cast(str, i.attributes['href'])
+                for i in self.tree.css('a.attachments-thumb')
+            ]
             or None,
             order_subcategory_id=int(subcategory_url.split('/')[-2]),
             order_subcategory_type=SubcategoryType.get_by_url(subcategory_url),
             review=ReviewsParser(
-                review_div.html,
+                self.tree.css_first('div.review-container').html or '',
                 options=self.options.reviews_parsing_options,
             )
             .parse()
             .reviews[0],
             chat=ChatParser(
-                self.tree.css_first('div.chat').html,
+                self.tree.css_first('div.chat').html or '',
                 options=self.options.chat_parsing_options,
             ).parse(),
             data=data,

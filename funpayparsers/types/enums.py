@@ -14,11 +14,10 @@ __all__ = (
 
 
 import re
-from typing import Type
+from typing import cast
 from enum import Enum
 from types import MappingProxyType
 from functools import cache
-from typing import cast
 
 
 class UpdateType(Enum):
@@ -397,8 +396,7 @@ class PaymentMethod(Enum):
 
         css_class = match.string[match.start() : match.end()]
         return cast(
-            PaymentMethod,
-            cls.css_class_to_method_map().get(css_class) or cls.UNKNOWN
+            PaymentMethod, cls.css_class_to_method_map().get(css_class) or cls.UNKNOWN
         )
 
 

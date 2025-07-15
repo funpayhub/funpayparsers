@@ -47,7 +47,7 @@ def chat_preview_data() -> PrivateChatPreview:
 
 
 @pytest.fixture
-def private_chat_preview_data(chat_preview_data: PrivateChatPreview):
+def private_chat_preview_data(chat_preview_data: PrivateChatPreview) -> tuple[str, PrivateChatPreview]:
     source = html.format(**chat_preview_data.as_dict()).strip()
     return source, replace(chat_preview_data, raw_source=source)
 

@@ -67,7 +67,6 @@ class ParsingOptions:
     Defaults to ``False``.
     """
 
-
     context: dict[Any, Any] = field(default_factory=dict)
     """
     Parsing context.

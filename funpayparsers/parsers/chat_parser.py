@@ -3,6 +3,7 @@ from __future__ import annotations
 
 __all__ = ('ChatParsingOptions', 'ChatParser')
 
+from typing import cast
 from dataclasses import dataclass
 
 from selectolax.lexbor import LexborNode
@@ -16,7 +17,6 @@ from funpayparsers.parsers.user_preview_parser import (
     UserPreviewParsingMode,
     UserPreviewParsingOptions,
 )
-from typing import cast
 
 
 @dataclass(frozen=True)
@@ -59,14 +59,18 @@ class ChatParser(FunPayHTMLObjectParser[Chat, ChatParsingOptions]):
         chat_div = self.tree.css('div.chat')[0]
         interlocutor, notifications, banned = self._parse_chat_header(chat_div)
 
-        chat_id = int(chat_div.attributes['data-id']) if chat_div.attributes.get('data-id') else None
+        chat_id = (
+            int(chat_div.attributes['data-id'])
+            if chat_div.attributes.get('data-id')
+            else None
+        )
         chat_name = chat_div.attributes.get('data-name')
 
         messages_div = chat_div.css('div.chat-message-list')[0]
         history = MessagesParser(
             raw_source=messages_div.html,
             options=self.options.messages_parsing_options,
-            context={'chat_id': chat_id, 'chat_name': chat_name}
+            context={'chat_id': chat_id, 'chat_name': chat_name},
         ).parse()
 
         return Chat(

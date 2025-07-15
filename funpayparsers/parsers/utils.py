@@ -10,6 +10,7 @@ __all__ = (
 )
 
 import re
+from typing import cast
 from copy import deepcopy
 from datetime import datetime, timedelta
 from collections.abc import Iterable
@@ -19,7 +20,7 @@ from selectolax.lexbor import LexborNode, LexborHTMLParser
 from funpayparsers.types.enums import BadgeType
 from funpayparsers.types.common import MoneyValue
 from funpayparsers.types.messages import Message
-from typing import cast
+
 
 CSS_URL_RE = re.compile(r'url\(([^()]+)\)', re.IGNORECASE)
 MONEY_VALUE_RE = re.compile(r'^([+\-]?\d+(?:\.\d+)?)(.)$')
