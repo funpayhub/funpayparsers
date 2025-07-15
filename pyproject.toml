@@ -61,6 +61,9 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 strict = true
 pretty = true
+exclude = [
+    "docs"
+]
 
 
 [[tool.mypy.overrides]]

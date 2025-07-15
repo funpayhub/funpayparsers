@@ -3,7 +3,6 @@ from __future__ import annotations
 
 __all__ = ('PrivateChatPreviewsParser', 'PrivateChatPreviewParsingOptions')
 
-from typing import cast
 from dataclasses import dataclass
 
 from funpayparsers.types.chat import PrivateChatPreview
@@ -42,7 +41,7 @@ class PrivateChatPreviewsParser(
                 # chat always has a class
                 is_unread='unread' in chat.attributes['class'],  # type: ignore[operator]
                 username=chat.css('div.media-user-name')[0].text(strip=True),
-                avatar_url=cast(str, extract_css_url(avatar_css)),
+                avatar_url=extract_css_url(avatar_css),
                 last_message_id=int(
                     chat.attributes['data-node-msg']  # type: ignore[arg-type] # always has data-node-msg
                 ),

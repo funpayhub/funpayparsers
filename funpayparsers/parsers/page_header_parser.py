@@ -81,12 +81,12 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             money_value = MoneyValue(
                 raw_source='',
                 value=0.0,
-                character=currency.value(),
+                character=currency.value,
             )
 
-        language_class = header.css(
+        language_class: str = header.css(
             'a.dropdown-toggle.menu-item-langs > i.menu-icon',
-        )[0].attributes['class']
+        )[0].attributes['class']  # type: ignore[assignment] # always has a class
 
         for i in _LANGUAGES:
             if i in language_class:
@@ -96,9 +96,9 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             language = Language.UNKNOWN
 
         return PageHeader(
-            raw_source=header.html,
+            raw_source=header.html or '',
             user_id=int(
-                header.css('a.user-link-dropdown')[0].attributes['href'].split('/')[-2],
+                header.css('a.user-link-dropdown')[0].attributes['href'].split('/')[-2],  # type: ignore[union-attr] # always has href
             ),
             username=header.css('div.user-link-name')[0].text().strip(),
             avatar_url=header.css('img')[0].attributes['src'],
@@ -119,9 +119,9 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
         )
         currency = _CURRENCIES.get(currency_text, Currency.UNKNOWN)
 
-        language_class = header.css('a.dropdown-toggle.menu-item-langs > i.menu-icon')[
+        language_class: str = header.css('a.dropdown-toggle.menu-item-langs > i.menu-icon')[
             0
-        ].attributes['class']
+        ].attributes['class']  # type: ignore[assignment] # always has a class
 
         for i in _LANGUAGES:
             if i in language_class:
@@ -131,7 +131,7 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             language = Language.UNKNOWN
 
         return PageHeader(
-            raw_source=header.html,
+            raw_source=header.html or '',
             user_id=None,
             username=None,
             avatar_url=None,

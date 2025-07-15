@@ -36,7 +36,7 @@ class AppData(FunPayObject):
     csrf_token: str
     """CSRF token."""
 
-    user_id: int
+    user_id: int | None
     """Users ID."""
 
     webpush: WebPush | None

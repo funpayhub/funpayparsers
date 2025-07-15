@@ -10,7 +10,7 @@ from funpayparsers.types.base import FunPayObject
 
 
 if TYPE_CHECKING:
-    from funpayparsers.types.updates import UserPreview, CurrentlyViewingOfferInfo
+    from funpayparsers.types.common import UserPreview, CurrentlyViewingOfferInfo
     from funpayparsers.types.messages import Message
 
 
