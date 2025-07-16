@@ -48,8 +48,8 @@ class OfferPreview(FunPayObject):
     is_pinned: bool
     """Whether this offer is pinned to the top of the list."""
 
-    desc: str | None
-    """The description of the offer, if provided."""
+    title: str | None
+    """Offer title, if exists."""
 
     amount: int | None
     """The quantity of goods available in this offer, if specified."""

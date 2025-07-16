@@ -20,7 +20,7 @@ cpu_html = """
 cpu_obj = CurrentlyViewingOfferInfo(
     raw_source='',
     id='123456-789-10-11-12',
-    name='Lot desc',
+    title='Lot desc',
 )
 
 

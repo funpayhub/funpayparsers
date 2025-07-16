@@ -85,7 +85,7 @@ class OrderPreviewsParser(
                     id=order.attributes['href'].split('/')[-2],  # type: ignore[union-attr]
                     # always has href
                     date_text=order.css('div.tc-date-time')[0].text(strip=True),
-                    desc=order.css('div.order-desc > div')[0].text(deep=False, strip=True),
+                    title=order.css('div.order-desc > div')[0].text(deep=False, strip=True),
                     category_text=order.css('div.text-muted')[0].text(strip=True),
                     status=OrderStatus.get_by_css_class(status_class),
                     total=value,

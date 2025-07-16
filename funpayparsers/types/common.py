@@ -141,5 +141,10 @@ class Achievement(FunPayObject):
 
 @dataclass
 class CurrentlyViewingOfferInfo(FunPayObject):
+    """represents a currently viewing offer info."""
+
     id: int | str
-    name: str
+    """Offer ID."""
+
+    title: str
+    """Offer title."""

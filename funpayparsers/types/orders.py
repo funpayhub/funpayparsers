@@ -26,8 +26,8 @@ class OrderPreview(FunPayObject):
     date_text: str
     """Order date (as human-readable text)."""
 
-    desc: str
-    """Order description."""
+    title: str
+    """Order title."""
 
     category_text: str
     """Order category and subcategory text."""

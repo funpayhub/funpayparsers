@@ -21,11 +21,22 @@ from functools import cache
 
 
 class RunnerDataType(Enum):
+    """Runner data types enumeration."""
+
     ORDERS_COUNTERS = 'orders_counters'
+    """Orders counters data."""
+
     CHAT_COUNTER = 'chat_counter'
+    """Chat counter data."""
+
     CHAT_BOOKMARKS = 'chat_bookmarks'
+    """Chat bookmarks data."""
+
     CHAT_NODE = 'chat_node'
+    """Chat node data."""
+
     CPU = 'c-p-u'
+    """Currently viewing offer info."""
 
     @classmethod
     def get_by_type_str(cls, type_str: str, /) -> RunnerDataType | None:

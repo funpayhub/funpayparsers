@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-__all__ = ('TransactionPreview', 'Transaction', 'TransactionPreviewsBatch')
+__all__ = ('TransactionPreview', 'TransactionInfo', 'TransactionPreviewsBatch')
 
 
 from dataclasses import dataclass
@@ -38,9 +38,14 @@ class TransactionPreview(FunPayObject):
 
 
 @dataclass
-class Transaction(FunPayObject):
+class TransactionInfo(FunPayObject):
+    """Represents a transaction info."""
+
     status: TransactionStatus
-    data: dict[str, str]
+    """Transaction status."""
+
+    data: dict[str, str | int | float]
+    """Transaction data."""
 
 
 @dataclass

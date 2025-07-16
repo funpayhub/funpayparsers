@@ -43,7 +43,7 @@ def cpu_obj():
     return CurrentlyViewingOfferInfo(
         raw_source='',
         id='12345-678-90-1',
-        name='Lot name'
+        title='Lot name'
     )
 
 

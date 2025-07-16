@@ -119,7 +119,7 @@ class OfferPreviewsParser(
                     id=int(offer_id_str) if offer_id_str.isnumeric() else offer_id_str,
                     auto_delivery=bool(offer_div.attributes.get('data-auto')),
                     is_pinned=bool(offer_div.attributes.get('data-user')),
-                    desc=desc,
+                    title=desc,
                     amount=amount,
                     price=price,
                     seller=seller,

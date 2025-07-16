@@ -38,5 +38,5 @@ class CurrentlyViewingOfferInfoParser(
         return CurrentlyViewingOfferInfo(
             raw_source=self.raw_source,
             id=int(id_) if id_.isnumeric() else id_,
-            name=link.text(strip=True),
+            title=link.text(strip=True),
         )
