@@ -8,8 +8,8 @@ __all__ = (
     'NodeInfo',
     'ChatNode',
     'ActionResponse',
-    'UpdateObject',
-    'UpdatesPack',
+    'RunnerResponseObject',
+    'RunnerResponse',
 )
 
 from typing import Any, Generic, TypeVar
@@ -17,7 +17,7 @@ from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.chat import PrivateChatPreview
-from funpayparsers.types.enums import UpdateType
+from funpayparsers.types.enums import RunnerDataType
 from funpayparsers.types.common import CurrentlyViewingOfferInfo
 from funpayparsers.types.messages import Message
 
@@ -28,22 +28,22 @@ UpdateData = TypeVar('UpdateData')
 # ------ Simple objects ------
 @dataclass
 class OrdersCounters(FunPayObject):
-    """Represents an order counters data from updates object."""
+    """Represents an order counters data from runner response."""
 
     purchases: int
-    """Active purchases amount (``buyer`` field)."""
+    """Active purchases amount."""
     sales: int
-    """Active sales amount (``seller`` field)."""
+    """Active sales amount."""
 
 
 @dataclass
 class ChatBookmarks(FunPayObject):
-    """Represents a chat bookmarks data from updates object."""
+    """Represents a chat bookmarks data from runner response."""
 
     counter: int
     """Unread chats amount."""
 
-    message: int
+    latest_message_id: int
     """
     ID of the latest unread message.
     
@@ -60,12 +60,12 @@ class ChatBookmarks(FunPayObject):
 
 @dataclass
 class ChatCounter(FunPayObject):
-    """Represents a chat counter data from updates object."""
+    """Represents a chat counter data from runner response."""
 
     counter: int
     """Unread chats amount."""
 
-    message: int
+    latest_message_id: int
     """
     ID of the latest unread message.
     
@@ -77,22 +77,36 @@ class ChatCounter(FunPayObject):
 # ------ Nodes ------
 @dataclass
 class NodeInfo(FunPayObject):
+    """Represents a chat info in chat data from runner response."""
+
     id: int
+    """Chat ID."""
+
     name: str
+    """Chat name."""
+
     silent: bool
+    """Purpose is unknown."""  # todo
 
 
 @dataclass
 class ChatNode(FunPayObject):
+    """Represents a chat data from runner response."""
+
     node: NodeInfo
+    """Chat info."""
+
     messages: list[Message]
+    """List of messages."""
+
     has_history: bool
+    """Purpose is unknown."""  # todo
 
 
 # ------ Response to action ------
 @dataclass
 class ActionResponse(FunPayObject):
-    """Represents an action response data from updates object."""
+    """Represents an action response data from runner response."""
 
     error: str | None
     """Error text, if an error occurred while processing a request."""
@@ -100,30 +114,43 @@ class ActionResponse(FunPayObject):
 
 # ------ Update obj ------
 @dataclass
-class UpdateObject(FunPayObject, Generic[UpdateData]):
-    """Represents a single update data from updates object."""
+class RunnerResponseObject(FunPayObject, Generic[UpdateData]):
+    """Represents a single runner response object from runner response."""
 
-    type: UpdateType
-    """Update type."""
+    type: RunnerDataType
+    """Object type."""
 
-    id: int | str  # todo: wtf is this? tag = id
-    """Update ID."""
+    id: int | str
+    """Related ID (user ID / chat ID / etc)."""
 
     tag: str
-    """Update tag."""
+    """Runner tag."""
 
     data: UpdateData
-    """Update data."""
+    """Runner object data."""
 
 
 @dataclass
-class UpdatesPack(FunPayObject):
-    """Represents an updates object, returned by runner."""
+class RunnerResponse(FunPayObject):
+    """Represents a runner response."""
 
-    orders_counters: UpdateObject[OrdersCounters] | None
-    chat_counter: UpdateObject[ChatCounter] | None
-    chat_bookmarks: UpdateObject[ChatBookmarks] | None
-    cpu: UpdateObject[CurrentlyViewingOfferInfo] | None
-    nodes: list[UpdateObject[ChatNode]] | None
+    orders_counters: RunnerResponseObject[OrdersCounters] | None
+    """Orders counters data."""
+
+    chat_counter: RunnerResponseObject[ChatCounter] | None
+    """Chat counter data."""
+
+    chat_bookmarks: RunnerResponseObject[ChatBookmarks] | None
+    """Chat bookmarks data."""
+
+    cpu: RunnerResponseObject[CurrentlyViewingOfferInfo] | None
+    """Currently viewing offer info."""
+
+    nodes: list[RunnerResponseObject[ChatNode]] | None
+    """Nodes data."""
+
     unknown_objects: list[dict[str, Any]] | None
+    """Datas with unknown type."""
+
     response: ActionResponse | None
+    """Action response."""

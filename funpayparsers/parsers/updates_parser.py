@@ -7,15 +7,15 @@ import json
 from typing import Any, cast
 from dataclasses import dataclass
 
-from funpayparsers.types.enums import UpdateType
+from funpayparsers.types.enums import RunnerDataType
 from funpayparsers.parsers.base import ParsingOptions, FunPayJSONObjectParser
 from funpayparsers.types.common import CurrentlyViewingOfferInfo
 from funpayparsers.types.updates import (
     ChatNode,
     NodeInfo,
     ChatCounter,
-    UpdatesPack,
-    UpdateObject,
+    RunnerResponse,
+    RunnerResponseObject,
     ChatBookmarks,
     ActionResponse,
     OrdersCounters,
@@ -64,7 +64,7 @@ class UpdatesParsingOptions(ParsingOptions):
     """
 
 
-class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
+class UpdatesParser(FunPayJSONObjectParser[RunnerResponse, UpdatesParsingOptions]):
     """
     Class for parsing updates.
 
@@ -72,8 +72,8 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
         - Runner response.
     """
 
-    def _parse(self) -> UpdatesPack:
-        updates_obj = UpdatesPack(
+    def _parse(self) -> RunnerResponse:
+        updates_obj = RunnerResponse(
             raw_source=str(self.raw_source),
             orders_counters=None,
             chat_counter=None,
@@ -96,7 +96,7 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
             result = self._parse_update(obj)
             if result is None:
                 updates_obj.unknown_objects.append(obj)  # type: ignore[union-attr]
-            elif result.type is UpdateType.CHAT_NODE:
+            elif result.type is RunnerDataType.CHAT_NODE:
                 updates_obj.nodes.append(result)  # type: ignore[union-attr]
             else:
                 setattr(updates_obj, self.__update_fields__[result.type], result)
@@ -117,14 +117,14 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
         return ChatCounter(
             raw_source=str(obj),
             counter=int(obj['counter']),
-            message=int(obj['message']),
+            latest_message_id=int(obj['message']),
         )
 
     def _parse_chat_bookmarks(self, obj: dict[str, Any]) -> ChatBookmarks:
         return ChatBookmarks(
             raw_source=str(obj),
             counter=int(obj['counter']),
-            message=int(obj['message']),
+            latest_message_id=int(obj['message']),
             order=obj['order'],
             chat_previews=PrivateChatPreviewsParser(
                 obj['html'],
@@ -167,15 +167,15 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
             error=obj.get('error'),
         )
 
-    def _parse_update(self, update_dict: dict[str, Any]) -> UpdateObject[Any] | None:
-        update_type = UpdateType.get_by_type_str(cast(str, update_dict.get('type')))
+    def _parse_update(self, update_dict: dict[str, Any]) -> RunnerResponseObject[Any] | None:
+        update_type = RunnerDataType.get_by_type_str(cast(str, update_dict.get('type')))
         if update_type not in self.__parsing_methods__:
             return None
 
         method = self.__parsing_methods__[update_type]
         obj = method(self, update_dict['data'])
 
-        return UpdateObject(
+        return RunnerResponseObject(
             raw_source=str(update_dict),
             type=update_type,
             id=update_dict['id'],
@@ -184,16 +184,16 @@ class UpdatesParser(FunPayJSONObjectParser[UpdatesPack, UpdatesParsingOptions]):
         )
 
     __parsing_methods__ = {
-        UpdateType.ORDERS_COUNTERS: _parse_orders_counters,
-        UpdateType.CHAT_COUNTER: _parse_chat_counter,
-        UpdateType.CHAT_BOOKMARKS: _parse_chat_bookmarks,
-        UpdateType.CHAT_NODE: _parse_node,
-        UpdateType.CPU: _parse_cpu,
+        RunnerDataType.ORDERS_COUNTERS: _parse_orders_counters,
+        RunnerDataType.CHAT_COUNTER: _parse_chat_counter,
+        RunnerDataType.CHAT_BOOKMARKS: _parse_chat_bookmarks,
+        RunnerDataType.CHAT_NODE: _parse_node,
+        RunnerDataType.CPU: _parse_cpu,
     }
 
     __update_fields__ = {
-        UpdateType.ORDERS_COUNTERS: 'orders_counters',
-        UpdateType.CHAT_COUNTER: 'chat_counter',
-        UpdateType.CHAT_BOOKMARKS: 'chat_bookmarks',
-        UpdateType.CPU: 'cpu',
+        RunnerDataType.ORDERS_COUNTERS: 'orders_counters',
+        RunnerDataType.CHAT_COUNTER: 'chat_counter',
+        RunnerDataType.CHAT_BOOKMARKS: 'chat_bookmarks',
+        RunnerDataType.CPU: 'cpu',
     }

@@ -8,7 +8,7 @@ __all__ = (
     'SubcategoryType',
     'TransactionStatus',
     'BadgeType',
-    'UpdateType',
+    'RunnerDataType',
     'Language',
 )
 
@@ -20,7 +20,7 @@ from types import MappingProxyType
 from functools import cache
 
 
-class UpdateType(Enum):
+class RunnerDataType(Enum):
     ORDERS_COUNTERS = 'orders_counters'
     CHAT_COUNTER = 'chat_counter'
     CHAT_BOOKMARKS = 'chat_bookmarks'
@@ -28,7 +28,7 @@ class UpdateType(Enum):
     CPU = 'c-p-u'
 
     @classmethod
-    def get_by_type_str(cls, type_str: str, /) -> UpdateType | None:
+    def get_by_type_str(cls, type_str: str, /) -> RunnerDataType | None:
         """Determine an update type by its type string."""
         for i in cls:
             if i.value == type_str:
