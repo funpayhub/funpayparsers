@@ -224,15 +224,21 @@ class FunPayObjectParser(ABC, Generic[ReturnType, OptionsClass]):
 
 
 class FunPayHTMLObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
+    """Base parser for all HTML object parsers."""
+
     def __init__(self, raw_source: str, options: OptionsClass | None = None, **overrides: Any):
         """
-        :param raw_source: raw source of an object (HTML / JSON string)
+        :param raw_source: raw source of an object (HTML string).
+        :param options: parsing options class.
+        :param overrides: options overrides.
         """
         super().__init__(raw_source=raw_source, options=options, **overrides)
         self._tree: LexborHTMLParser | None = None
 
     @property
     def tree(self) -> LexborHTMLParser:
+        """HTML tree."""
+
         if self._tree is not None:
             return self._tree
 
@@ -241,21 +247,30 @@ class FunPayHTMLObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
 
     @property
     def raw_source(self) -> str:
+        """Passed raw source."""
         return self._raw_source  # type: ignore[no-any-return] # raw_source type in __init__
 
 
 class FunPayJSONObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
+    """Base parser for all JSON object parsers."""
+
     def __init__(
         self,
         raw_source: str | dict[str, Any] | list[Any],
         options: OptionsClass | None = None,
         **overrides: Any,
     ):
+        """
+        :param raw_source: raw source of an object (JSON string or ``json.loads()`` output).
+        :param options: parsing options class.
+        :param overrides: options overrides.
+        """
         super().__init__(raw_source=raw_source, options=options, **overrides)
         self._data: dict[str, Any] | list[Any] | None = None
 
     @property
     def data(self) -> dict[str, Any] | list[Any]:
+        """``json.loads()`` output of the passed raw source."""
         if self._data is not None:
             return self._data
 
@@ -266,4 +281,5 @@ class FunPayJSONObjectParser(FunPayObjectParser[ReturnType, OptionsClass], ABC):
 
     @property
     def raw_source(self) -> str | dict[str, Any] | list[Any]:
+        """Passed raw source."""
         return self._raw_source  # type: ignore[no-any-return] # raw_source type in __init__
