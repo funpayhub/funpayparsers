@@ -89,10 +89,10 @@ class SubcategoryPageParser(
                 self.tree.css_first('body').attributes['data-app-data'] or '',
                 options=self.options.app_data_parsing_options,
             ).parse(),
-            category_id=int(subcategory_id_str.split('-')[-1]),
-            subcategory_id=int(
+            category_id=int(
                 showcase.attributes['data-game']  # type: ignore[arg-type] # always has data-game
             ),
+            subcategory_id=int(subcategory_id_str.split('-')[-1]),
             subcategory_type=SubcategoryType.get_by_url(subcategory_id_str),
             related_subcategories=related_subcategories or None,
             offers=OfferPreviewsParser(
