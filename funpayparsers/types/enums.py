@@ -15,7 +15,6 @@ __all__ = (
 
 
 import re
-import warnings
 from typing import Any
 from enum import Enum
 from types import MappingProxyType
