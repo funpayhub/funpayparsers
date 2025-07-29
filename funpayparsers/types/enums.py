@@ -52,14 +52,14 @@ class RunnerDataType(Enum):
 
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
-    def __new__(cls, url_alias, showcase_alias) -> SubcategoryType:
+    def __new__(cls, url_alias: str, showcase_alias: str) -> SubcategoryType:
         obj = object.__new__(cls)
 
         # For backward compatibility: before v0.1.2 there were no custom fields.
         obj._value_ = showcase_alias
 
-        obj.url_alias = url_alias
-        obj.showcase_alias = showcase_alias
+        obj.url_alias = url_alias  # type: ignore[attr-defined]
+        obj.showcase_alias = showcase_alias  # type: ignore[attr-defined]
 
         return obj
 
@@ -73,7 +73,7 @@ class SubcategoryType(Enum):
     """Unknown type. Just in case, for future FunPay updates."""
 
     @property
-    def value(self):
+    def value(self) -> str:
         warnings.warn(
             f"Usage of SubcategoryType.<any>.value is deprecated since version 0.1.2, "
             f"as this enum now contains multiple fields.\n"
@@ -83,7 +83,7 @@ class SubcategoryType(Enum):
             DeprecationWarning,
             stacklevel=2
         )
-        return super().value
+        return super().value  # type: ignore[no-any-return]
 
     @classmethod
     def get_by_url(cls, url: str, /) -> SubcategoryType:
@@ -93,7 +93,7 @@ class SubcategoryType(Enum):
         for i in cls:
             if i is cls.UNKNOWN:
                 continue
-            if i.url_alias in url:
+            if i.url_alias in url:  # type: ignore[union-attr]
                 return i
         return cls.UNKNOWN
 
@@ -105,7 +105,7 @@ class SubcategoryType(Enum):
         for i in cls:
             if i is cls.UNKNOWN:
                 continue
-            if i.showcase_alias in showcase_data_section:
+            if i.showcase_alias in showcase_data_section:  # type: ignore[union-attr]
                 return i
         return cls.UNKNOWN
 
@@ -193,11 +193,11 @@ class TransactionStatus(Enum):
 
 
 class MessageType(Enum):
-    def __new__(cls, num: int, pattern: re.Pattern | None):
+    def __new__(cls, num: int, pattern: re.Pattern[str] | None) -> MessageType:
         obj = object.__new__(cls)
         obj._value_ = num
-        obj.num = num
-        obj.pattern = pattern
+        obj.num = num  # type: ignore[attr-defined]
+        obj.pattern = pattern  # type: ignore[attr-defined]
         return obj
 
     NON_SYSTEM = 0, None
@@ -221,7 +221,7 @@ class MessageType(Enum):
             if i is cls.NON_SYSTEM or i is cls.UNKNOWN_SYSTEM:
                 continue
 
-            if i.pattern.fullmatch(message_text):
+            if i.pattern.fullmatch(message_text):  # type: ignore[union-attr]
                 return i
 
         return cls.NON_SYSTEM
@@ -482,15 +482,15 @@ class PaymentMethod(Enum):
 class Language(Enum):
     """Page languages enumeration."""
 
-    def __new__(cls, appdata_alias, url_alias, header_menu_css_class):
+    def __new__(cls, appdata_alias: str, url_alias: str, header_menu_css_class: str) -> Language:
         obj = object.__new__(cls)
 
         # For backward compatibility: before v0.1.2 there were no custom fields.
         obj._value_ = appdata_alias
 
-        obj.appdata_alias = appdata_alias
-        obj.url_alias = url_alias
-        obj.header_menu_css_class = header_menu_css_class
+        obj.appdata_alias = appdata_alias  # type: ignore[attr-defined]
+        obj.url_alias = url_alias  # type: ignore[attr-defined]
+        obj.header_menu_css_class = header_menu_css_class  # type: ignore[attr-defined]
         return obj
 
     UNKNOWN = '', '', ''
@@ -499,7 +499,7 @@ class Language(Enum):
     UK = 'uk', 'uk', 'menu-icon-lang-uk'
 
     @property
-    def value(self):
+    def value(self) -> str:
         warnings.warn(
             f"Usage of Language.<any>.value is deprecated since version 0.1.2, "
             f"as this enum now contains multiple fields.\n"
@@ -508,21 +508,21 @@ class Language(Enum):
             DeprecationWarning,
             stacklevel=2
         )
-        return super().value
+        return super().value  # type: ignore[no-any-return]
 
     @classmethod
     def get_by_lang_code(cls, lang_code: Any, /) -> Language:
         for i in cls:
-            if i.appdata_alias == lang_code:
+            if i.appdata_alias == lang_code:   # type: ignore[attr-defined]
                 return i
         return cls.UNKNOWN
 
     @classmethod
-    def get_by_header_menu_css_class(cls, css_class: str, /):
+    def get_by_header_menu_css_class(cls, css_class: str, /) -> Language:
         for i in cls:
             if i is cls.UNKNOWN:
                 continue
 
-            if i.header_menu_css_class in css_class:
+            if i.header_menu_css_class in css_class:  # type: ignore[union-attr]
                 return i
         return cls.UNKNOWN
