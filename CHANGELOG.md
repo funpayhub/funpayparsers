@@ -40,7 +40,7 @@ dataclasses as their values instead of relying on custom `__new__` logic in Enum
 - Accessing enum fields now requires `.value`, e.g.:
   ```python
   Language.RU.value.url_alias
-  ``
+  ```
 - All `get_by_...` class methods in all enums have been converted to `@staticmethod`s.
 
 > **Note**
