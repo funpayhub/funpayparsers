@@ -66,6 +66,8 @@ class SubcategoryPageParser(
         subcategory_id_str: str = showcase.attributes['data-section']  # type: ignore[assignment]
         # always has 'data-section'
         related_subcategories = []
+        subcategory_type = SubcategoryType.get_by_showcase_data_section(subcategory_id_str)
+
         for i in self.tree.css('a.counter-item'):
             url: str = i.attributes['href']  # type: ignore[assignment]
             # 'a' always has 'href'.
@@ -73,7 +75,7 @@ class SubcategoryPageParser(
                 Subcategory(
                     raw_source=i.html or '',
                     id=int(url.split('/')[-2]),
-                    type=SubcategoryType.get_by_url(url),
+                    type=subcategory_type,
                     name=i.css_first('div.counter-param').text().strip(),
                     offers_amount=int(i.css_first('div.counter-value').text().strip()),
                 )
@@ -93,7 +95,7 @@ class SubcategoryPageParser(
                 showcase.attributes['data-game']  # type: ignore[arg-type] # always has data-game
             ),
             subcategory_id=int(subcategory_id_str.split('-')[-1]),
-            subcategory_type=SubcategoryType.get_by_url(subcategory_id_str),
+            subcategory_type=subcategory_type,
             related_subcategories=related_subcategories or None,
             offers=OfferPreviewsParser(
                 showcase.html or '',
