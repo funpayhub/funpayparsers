@@ -451,6 +451,9 @@ class Language(Enum):
     @classmethod
     def get_by_header_menu_css_class(cls, css_class: str, /):
         for i in cls:
+            if i is cls.UNKNOWN:
+                continue
+
             if i.header_menu_css_class in css_class:
                 return i
         return cls.UNKNOWN
