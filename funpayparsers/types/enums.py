@@ -57,7 +57,7 @@ class SubcategoryType(Enum):
     def __new__(cls, url_alias: str, showcase_alias: str) -> SubcategoryType:
         obj = object.__new__(cls)
 
-        # For backward compatibility: before v0.1.2 there were no custom fields.
+        # For backward compatibility: before v0.2.0 there were no custom fields.
         obj._value_ = showcase_alias
 
         obj.url_alias = url_alias  # type: ignore[attr-defined]
@@ -77,7 +77,7 @@ class SubcategoryType(Enum):
     @property
     def value(self) -> str:
         warnings.warn(
-            'Usage of SubcategoryType.<any>.value is deprecated since version 0.1.2, '
+            'Usage of SubcategoryType.<any>.value is deprecated since version 0.2.0, '
             'as this enum now contains multiple fields.\n'
             'Please use SubcategoryType.<any>.url_alias or '
             'SubcategoryType.<any>.showcase_alias instead. '
@@ -487,7 +487,7 @@ class Language(Enum):
     def __new__(cls, appdata_alias: str, url_alias: str, header_menu_css_class: str) -> Language:
         obj = object.__new__(cls)
 
-        # For backward compatibility: before v0.1.2 there were no custom fields.
+        # For backward compatibility: before v0.2.0 there were no custom fields.
         obj._value_ = appdata_alias
 
         obj.appdata_alias = appdata_alias  # type: ignore[attr-defined]
@@ -503,7 +503,7 @@ class Language(Enum):
     @property
     def value(self) -> str:
         warnings.warn(
-            'Usage of Language.<any>.value is deprecated since version 0.1.2, '
+            'Usage of Language.<any>.value is deprecated since version 0.2.0, '
             'as this enum now contains multiple fields.\n'
             'Please use Language.<any>.appdata_alias or Language.<any>.url_alias instead. '
             'Use Language.<any>.value only if you are sure what you are doing.',
