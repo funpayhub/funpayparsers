@@ -16,10 +16,11 @@ __all__ = (
 
 import re
 import warnings
-from typing import Any, cast
+from typing import Any
 from enum import Enum
 from types import MappingProxyType
 from functools import cache
+from dataclasses import dataclass
 
 from funpayparsers import message_type_re as msg_re
 
@@ -42,74 +43,55 @@ class RunnerDataType(Enum):
     CPU = 'c-p-u'
     """Currently viewing offer info."""
 
-    @classmethod
-    def get_by_type_str(cls, type_str: str, /) -> RunnerDataType | None:
+    @staticmethod
+    def get_by_type_str(type_str: str, /) -> RunnerDataType | None:
         """Determine an update type by its type string."""
-        for i in cls:
+        for i in RunnerDataType:
             if i.value == type_str:
                 return i
         return None
 
 
+@dataclass(frozen=True)
+class _SubcategoryTypeAliases:
+    url_alias: str
+    showcase_alias: str
+
+
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
-
-    def __new__(cls, url_alias: str, showcase_alias: str) -> SubcategoryType:
-        obj = object.__new__(cls)
-
-        # For backward compatibility: before v0.2.0 there were no custom fields.
-        obj._value_ = showcase_alias
-
-        obj.url_alias = url_alias  # type: ignore[attr-defined]
-        obj.showcase_alias = showcase_alias  # type: ignore[attr-defined]
-
-        return obj
-
-    COMMON = 'lots', 'lot'
+    COMMON = _SubcategoryTypeAliases('lots', 'lot')
     """Common lots."""
 
-    CURRENCY = 'chips', 'chip'
+    CURRENCY = _SubcategoryTypeAliases('chips', 'chip')
     """Currency lots (/chips/)."""
 
-    UNKNOWN = '', ''
+    UNKNOWN = _SubcategoryTypeAliases('', '')
     """Unknown type. Just in case, for future FunPay updates."""
 
-    @property
-    def value(self) -> str:
-        warnings.warn(
-            'Usage of SubcategoryType.<any>.value is deprecated since version 0.2.0, '
-            'as this enum now contains multiple fields.\n'
-            'Please use SubcategoryType.<any>.url_alias or '
-            'SubcategoryType.<any>.showcase_alias instead. '
-            'Use SubcategoryType.<any>.value only if you are sure what you are doing.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return super().value  # type: ignore[no-any-return]
-
-    @classmethod
-    def get_by_url(cls, url: str, /) -> SubcategoryType:
+    @staticmethod
+    def get_by_url(url: str, /) -> SubcategoryType:
         """
         Determine a subcategory type by URL.
         """
-        for i in cls:
-            if i is cls.UNKNOWN:
+        for i in SubcategoryType:
+            if i is SubcategoryType.UNKNOWN:
                 continue
-            if i.url_alias in url:  # type: ignore[union-attr]
+            if i.value.url_alias in url:
                 return i
-        return cls.UNKNOWN
+        return SubcategoryType.UNKNOWN
 
-    @classmethod
-    def get_by_showcase_data_section(cls, showcase_data_section: str, /) -> SubcategoryType:
+    @staticmethod
+    def get_by_showcase_data_section(showcase_data_section: str, /) -> SubcategoryType:
         """
         Determine a subcategory type by showcase data section value.
         """
-        for i in cls:
-            if i is cls.UNKNOWN:
+        for i in SubcategoryType:
+            if i is SubcategoryType.UNKNOWN:
                 continue
-            if i.showcase_alias in showcase_data_section:  # type: ignore[union-attr]
+            if i.value.showcase_alias in showcase_data_section:
                 return i
-        return cls.UNKNOWN
+        return SubcategoryType.UNKNOWN
 
 
 class OrderStatus(Enum):
@@ -131,18 +113,18 @@ class OrderStatus(Enum):
     UNKNOWN = ''
     """Unknown status. Just in case, for future FunPay updates."""
 
-    @classmethod
-    def get_by_css_class(cls, css_class: str, /) -> OrderStatus:
+    @staticmethod
+    def get_by_css_class(css_class: str, /) -> OrderStatus:
         """
         Determine the order status based on a given CSS class string.
         """
-        for i in cls:
-            if i is cls.UNKNOWN:
+        for i in OrderStatus:
+            if i is OrderStatus.UNKNOWN:
                 continue
 
-            if cast(str, i.value) in css_class:
+            if i.value in css_class:
                 return i
-        return cls.UNKNOWN
+        return OrderStatus.UNKNOWN
 
 
 class Currency(Enum):
@@ -155,13 +137,13 @@ class Currency(Enum):
     USD = '$'
     EUR = '€'
 
-    @classmethod
-    def get_by_character(cls, character: str, /) -> Currency:
+    @staticmethod
+    def get_by_character(character: str, /) -> Currency:
         """Determine the currency based on a given currency string."""
-        for i in cls:
+        for i in Currency:
             if i.value == character:
                 return i
-        return cls.UNKNOWN
+        return Currency.UNKNOWN
 
 
 class TransactionStatus(Enum):
@@ -179,54 +161,47 @@ class TransactionStatus(Enum):
     UNKNOWN = ''
     """Unknown transaction status. Just in case, for future FunPay updates."""
 
-    @classmethod
-    def get_by_css_class(cls, css_class: str, /) -> TransactionStatus:
+    @staticmethod
+    def get_by_css_class(css_class: str, /) -> TransactionStatus:
         """
         Determine the transaction type based on a given CSS class string.
         """
 
-        for i in cls:
-            if i is cls.UNKNOWN:
+        for i in TransactionStatus:
+            if i is TransactionStatus.UNKNOWN:
                 continue
 
-            if cast(str, i.value) in css_class:
+            if i.value in css_class:
                 return i
-        return cls.UNKNOWN
+        return TransactionStatus.UNKNOWN
 
 
 class MessageType(Enum):
-    def __new__(cls, num: int, pattern: re.Pattern[str] | None) -> MessageType:
-        obj = object.__new__(cls)
-        obj._value_ = num
-        obj.num = num  # type: ignore[attr-defined]
-        obj.pattern = pattern  # type: ignore[attr-defined]
-        return obj
+    NON_SYSTEM = None
+    UNKNOWN_SYSTEM = None
+    NEW_ORDER = msg_re.NEW_ORDER
+    ORDER_CLOSED = msg_re.ORDER_CLOSED
+    ORDER_CLOSED_BY_ADMIN = msg_re.ORDER_CLOSED_BY_ADMIN
+    ORDER_REOPENED = msg_re.ORDER_REOPENED
+    ORDER_REFUNDED = msg_re.ORDER_REFUNDED
+    ORDER_PARTIALLY_REFUNDED = msg_re.ORDER_PARTIALLY_REFUND
+    NEW_FEEDBACK = msg_re.NEW_FEEDBACK
+    FEEDBACK_CHANGED = msg_re.FEEDBACK_CHANGED
+    FEEDBACK_DELETED = msg_re.FEEDBACK_DELETED
+    NEW_FEEDBACK_REPLY = msg_re.NEW_FEEDBACK_REPLY
+    FEEDBACK_REPLY_CHANGED = msg_re.FEEDBACK_REPLY_CHANGED
+    FEEDBACK_REPLY_DELETED = msg_re.FEEDBACK_REPLY_DELETED
 
-    NON_SYSTEM = 0, None
-    UNKNOWN_SYSTEM = 1, None
-    NEW_ORDER = 2, msg_re.NEW_ORDER
-    ORDER_CLOSED = 3, msg_re.ORDER_CLOSED
-    ORDER_CLOSED_BY_ADMIN = 4, msg_re.ORDER_CLOSED_BY_ADMIN
-    ORDER_REOPENED = 5, msg_re.ORDER_REOPENED
-    ORDER_REFUNDED = 6, msg_re.ORDER_REFUNDED
-    ORDER_PARTIALLY_REFUNDED = 7, msg_re.ORDER_PARTIALLY_REFUND
-    NEW_FEEDBACK = 8, msg_re.NEW_FEEDBACK
-    FEEDBACK_CHANGED = 9, msg_re.FEEDBACK_CHANGED
-    FEEDBACK_DELETED = 10, msg_re.FEEDBACK_DELETED
-    NEW_FEEDBACK_REPLY = 11, msg_re.NEW_FEEDBACK_REPLY
-    FEEDBACK_REPLY_CHANGED = 12, msg_re.FEEDBACK_REPLY_CHANGED
-    FEEDBACK_REPLY_DELETED = 13, msg_re.FEEDBACK_REPLY_DELETED
-
-    @classmethod
-    def get_by_message_text(cls, message_text: str, /) -> MessageType:
-        for i in cls:
-            if i is cls.NON_SYSTEM or i is cls.UNKNOWN_SYSTEM:
+    @staticmethod
+    def get_by_message_text(message_text: str, /) -> MessageType:
+        for i in MessageType:
+            if i.value is None:
                 continue
 
-            if i.pattern.fullmatch(message_text):  # type: ignore[union-attr]
+            if i.value.fullmatch(message_text):
                 return i
 
-        return cls.NON_SYSTEM
+        return MessageType.NON_SYSTEM
 
 
 class BadgeType(Enum):
@@ -238,18 +213,18 @@ class BadgeType(Enum):
     AUTO_DELIVERY = 'label-default'
     UNKNOWN = ''
 
-    @classmethod
-    def get_by_css_class(cls, css_class: str, /) -> BadgeType:
+    @staticmethod
+    def get_by_css_class(css_class: str, /) -> BadgeType:
         """
         Determine the badge type based on a given CSS class string.
         """
-        for i in cls:
-            if i is cls.UNKNOWN:
+        for i in BadgeType:
+            if i is BadgeType.UNKNOWN:
                 continue
 
-            if cast(str, i.value) in css_class:
+            if i.value in css_class:
                 return i
-        return cls.UNKNOWN
+        return BadgeType.UNKNOWN
 
 
 _PAYMENT_METHOD_CLS_RE = re.compile(r'payment-method-[a-zA-Z0-9_]+')
@@ -463,68 +438,56 @@ class PaymentMethod(Enum):
 
     # MIR = 26, ('UNKNOWN', ), (345, Y)  =(
 
-    @classmethod
+    @staticmethod
     @cache
-    def css_class_to_method_map(cls) -> MappingProxyType[str, PaymentMethod]:
+    def css_class_to_method_map() -> MappingProxyType[str, PaymentMethod]:
         return MappingProxyType(
-            {css_class: method for method in cls for css_class in method.value}
+            {css_class: method for method in PaymentMethod for css_class in method.value}
         )
 
-    @classmethod
-    def get_by_css_class(cls, css_class: str) -> PaymentMethod:
+    @staticmethod
+    def get_by_css_class(css_class: str, /) -> PaymentMethod:
         """Determine the payment method based on a given CSS class string."""
         match = _PAYMENT_METHOD_CLS_RE.search(css_class)
         if not match:
-            return cls.UNKNOWN
+            return PaymentMethod.UNKNOWN
 
         css_class = match.string[match.start() : match.end()]
-        return cls.css_class_to_method_map().get(css_class) or cls.UNKNOWN
+        return PaymentMethod.css_class_to_method_map().get(css_class) or PaymentMethod.UNKNOWN
+
+
+@dataclass(frozen=True)
+class _LanguageAliases:
+    appdata_alias: str
+    url_alias: str
+    header_menu_css_class: str
 
 
 class Language(Enum):
     """Page languages enumeration."""
 
-    def __new__(cls, appdata_alias: str, url_alias: str, header_menu_css_class: str) -> Language:
-        obj = object.__new__(cls)
+    UNKNOWN = _LanguageAliases('', '', '')
+    RU = _LanguageAliases('ru', '', 'menu-icon-lang-ru')
+    EN = _LanguageAliases('en', 'en', 'menu-icon-lang-en')
+    UK = _LanguageAliases('uk', 'uk', 'menu-icon-lang-uk')
 
-        # For backward compatibility: before v0.2.0 there were no custom fields.
-        obj._value_ = appdata_alias
 
-        obj.appdata_alias = appdata_alias  # type: ignore[attr-defined]
-        obj.url_alias = url_alias  # type: ignore[attr-defined]
-        obj.header_menu_css_class = header_menu_css_class  # type: ignore[attr-defined]
-        return obj
-
-    UNKNOWN = '', '', ''
-    RU = 'ru', '', 'menu-icon-lang-ru'
-    EN = 'en', 'en', 'menu-icon-lang-en'
-    UK = 'uk', 'uk', 'menu-icon-lang-uk'
-
-    @property
-    def value(self) -> str:
-        warnings.warn(
-            'Usage of Language.<any>.value is deprecated since version 0.2.0, '
-            'as this enum now contains multiple fields.\n'
-            'Please use Language.<any>.appdata_alias or Language.<any>.url_alias instead. '
-            'Use Language.<any>.value only if you are sure what you are doing.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return super().value  # type: ignore[no-any-return]
-
-    @classmethod
-    def get_by_lang_code(cls, lang_code: Any, /) -> Language:
-        for i in cls:
-            if i.appdata_alias == lang_code:  # type: ignore[attr-defined]
-                return i
-        return cls.UNKNOWN
-
-    @classmethod
-    def get_by_header_menu_css_class(cls, css_class: str, /) -> Language:
-        for i in cls:
-            if i is cls.UNKNOWN:
+    @staticmethod
+    def get_by_lang_code(lang_code: Any, /) -> Language:
+        for i in Language:
+            if i is Language.UNKNOWN:
                 continue
 
-            if i.header_menu_css_class in css_class:  # type: ignore[union-attr]
+            if i.value.appdata_alias == lang_code:
                 return i
-        return cls.UNKNOWN
+        return Language.UNKNOWN
+
+    @staticmethod
+    def get_by_header_menu_css_class(css_class: str, /) -> Language:
+        for i in Language:
+            if i is Language.UNKNOWN:
+                continue
+
+            if i.value.header_menu_css_class in css_class:
+                return i
+        return Language.UNKNOWN
