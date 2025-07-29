@@ -26,12 +26,6 @@ _CURRENCIES = {
     'євро': Currency.EUR,
 }
 
-_LANGUAGES = {
-    'menu-icon-lang-uk': Language.UK,
-    'menu-icon-lang-en': Language.EN,
-    'menu-icon-lang-ru': Language.RU,
-}
-
 
 @dataclass(frozen=True)
 class PageHeaderParsingOptions(ParsingOptions):
@@ -88,13 +82,6 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             'a.dropdown-toggle.menu-item-langs > i.menu-icon',
         )[0].attributes['class']  # type: ignore[assignment] # always has a class
 
-        for i in _LANGUAGES:
-            if i in language_class:
-                language = _LANGUAGES[i]
-                break
-        else:
-            language = Language.UNKNOWN
-
         return PageHeader(
             raw_source=header.html or '',
             user_id=int(
@@ -102,7 +89,7 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             ),
             username=header.css('div.user-link-name')[0].text().strip(),
             avatar_url=header.css('img')[0].attributes['src'],
-            language=language,
+            language=Language.get_by_header_menu_css_class(language_class),
             currency=currency,
             purchases=int(purchases_div[0].text().strip()) if purchases_div else None,
             sales=int(sales_div[0].text().strip()) if sales_div else None,
@@ -123,19 +110,12 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             0
         ].attributes['class']  # type: ignore[assignment] # always has a class
 
-        for i in _LANGUAGES:
-            if i in language_class:
-                language = _LANGUAGES[i]
-                break
-        else:
-            language = Language.UNKNOWN
-
         return PageHeader(
             raw_source=header.html or '',
             user_id=None,
             username=None,
             avatar_url=None,
-            language=language,
+            language=Language.get_by_header_menu_css_class(language_class),
             currency=currency,
             purchases=None,
             sales=None,

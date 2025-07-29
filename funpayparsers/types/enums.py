@@ -18,6 +18,7 @@ from typing import Any, cast
 from enum import Enum
 from types import MappingProxyType
 from functools import cache
+import warnings
 
 
 class RunnerDataType(Enum):
@@ -412,14 +413,44 @@ class PaymentMethod(Enum):
 class Language(Enum):
     """Page languages enumeration."""
 
-    UNKNOWN = ''
-    RU = 'ru'
-    EN = 'en'
-    UK = 'uk'
+    def __new__(cls, appdata_alias, url_alias, header_menu_css_class):
+        obj = object.__new__(cls)
+
+        # For backward compatibility: before v0.1.2 there were no custom fields.
+        obj._value_ = appdata_alias
+
+        obj.appdata_alias = appdata_alias
+        obj.url_alias = url_alias
+        obj.header_menu_css_class = header_menu_css_class
+        return obj
+
+    UNKNOWN = '', '', ''
+    RU = 'ru', '', 'menu-icon-lang-ru'
+    EN = 'en', 'en', 'menu-icon-lang-en'
+    UK = 'uk', 'uk', 'menu-icon-lang-uk'
+
+    @property
+    def value(self):
+        warnings.warn(
+            f"Usage of Language.<any>.value is deprecated since version 0.1.2, "
+            f"as this enum now contains multiple fields.\n"
+            f"Please use Language.<any>.appdata_alias or Language.<any>.url_alias instead. "
+            f"Use Language.<any>.value only if you are sure what you are doing.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return super().value
 
     @classmethod
     def get_by_lang_code(cls, lang_code: Any, /) -> Language:
         for i in cls:
-            if i.value == lang_code:
+            if i.appdata_alias == lang_code:
+                return i
+        return cls.UNKNOWN
+
+    @classmethod
+    def get_by_header_menu_css_class(cls, css_class: str, /):
+        for i in cls:
+            if i.header_menu_css_class in css_class:
                 return i
         return cls.UNKNOWN
