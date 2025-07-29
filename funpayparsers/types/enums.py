@@ -17,6 +17,7 @@ import re
 from typing import Any, cast
 from enum import Enum
 from types import MappingProxyType
+from funpayparsers import message_type_re as msg_re
 from functools import cache
 import warnings
 
@@ -190,7 +191,39 @@ class TransactionStatus(Enum):
         return cls.UNKNOWN
 
 
-class SystemMessageType(Enum): ...
+class MessageType(Enum):
+    def __new__(cls, num: int, pattern: re.Pattern | None):
+        obj = object.__new__(cls)
+        obj._value_ = num
+        obj.num = num
+        obj.pattern = pattern
+        return obj
+
+    NON_SYSTEM = 0, None
+    UNKNOWN_SYSTEM = 1, None
+    NEW_ORDER = 2, msg_re.NEW_ORDER
+    ORDER_CLOSED = 3, msg_re.ORDER_CLOSED
+    ORDER_CLOSED_BY_ADMIN = 4, msg_re.ORDER_CLOSED_BY_ADMIN
+    ORDER_REOPENED = 5, msg_re.ORDER_REOPENED
+    ORDER_REFUNDED = 6, msg_re.ORDER_REFUNDED
+    ORDER_PARTIALLY_REFUNDED = 7, msg_re.ORDER_PARTIALLY_REFUND
+    NEW_FEEDBACK = 8, msg_re.NEW_FEEDBACK
+    FEEDBACK_CHANGED = 9, msg_re.FEEDBACK_CHANGED
+    FEEDBACK_DELETED = 10, msg_re.FEEDBACK_DELETED
+    NEW_FEEDBACK_REPLY = 11, msg_re.NEW_FEEDBACK_REPLY
+    FEEDBACK_REPLY_CHANGED = 12, msg_re.FEEDBACK_REPLY_CHANGED
+    FEEDBACK_REPLY_DELETED = 13, msg_re.FEEDBACK_REPLY_DELETED
+
+    @classmethod
+    def get_by_message_text(cls, message_text: str, /) -> MessageType:
+        for i in cls:
+            if i is cls.NON_SYSTEM or i is cls.UNKNOWN_SYSTEM:
+                continue
+
+            if i.pattern.fullmatch(message_text):
+                return i
+
+        return cls.NON_SYSTEM
 
 
 class BadgeType(Enum):
