@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 
 
@@ -15,7 +17,7 @@ __all__ = (
     'FEEDBACK_REPLY_CHANGED',
     'FEEDBACK_REPLY_DELETED',
     'ORDER_ID',
-    'USERNAME'
+    'USERNAME',
 )
 
 
@@ -28,7 +30,8 @@ NEW_ORDER = re.compile(
     r'(?m:Покупатель (?P<u>%(urs)s) оплатил заказ #%(oirs)s\. .+\n'
     r'(?P=u), не забудьте потом нажать кнопку «Подтвердить выполнение заказа»\.)|'
     r'(?m:The buyer (?P<e_u>%(urs)s) has paid for order #%(oirs)s\. .+\n'
-    r'(?P=e_u), do not forget to press the «Confirm order fulfilment» button once you finish.)' % _f_dict
+    r'(?P=e_u), do not forget to press the «Confirm order fulfilment» button once you finish.)'
+    % _f_dict
 )
 """
 Покупатель <ИМЯ ПОКУПАТЕЛЯ> оплатил заказ #<ID ЗАКАЗА>. <НАЗВАНИЕ ЛОТА>.

@@ -10,17 +10,18 @@ __all__ = (
     'BadgeType',
     'RunnerDataType',
     'Language',
-    'MessageType'
+    'MessageType',
 )
 
 
 import re
+import warnings
 from typing import Any, cast
 from enum import Enum
 from types import MappingProxyType
-from funpayparsers import message_type_re as msg_re
 from functools import cache
-import warnings
+
+from funpayparsers import message_type_re as msg_re
 
 
 class RunnerDataType(Enum):
@@ -52,6 +53,7 @@ class RunnerDataType(Enum):
 
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
+
     def __new__(cls, url_alias: str, showcase_alias: str) -> SubcategoryType:
         obj = object.__new__(cls)
 
@@ -75,13 +77,13 @@ class SubcategoryType(Enum):
     @property
     def value(self) -> str:
         warnings.warn(
-            f"Usage of SubcategoryType.<any>.value is deprecated since version 0.1.2, "
-            f"as this enum now contains multiple fields.\n"
-            f"Please use SubcategoryType.<any>.url_alias or "
-            f"SubcategoryType.<any>.showcase_alias instead. "
-            f"Use SubcategoryType.<any>.value only if you are sure what you are doing.",
+            'Usage of SubcategoryType.<any>.value is deprecated since version 0.1.2, '
+            'as this enum now contains multiple fields.\n'
+            'Please use SubcategoryType.<any>.url_alias or '
+            'SubcategoryType.<any>.showcase_alias instead. '
+            'Use SubcategoryType.<any>.value only if you are sure what you are doing.',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return super().value  # type: ignore[no-any-return]
 
@@ -501,19 +503,19 @@ class Language(Enum):
     @property
     def value(self) -> str:
         warnings.warn(
-            f"Usage of Language.<any>.value is deprecated since version 0.1.2, "
-            f"as this enum now contains multiple fields.\n"
-            f"Please use Language.<any>.appdata_alias or Language.<any>.url_alias instead. "
-            f"Use Language.<any>.value only if you are sure what you are doing.",
+            'Usage of Language.<any>.value is deprecated since version 0.1.2, '
+            'as this enum now contains multiple fields.\n'
+            'Please use Language.<any>.appdata_alias or Language.<any>.url_alias instead. '
+            'Use Language.<any>.value only if you are sure what you are doing.',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return super().value  # type: ignore[no-any-return]
 
     @classmethod
     def get_by_lang_code(cls, lang_code: Any, /) -> Language:
         for i in cls:
-            if i.appdata_alias == lang_code:   # type: ignore[attr-defined]
+            if i.appdata_alias == lang_code:  # type: ignore[attr-defined]
                 return i
         return cls.UNKNOWN
 

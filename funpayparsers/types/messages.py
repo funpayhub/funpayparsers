@@ -3,11 +3,11 @@ from __future__ import annotations
 
 __all__ = ('Message',)
 
-from dataclasses import dataclass, field
+from dataclasses import field, dataclass
 
 from funpayparsers.types.base import FunPayObject
-from funpayparsers.types.common import UserBadge
 from funpayparsers.types.enums import MessageType
+from funpayparsers.types.common import UserBadge
 
 
 @dataclass
@@ -78,11 +78,7 @@ class Message(FunPayObject):
     """
 
     _type_cache: tuple[str | None, MessageType] | None = field(
-        init=False,
-        repr=False,
-        compare=False,
-        hash=False,
-        default=None
+        init=False, repr=False, compare=False, hash=False, default=None
     )
 
     @property

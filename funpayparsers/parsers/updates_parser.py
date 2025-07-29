@@ -14,11 +14,11 @@ from funpayparsers.types.updates import (
     ChatNode,
     NodeInfo,
     ChatCounter,
-    RunnerResponse,
-    RunnerResponseObject,
     ChatBookmarks,
     ActionResponse,
     OrdersCounters,
+    RunnerResponse,
+    RunnerResponseObject,
 )
 from funpayparsers.parsers.cpu_parser import (
     CurrentlyViewingOfferInfoParser,
