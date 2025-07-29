@@ -50,15 +50,38 @@ class RunnerDataType(Enum):
 
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
+    def __new__(cls, url_alias, showcase_alias) -> SubcategoryType:
+        obj = object.__new__(cls)
 
-    COMMON = 'lot'
+        # For backward compatibility: before v0.1.2 there were no custom fields.
+        obj._value_ = showcase_alias
+
+        obj.url_alias = url_alias
+        obj.showcase_alias = showcase_alias
+
+        return obj
+
+    COMMON = 'lots', 'lot'
     """Common lots."""
 
-    CURRENCY = 'chip'
+    CURRENCY = 'chips', 'chip'
     """Currency lots (/chips/)."""
 
-    UNKNOWN = ''
+    UNKNOWN = '', ''
     """Unknown type. Just in case, for future FunPay updates."""
+
+    @property
+    def value(self):
+        warnings.warn(
+            f"Usage of SubcategoryType.<any>.value is deprecated since version 0.1.2, "
+            f"as this enum now contains multiple fields.\n"
+            f"Please use SubcategoryType.<any>.url_alias or "
+            f"SubcategoryType.<any>.showcase_alias instead. "
+            f"Use SubcategoryType.<any>.value only if you are sure what you are doing.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return super().value
 
     @classmethod
     def get_by_url(cls, url: str, /) -> SubcategoryType:
@@ -68,7 +91,19 @@ class SubcategoryType(Enum):
         for i in cls:
             if i is cls.UNKNOWN:
                 continue
-            if cast(str, i.value) in url:
+            if i.url_alias in url:
+                return i
+        return cls.UNKNOWN
+
+    @classmethod
+    def get_by_showcase_data_section(cls, showcase_data_section: str, /) -> SubcategoryType:
+        """
+        Determine a subcategory type by showcase data section value.
+        """
+        for i in cls:
+            if i is cls.UNKNOWN:
+                continue
+            if i.showcase_alias in showcase_data_section:
                 return i
         return cls.UNKNOWN
 
