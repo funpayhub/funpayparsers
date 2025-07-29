@@ -3,10 +3,11 @@ from __future__ import annotations
 
 __all__ = ('Message',)
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.common import UserBadge
+from funpayparsers.types.enums import MessageType
 
 
 @dataclass
@@ -75,3 +76,27 @@ class Message(FunPayObject):
 
     Context key: ``chat_name``.
     """
+
+    _type_cache: tuple[str | None, MessageType] | None = field(
+        init=False,
+        repr=False,
+        compare=False,
+        hash=False,
+        default=None
+    )
+
+    @property
+    def type(self) -> MessageType:
+        if self._type_cache is not None:
+            if self._type_cache[0] == self.text:
+                return self._type_cache[1]
+
+        if not self.text:
+            return MessageType.NON_SYSTEM
+
+        if self.sender_id not in [0, 500]:
+            return MessageType.NON_SYSTEM
+
+        msg_type = MessageType.get_by_message_text(self.text)
+        self._type_cache = (self.text, msg_type)
+        return msg_type

@@ -10,6 +10,7 @@ __all__ = (
     'BadgeType',
     'RunnerDataType',
     'Language',
+    'MessageType'
 )
 
 
