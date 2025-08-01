@@ -75,20 +75,19 @@ MONTH_NUM_RE = r'0?\d|1[0-2]'  # month number (1-12 or 01-12)
 DAY_RE = r'[01]?\d|2[0-9]|3[01]'  # day number (1-31 or 01-31)
 HOUR_RE = r'[01]?\d|2[0-3]'  # hour number (0-23 or 00-23)
 MIN_OR_SEC_RE = r'[0-5]?\d'  # minute/second number (0-59 or 00-59)
+TIME_RE = rf'(?P<h>{HOUR_RE}):(?P<m>{MIN_OR_SEC_RE})(?::(?P<s>{MIN_OR_SEC_RE}))?'
 
-TIME_RE = re.compile(rf'^({HOUR_RE}):({MIN_OR_SEC_RE}):({MIN_OR_SEC_RE})$')
-SHORT_DATE_RE = re.compile(rf'^({DAY_RE})\.({MONTH_NUM_RE})\.(\d{{2}})$')
+TIME_ONLY_RE = re.compile(rf'^{TIME_RE}$')
+SHORT_DATE_RE = re.compile(rf'^(?P<day>{DAY_RE})\.(?P<month>{MONTH_NUM_RE})\.(?P<year>\d{{2}})$')
 
-TODAY_OR_YESTERDAY_RE = re.compile(
-    rf'^({TODAY_YESTERDAY_RE}),?\s*({HOUR_RE}):({MIN_OR_SEC_RE})$',
-)
+TODAY_OR_YESTERDAY_RE = re.compile(rf'^(?P<day>{TODAY_YESTERDAY_RE}),?\s*{TIME_RE}$')
 
 CURR_YEAR_DATE_RE = re.compile(
-    rf'^({DAY_RE})\s*({MONTHS_NAMES_RE}),?\s*({HOUR_RE}):({MIN_OR_SEC_RE})$',
+    rf'^(?P<day>{DAY_RE})\s*(?P<month>{MONTHS_NAMES_RE}),?\s*{TIME_RE}$',
 )
 
 DATE_RE = re.compile(
-    rf'^({DAY_RE})\s*({MONTHS_NAMES_RE})\s*(\d{{4}}),?\s*({HOUR_RE}):({MIN_OR_SEC_RE})$',
+    rf'^(?P<day>{DAY_RE})\s*(?P<month>{MONTHS_NAMES_RE})\s*(?P<year>\d{{4}}),?\s*{TIME_RE}$',
 )
 
 
@@ -99,17 +98,21 @@ def parse_date_string(date_string: str, /) -> int:
     date_string = date_string.lower().strip()
     date = datetime.now().replace(second=0, microsecond=0)
 
-    if match := TIME_RE.match(date_string):
-        h, m, s = map(int, match.groups())
-        return int(date.replace(hour=h, minute=m, second=s).timestamp())
+    if match := TIME_ONLY_RE.match(date_string):
+        return int(
+            date.replace(
+                hour=int(match.group('h')),
+                minute=int(match.group('m')),
+                second=int(match.group('s') or 0)
+            ).timestamp()
+        )
 
     if match := SHORT_DATE_RE.match(date_string):
-        d, mo, y = map(int, match.groups())
         return int(
             datetime(
-                year=y + 2000,
-                month=mo,
-                day=d,
+                year=int(match.group('year')) + 2000,
+                month=int(match.group('month')),
+                day=int(match.group('day')),
                 hour=0,
                 minute=0,
                 second=0,
@@ -118,28 +121,40 @@ def parse_date_string(date_string: str, /) -> int:
         )
 
     if match := TODAY_OR_YESTERDAY_RE.match(date_string):
-        day, h, m = match.groups()  # type: ignore[assignment]
-        date = date.replace(hour=int(h), minute=int(m))
+        day = match.group('day')
+        date = date.replace(
+            hour=int(match.group('h')),
+            minute=int(match.group('m'))
+        )
         if day in TODAY_WORDS:
             return int(date.timestamp())
         return int((date - timedelta(days=1)).timestamp())
 
     if match := CURR_YEAR_DATE_RE.match(date_string):
-        day, month, h, m = match.groups()  # type: ignore[assignment]
-        year = date.year
+        month = match.group('month')
         month = MONTHS[month]
         return int(
             date.replace(
-                year=int(year), month=month, day=int(day), hour=int(h), minute=int(m)
+                year=date.year,
+                month=month,
+                day=int(match.group('day')),
+                hour=int(match.group('h')),
+                minute=int(match.group('m')),
+                second=int(match.group('s') or 0)
             ).timestamp()
         )
 
     if match := DATE_RE.match(date_string):
-        day, month, year, h, m = match.groups()  # type: ignore[assignment]
+        month = match.group('month')
         month = MONTHS[month]
         return int(
             date.replace(
-                year=int(year), month=month, day=int(day), hour=int(h), minute=int(m)
+                year=int(match.group('year')),
+                month=month,
+                day=int(match.group('day')),
+                hour=int(match.group('h')),
+                minute=int(match.group('m')),
+                second=int(match.group('s') or 0)
             ).timestamp()
         )
 

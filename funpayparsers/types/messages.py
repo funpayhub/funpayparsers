@@ -96,3 +96,12 @@ class Message(FunPayObject):
         msg_type = MessageType.get_by_message_text(self.text)
         self._type_cache = (self.text, msg_type)
         return msg_type
+
+    @property
+    def send_date_timestamp(self) -> int:
+        from funpayparsers.parsers.utils import parse_date_string
+
+        if not self.send_date_text:
+            return 0
+
+        return parse_date_string(self.send_date_text)
