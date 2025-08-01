@@ -11,6 +11,19 @@ from funpayparsers.types.common import UserBadge
 
 
 @dataclass
+class MessageMeta:
+    def __init__(self, message: Message):
+        self._order_id: str | None = None
+        self._order_desc: str | None = None
+        self._seller_id: int | None = None
+        self._seller_username: str | None = None
+        self._buyer_id: int | None = None
+        self._buyer_username: str | None = None
+        self._admin_id: int | None = None
+        self._admin_username: str | None = None
+
+
+@dataclass
 class Message(FunPayObject):
     """Represents a message from any FunPay chat (private or public)."""
 
