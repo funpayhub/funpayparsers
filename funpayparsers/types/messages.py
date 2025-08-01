@@ -98,7 +98,7 @@ class Message(FunPayObject):
         return msg_type
 
     @property
-    def send_date_timestamp(self) -> int:
+    def timestamp(self) -> int:
         from funpayparsers.parsers.utils import parse_date_string
 
         if not self.send_date_text:
