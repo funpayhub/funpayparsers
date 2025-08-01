@@ -199,10 +199,10 @@ def resolve_messages_senders(messages: Iterable[Message], /) -> None:
     Typically, the earliest message in a fetched history is a heading message.
     """
 
-    username, userid, badge = None, None, None
+    username, userid, badge, send_time = None, None, None, None
     for m in messages:
         if m.is_heading:
-            username, userid = m.sender_username, m.sender_id
+            username, userid, send_time = m.sender_username, m.sender_id, m.send_date_text
             badge = (
                 deepcopy(m.badge)
                 if m.badge and m.badge.type is not BadgeType.AUTO_DELIVERY
@@ -210,7 +210,7 @@ def resolve_messages_senders(messages: Iterable[Message], /) -> None:
             )
             continue
 
-        m.sender_username, m.sender_id, m.badge = username, userid, badge
+        m.sender_username, m.sender_id, m.badge, m.send_date_text = username, userid, badge, send_time
 
 
 @overload
