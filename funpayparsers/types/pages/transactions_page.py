@@ -8,6 +8,11 @@ from dataclasses import dataclass
 from funpayparsers.types.common import MoneyValue
 from funpayparsers.types.finances import TransactionPreviewsBatch
 from funpayparsers.types.pages.base import FunPayPage
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from funpayparsers.parsers.page_parsers.transactions_page_parser import TransactionsPageParsingOptions
 
 
 @dataclass
@@ -25,3 +30,14 @@ class TransactionsPage(FunPayPage):
 
     transactions: TransactionPreviewsBatch | None
     """Transaction previews."""
+
+    @classmethod
+    def from_raw_source(
+            cls,
+            raw_source: str,
+            options: TransactionsPageParsingOptions | None = None
+    ) -> TransactionsPage:
+        from funpayparsers.parsers.page_parsers.transactions_page_parser import TransactionsPageParser, TransactionsPageParsingOptions
+
+        options = options or TransactionsPageParsingOptions()
+        return TransactionsPageParser(raw_source=raw_source, options=options).parse()

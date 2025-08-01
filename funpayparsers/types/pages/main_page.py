@@ -8,6 +8,11 @@ from dataclasses import dataclass
 from funpayparsers.types.chat import Chat
 from funpayparsers.types.categories import Category
 from funpayparsers.types.pages.base import FunPayPage
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from funpayparsers.parsers.page_parsers.main_page_parser import MainPageParsingOptions
 
 
 @dataclass
@@ -26,3 +31,14 @@ class MainPage(FunPayPage):
     
     Does not exist on EN version of the main page.
     """
+
+    @classmethod
+    def from_raw_source(
+            cls,
+            raw_source: str,
+            options: MainPageParsingOptions | None = None
+    ) -> MainPage:
+        from funpayparsers.parsers.page_parsers.main_page_parser import MainPageParser, MainPageParsingOptions
+
+        options = options or MainPageParsingOptions()
+        return MainPageParser(raw_source=raw_source, options=options).parse()

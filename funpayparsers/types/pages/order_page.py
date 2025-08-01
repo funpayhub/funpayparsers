@@ -13,6 +13,12 @@ from funpayparsers.parsers.utils import parse_money_value_string
 from funpayparsers.types.reviews import Review
 from funpayparsers.types.pages.base import FunPayPage
 
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from funpayparsers.parsers.page_parsers.order_page_parser import OrderPageParsingOptions
+
 
 @dataclass
 class OrderPage(FunPayPage):
@@ -109,3 +115,14 @@ class OrderPage(FunPayPage):
         if not value:
             return None
         return parse_money_value_string(value)
+
+    @classmethod
+    def from_raw_source(
+            cls,
+            raw_source: str,
+            options: OrderPageParsingOptions | None = None
+    ) -> OrderPage:
+        from funpayparsers.parsers.page_parsers.order_page_parser import OrderPageParser, OrderPageParsingOptions
+
+        options = options or OrderPageParsingOptions()
+        return OrderPageParser(raw_source=raw_source, options=options).parse()

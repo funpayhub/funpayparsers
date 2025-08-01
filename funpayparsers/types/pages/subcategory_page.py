@@ -9,6 +9,11 @@ from funpayparsers.types.enums import SubcategoryType
 from funpayparsers.types.offers import OfferPreview
 from funpayparsers.types.categories import Subcategory
 from funpayparsers.types.pages.base import FunPayPage
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from funpayparsers.parsers.page_parsers.subcategory_page_parser import SubcategoryPageParsingOptions
 
 
 @dataclass
@@ -32,3 +37,14 @@ class SubcategoryPage(FunPayPage):
 
     offers: list[OfferPreview] | None
     """Subcategory offers list."""
+
+    @classmethod
+    def from_raw_source(
+            cls,
+            raw_source: str,
+            options: SubcategoryPageParsingOptions | None = None
+    ) -> SubcategoryPage:
+        from funpayparsers.parsers.page_parsers.subcategory_page_parser import SubcategoryPageParser, SubcategoryPageParsingOptions
+
+        options = options or SubcategoryPageParsingOptions()
+        return SubcategoryPageParser(raw_source=raw_source, options=options).parse()

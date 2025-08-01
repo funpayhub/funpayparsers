@@ -12,6 +12,11 @@ from funpayparsers.types.common import UserBadge, UserRating, Achievement
 from funpayparsers.types.offers import OfferPreview
 from funpayparsers.types.reviews import ReviewsBatch
 from funpayparsers.types.pages.base import FunPayPage
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from funpayparsers.parsers.page_parsers.profile_page_parser import ProfilePageParsingOptions
 
 
 @dataclass
@@ -56,3 +61,14 @@ class ProfilePage(FunPayPage):
 
     reviews: ReviewsBatch | None
     """User reviews."""
+
+    @classmethod
+    def from_raw_source(
+            cls,
+            raw_source: str,
+            options: ProfilePageParsingOptions | None = None
+    ) -> ProfilePage:
+        from funpayparsers.parsers.page_parsers.profile_page_parser import ProfilePageParser, ProfilePageParsingOptions
+
+        options = options or ProfilePageParsingOptions()
+        return ProfilePageParser(raw_source=raw_source, options=options).parse()

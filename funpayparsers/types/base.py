@@ -5,6 +5,10 @@ __all__ = ('FunPayObject',)
 
 from typing import Any, Type, TypeVar
 from dataclasses import field, asdict, dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from funpayparsers.parsers.base import ParsingOptions
 
 
 SelfT = TypeVar('SelfT', bound='FunPayObject')
@@ -32,3 +36,10 @@ class FunPayObject:
         Creates instance from a dict.
         """
         return cls(**data)
+
+    @classmethod
+    def from_raw_source(cls: type[SelfT], raw_source: str, options: Any = None) -> SelfT:
+        """
+        Create instance from a raw source using related parser.
+        """
+        raise NotImplementedError(f'{cls.__name__}.from_raw_source is not implemented.')
