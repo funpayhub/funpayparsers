@@ -1,13 +1,47 @@
 from __future__ import annotations
 
 
-__all__ = ('Message',)
+__all__ = ('Message', 'MessageMeta')
 
 from dataclasses import field, dataclass
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.enums import MessageType
 from funpayparsers.types.common import UserBadge
+
+
+@dataclass
+class MessageMeta(FunPayObject):
+    """
+    Represents a message meta info.
+    """
+
+    type: MessageType = MessageType.NON_SYSTEM
+    """Message type."""
+
+    order_id: str | None = None
+    """Mentioned order ID."""
+
+    order_desc: str | None = None
+    """Mentioned order description."""
+
+    seller_id: int | None = None
+    """Mentioned seller ID."""
+
+    seller_username: str | None = None
+    """Mentioned seller username."""
+
+    buyer_id: int | None = None
+    """Mentioned buyer ID."""
+
+    buyer_username: str | None = None
+    """Mentioned buyer username."""
+
+    admin_id: int | None = None
+    """Mentioned admin ID."""
+
+    admin_username: str | None = None
+    """Mentioned admin username."""
 
 
 @dataclass
@@ -77,25 +111,10 @@ class Message(FunPayObject):
     Context key: ``chat_name``.
     """
 
-    _type_cache: tuple[str | None, MessageType] | None = field(
-        init=False, repr=False, compare=False, hash=False, default=None
-    )
-
-    @property
-    def type(self) -> MessageType:
-        if self._type_cache is not None:
-            if self._type_cache[0] == self.text:
-                return self._type_cache[1]
-
-        if not self.text:
-            return MessageType.NON_SYSTEM
-
-        if self.sender_id not in [0, 500]:
-            return MessageType.NON_SYSTEM
-
-        msg_type = MessageType.get_by_message_text(self.text)
-        self._type_cache = (self.text, msg_type)
-        return msg_type
+    meta: MessageMeta
+    """
+    Message meta info (message type, mentioned users / order).
+    """
 
     @property
     def timestamp(self) -> int:

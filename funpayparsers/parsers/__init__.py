@@ -20,3 +20,4 @@ from .offer_previews_parser import *
 from .order_previews_parser import *
 from .private_chat_info_parser import *
 from .transaction_previews_parser import *
+from .message_meta_parser import *

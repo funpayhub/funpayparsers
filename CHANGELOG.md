@@ -35,6 +35,8 @@ Use `url_alias`, `appdata_alias` or `header_menu_css_class` of members instead.
 
 ## FunPay Parsers 0.3.0
 
+### Changes
+
 - Members of `funpayparsers.types.enums.SubcategoryType` and `funpayparsers.types.enums.Language` now use frozen 
 dataclasses as their values instead of relying on custom `__new__` logic in Enums.
 - Accessing enum fields now requires `.value`, e.g.:
@@ -55,3 +57,18 @@ dataclasses as their values instead of relying on custom `__new__` logic in Enum
 > for type checkers like `mypy`.
 >
 > This design is currently considered a balanced trade-off between architectural purity and practical readability.
+
+
+## FunPay Parsers 0.3.1
+
+### Features
+
+- Added `@classmethod` `from_raw_source` to `FunPayObject`. Raises `NotImplementedError` by default.
+- Implemented `from_raw_source` in all page-types.
+- Added `timestamp` property to `funpayparsers.types.Message`.
+
+### Improvements
+
+- Improved ``funpayparsers.parsers.utils.parse_date_string``: added new patterns of dates.
+- Improved ``funpayparsers.parsers.utils.resolve_messages_senders``: field `send_date_text` of heading message 
+now propagates on messages below it.
