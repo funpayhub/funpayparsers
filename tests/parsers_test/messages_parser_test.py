@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from funpayparsers.types import Message, UserBadge
+from funpayparsers.types import Message, MessageMeta, UserBadge
+from funpayparsers.types.enums import MessageType
 from funpayparsers.parsers.messages_parser import MessagesParser, MessagesParsingOptions
 
 
 OPTIONS = MessagesParsingOptions(empty_raw_source=True)
-
 
 heading_message_html = """<div class="chat-msg-item chat-msg-with-head" id="message-12345">
     <div class="chat-message">
@@ -19,18 +19,20 @@ heading_message_html = """<div class="chat-msg-item chat-msg-with-head" id="mess
     </div>
 </div>"""
 
-heading_message_obj = Message(raw_source='',
-                              id=12345,
-                              is_heading=True,
-                              sender_id=54321,
-                              sender_username='Username',
-                              badge=None,
-                              send_date_text='26 мая, 11:21:41',
-                              text='MessageText',
-                              image_url=None,
-                              chat_id=None,
-                              chat_name=None
-                              )
+heading_message_obj = Message(
+    raw_source='',
+    id=12345,
+    is_heading=True,
+    sender_id=54321,
+    sender_username='Username',
+    badge=None,
+    send_date_text='26 мая, 11:21:41',
+    text='MessageText',
+    image_url=None,
+    chat_id=None,
+    chat_name=None,
+    meta=MessageMeta(raw_source='')
+)
 
 
 non_heading_message_html = """<div class="chat-msg-item" id="message-12346">
@@ -41,18 +43,20 @@ non_heading_message_html = """<div class="chat-msg-item" id="message-12346">
     </div>
 </div>"""
 
-non_heading_message_obj = Message(raw_source='',
-                                  id=12346,
-                                  is_heading=False,
-                                  sender_id=None,
-                                  sender_username=None,
-                                  badge=None,
-                                  send_date_text=None,
-                                  text='MessageText',
-                                  image_url=None,
-                                  chat_id=None,
-                                  chat_name=None
-                                  )
+non_heading_message_obj = Message(
+    raw_source='',
+    id=12346,
+    is_heading=False,
+    sender_id=None,
+    sender_username=None,
+    badge=None,
+    send_date_text=None,
+    text='MessageText',
+    image_url=None,
+    chat_id=None,
+    chat_name=None,
+    meta=MessageMeta(raw_source='')
+)
 
 
 notification_message_html = """<div class="chat-msg-item chat-msg-with-head" id="message-12347">
@@ -85,7 +89,16 @@ notification_message_obj = Message(
         text='оповещение'
     ),
     chat_id=None,
-    chat_name=None
+    chat_name=None,
+    meta=MessageMeta(
+        raw_source='',
+        type=MessageType.ORDER_REFUNDED,
+        seller_id=10,
+        seller_username='SellerUsername',
+        buyer_id=54321,
+        buyer_username='BuyerUsername',
+        order_id='AAAAAAAA'
+    )
 )
 
 
@@ -103,7 +116,8 @@ multiple_messages_obj = [
         text='MessageText',
         image_url=None,
         chat_id=None,
-        chat_name=None
+        chat_name=None,
+        meta=MessageMeta(raw_source='')
     )
 ]
 

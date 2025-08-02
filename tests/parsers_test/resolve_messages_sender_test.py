@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from funpayparsers.types import Message, UserBadge
+from funpayparsers.types import Message, UserBadge, MessageMeta
 from funpayparsers.parsers.utils import resolve_messages_senders
 
 
@@ -25,7 +25,8 @@ processed_messages = [
         text='MessageText1',
         image_url=None,
         chat_id=None,
-        chat_name=None
+        chat_name=None,
+        meta=MessageMeta(raw_source='')
     ),
     Message(
         raw_source='',
@@ -38,7 +39,8 @@ processed_messages = [
         text='MessageText2',
         image_url=None,
         chat_id=None,
-        chat_name=None
+        chat_name=None,
+        meta=MessageMeta(raw_source='')
     )
 ]
 
@@ -57,7 +59,8 @@ def original_messages():
             text='MessageText1',
             image_url=None,
             chat_id=None,
-            chat_name=None
+            chat_name=None,
+            meta=MessageMeta(raw_source='')
         ),
         Message(
             raw_source='',
@@ -70,7 +73,8 @@ def original_messages():
             text='MessageText2',
             image_url=None,
             chat_id=None,
-            chat_name=None
+            chat_name=None,
+            meta=MessageMeta(raw_source='')
         )
     ]
 

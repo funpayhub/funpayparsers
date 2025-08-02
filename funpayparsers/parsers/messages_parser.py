@@ -10,9 +10,11 @@ from selectolax.lexbor import LexborNode
 
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.common import UserBadge
+from funpayparsers.types.enums import MessageType
 from funpayparsers.parsers.utils import resolve_messages_senders
-from funpayparsers.types.messages import Message
+from funpayparsers.types.messages import Message, MessageMeta
 from funpayparsers.parsers.badge_parser import UserBadgeParser, UserBadgeParsingOptions
+from funpayparsers.parsers.message_meta_parser import MessageMetaParser, MessageMetaParsingOptions
 
 
 @dataclass(frozen=True)
@@ -53,6 +55,13 @@ class MessagesParsingOptions(ParsingOptions):
     Defaults to ``UserBadgeParsingOptions()``.
     """
 
+    message_meta_parsing_options: MessageMetaParsingOptions = MessageMetaParsingOptions()
+    """
+    Options instance for ``MessageMetaParser``, which is used by ``MessagesParser``.
+
+    Defaults to ``MessageMetaParsingOptions()``.
+    """
+
 
 class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOptions]):
     """
@@ -73,15 +82,22 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
                 userid, username, date, badge = self._parse_message_header(msg_div)
 
             if image_tag := msg_div.css('a.chat-img-link'):
-                image_url, text = image_tag[0].attributes['href'], None
+                image_url, text, text_html = image_tag[0].attributes['href'], None, ''
             else:
                 image_url = None
 
                 # Every FunPay *system* message is heading, so we will know sender id
-                if userid == 0:
-                    text = msg_div.css('div.alert')[0].text().strip()
-                else:
-                    text = msg_div.css('div.chat-msg-text')[0].text().strip()
+                text_div = msg_div.css('div.chat-msg-text')[0]
+                text_html = ''.join(i.html for i in text_div.iter(include_text=True))
+                text = text_div.text()
+
+            if userid != 0:
+                meta = MessageMeta(raw_source=text_html, type=MessageType.NON_SYSTEM)
+            else:
+                meta = MessageMetaParser(
+                    raw_source=text_html,
+                    options=self.options.message_meta_parsing_options
+                ).parse()
 
             messages.append(
                 Message(
@@ -99,6 +115,7 @@ class MessagesParser(FunPayHTMLObjectParser[list[Message], MessagesParsingOption
                     image_url=image_url,
                     chat_id=self.options.context.get('chat_id'),
                     chat_name=self.options.context.get('chat_name'),
+                    meta=meta
                 )
             )
 
