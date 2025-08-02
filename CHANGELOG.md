@@ -72,3 +72,22 @@ dataclasses as their values instead of relying on custom `__new__` logic in Enum
 - Improved ``funpayparsers.parsers.utils.parse_date_string``: added new patterns of dates.
 - Improved ``funpayparsers.parsers.utils.resolve_messages_senders``: field `send_date_text` of heading message 
 now propagates on messages below it.
+
+
+## FunPay Parsers 0.4.0
+
+### Features
+
+- Added new object `funpayparses.types.messages.MessageMeta` and related parser 
+`funpayparsers.parsers.message_meta_parser.MessageMetaParser`. `MessageMeta` contains meta info about message, such is
+message type and mentioned seller / buyer / admin / order (if it is system message). `MessageMetaParser` accepts inner
+html of message (inner html of `div.chat-msg-text`) and returns `MessageMeta` object.
+
+### Changes
+
+- `funpayparsers.types.messages.Message.type` moved to `funpayparsers.types.messages.Message.meta.type`
+
+
+### Fixes
+
+- `funpayparsers.parsers.messages_parser.MessagesParser` doesn't strip message texts anymore.
