@@ -91,3 +91,15 @@ html of message (inner html of `div.chat-msg-text`) and returns `MessageMeta` ob
 ### Fixes
 
 - `funpayparsers.parsers.messages_parser.MessagesParser` doesn't strip message texts anymore.
+
+
+## FunPay Parsers 0.4.1
+
+### Fixes
+
+- `funpayparsers.parsers.page_parsers.subcategory_page_parser.SubCategoryPageParser` now can parse anonymous response.
+
+
+### Improvements
+
+- `funpayparsers.exceptions.ParsingError` now shorts HTML in error message if it longer than 500 symbols.
