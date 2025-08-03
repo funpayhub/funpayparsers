@@ -57,7 +57,7 @@ class OfferPreviewsParser(
         # cz there are specific fields in OfferPreview class for them.
         skip_match_data = ['user', 'online', 'auto']
 
-        processed_users: dict[int, OfferSeller] = {}
+        processed_users: dict[str, OfferSeller] = {}
 
         for offer_div in self.tree.css('a.tc-item'):
             url: str = offer_div.attributes['href']  # type: ignore[assignment] # always has href
@@ -132,7 +132,7 @@ class OfferPreviewsParser(
 
     @staticmethod
     def _parse_user_tag(
-        offer_tag: LexborNode, processed_users: dict[int, OfferSeller]
+        offer_tag: LexborNode, processed_users: dict[str, OfferSeller]
     ) -> OfferSeller | None:
         # If this offer preview is from sellers page,
         # and not from subcategory offers page, there is no user div.
@@ -141,15 +141,14 @@ class OfferPreviewsParser(
             return None
 
         user_div = user_divs[0]
-        username_span = user_div.css('div.media-user-name > span')[0]
-        user_id = int(
-            username_span.attributes['data-href'].split('/')[-2]  # type: ignore[union-attr] # always has data-href
-        )
+        username = user_div.css('div.media-user-name')[0].text(strip=True)
+        if username in processed_users:
+            return deepcopy(processed_users[username])
 
-        if user_id in processed_users:
-            return deepcopy(processed_users[user_id])
-
-        avatar_tag_style: str = user_div.css('div.avatar-photo')[0].attributes['style']  # type: ignore[assignment]  # always has style
+        avatar_tag = user_div.css_first('div.avatar-photo')
+        user_id = int(avatar_tag.attributes['data-href'].split('/')[-2])  # type: ignore[union-attr]
+        # always has data-href
+        avatar_tag_style: str = avatar_tag.attributes['style']  # type: ignore[assignment]  # always has style
 
         # If the user has fewer than 10 reviews or registered less than a month ago,
         # the rating stars are not shown. The number of reviews is displayed
@@ -170,12 +169,8 @@ class OfferPreviewsParser(
 
         result = OfferSeller(
             raw_source=user_div.html or '',
-            id=(
-                user_id
-                if user_id is not None
-                else int(username_span.attributes['data-href'].split('/')[-2])
-            ),
-            username=username_span.text(strip=True),
+            id=user_id,
+            username=username,
             online=bool(offer_tag.attributes.get('data-online')),
             avatar_url=extract_css_url(avatar_tag_style),
             register_date_text=(
@@ -185,5 +180,5 @@ class OfferPreviewsParser(
             reviews_amount=reviews_amount,
         )
 
-        processed_users[user_id] = result
+        processed_users[username] = result
         return result
