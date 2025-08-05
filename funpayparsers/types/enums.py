@@ -16,10 +16,10 @@ __all__ = (
 
 import re
 from typing import Any
+from dataclasses import dataclass
 from enum import Enum
 from types import MappingProxyType
 from functools import cache
-from dataclasses import dataclass
 
 from funpayparsers import message_type_re as msg_re
 
@@ -59,6 +59,7 @@ class _SubcategoryTypeAliases:
 
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
+
     COMMON = _SubcategoryTypeAliases('lots', 'lot')
     """Common lots."""
 
@@ -469,7 +470,6 @@ class Language(Enum):
     RU = _LanguageAliases('ru', '', 'menu-icon-lang-ru')
     EN = _LanguageAliases('en', 'en', 'menu-icon-lang-en')
     UK = _LanguageAliases('uk', 'uk', 'menu-icon-lang-uk')
-
 
     @staticmethod
     def get_by_lang_code(lang_code: Any, /) -> Language:

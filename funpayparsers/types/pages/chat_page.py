@@ -3,11 +3,13 @@ from __future__ import annotations
 
 __all__ = ('ChatPage',)
 
+from typing import TYPE_CHECKING
 from dataclasses import dataclass
 
 from funpayparsers.types.chat import Chat, PrivateChatInfo, PrivateChatPreview
 from funpayparsers.types.pages.base import FunPayPage
-from typing import TYPE_CHECKING
+
+
 if TYPE_CHECKING:
     from funpayparsers.parsers.page_parsers.chat_page_parser import ChatPageParsingOptions
 
@@ -27,11 +29,12 @@ class ChatPage(FunPayPage):
 
     @classmethod
     def from_raw_source(
-            cls,
-            raw_source: str,
-            options: ChatPageParsingOptions | None = None
+        cls, raw_source: str, options: ChatPageParsingOptions | None = None
     ) -> ChatPage:
-        from funpayparsers.parsers.page_parsers.chat_page_parser import ChatPageParser, ChatPageParsingOptions
+        from funpayparsers.parsers.page_parsers.chat_page_parser import (
+            ChatPageParser,
+            ChatPageParsingOptions,
+        )
 
         options = options or ChatPageParsingOptions()
         return ChatPageParser(raw_source=raw_source, options=options).parse()

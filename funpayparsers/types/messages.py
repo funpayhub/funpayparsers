@@ -3,7 +3,7 @@ from __future__ import annotations
 
 __all__ = ('Message', 'MessageMeta')
 
-from dataclasses import field, dataclass
+from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.enums import MessageType

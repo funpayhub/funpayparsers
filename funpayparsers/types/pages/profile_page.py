@@ -4,6 +4,7 @@ from __future__ import annotations
 __all__ = ('ProfilePage',)
 
 
+from typing import TYPE_CHECKING
 from dataclasses import dataclass
 
 from funpayparsers.types.chat import Chat
@@ -12,7 +13,6 @@ from funpayparsers.types.common import UserBadge, UserRating, Achievement
 from funpayparsers.types.offers import OfferPreview
 from funpayparsers.types.reviews import ReviewsBatch
 from funpayparsers.types.pages.base import FunPayPage
-from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
@@ -64,11 +64,12 @@ class ProfilePage(FunPayPage):
 
     @classmethod
     def from_raw_source(
-            cls,
-            raw_source: str,
-            options: ProfilePageParsingOptions | None = None
+        cls, raw_source: str, options: ProfilePageParsingOptions | None = None
     ) -> ProfilePage:
-        from funpayparsers.parsers.page_parsers.profile_page_parser import ProfilePageParser, ProfilePageParsingOptions
+        from funpayparsers.parsers.page_parsers.profile_page_parser import (
+            ProfilePageParser,
+            ProfilePageParsingOptions,
+        )
 
         options = options or ProfilePageParsingOptions()
         return ProfilePageParser(raw_source=raw_source, options=options).parse()

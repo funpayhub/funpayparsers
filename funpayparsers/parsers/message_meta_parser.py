@@ -6,15 +6,15 @@ __all__ = ('MessageMetaParsingOptions', 'MessageMetaParser')
 
 from dataclasses import dataclass
 
-from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.enums import MessageType
+from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.messages import MessageMeta
-
 
 
 @dataclass(frozen=True)
 class MessageMetaParsingOptions(ParsingOptions):
     """Options class for ``MessageMetaParser``."""
+
     ...
 
 
@@ -58,7 +58,7 @@ class MessageMetaParser(FunPayHTMLObjectParser[MessageMeta, MessageMetaParsingOp
             order_id=links[1].attributes['href'].split('/')[-2],  # type: ignore[union-attr]
             order_desc=links[1].next.text()[2:],  # type: ignore[union-attr]
             buyer_id=int(links[0].attributes['href'].split('/')[-2]),  # type: ignore[union-attr]
-            buyer_username=links[0].text(strip=True)
+            buyer_username=links[0].text(strip=True),
         )
 
     def parse_order_closed_message(self) -> MessageMeta:
