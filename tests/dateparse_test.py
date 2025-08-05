@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from funpayparsers.parsers.utils import (
     MONTHS,
@@ -11,6 +12,7 @@ from funpayparsers.parsers.utils import (
 
 
 CURR_DATE = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+ZONEINFO = ZoneInfo('Europe/Moscow')
 
 
 time_str = "12:20:24"

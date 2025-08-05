@@ -103,3 +103,10 @@ html of message (inner html of `div.chat-msg-text`) and returns `MessageMeta` ob
 ### Improvements
 
 - `funpayparsers.exceptions.ParsingError` now shorts HTML in error message if it longer than 500 symbols.
+
+
+## FunPay Parsers 0.4.2
+
+### Fixes
+
+- `funpayparsers.parsers.utils.parse_date_string` now respects machines timezone.

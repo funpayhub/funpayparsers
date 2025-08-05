@@ -13,6 +13,7 @@ import re
 from typing import Literal, cast, overload
 from copy import deepcopy
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from collections.abc import Iterable
 
 from selectolax.lexbor import LexborNode, LexborHTMLParser
@@ -93,30 +94,35 @@ DATE_RE = re.compile(
 
 def parse_date_string(date_string: str, /) -> int:
     """
-    Parse date string.
+    Parses a FunPay-style date string and converts it to a UNIX timestamp.
+
+    Timezone behavior:
+    - The input string is expected to represent time in UTC+3 (Europe/Moscow).
+    - The returned timestamp is in UTC+0.
+    - Internally, the parsed datetime is localized to UTC+3 and then converted to UTC.
+
+    :return: timestamp in UTC+0 timezone.
     """
     date_string = date_string.lower().strip()
-    date = datetime.now().replace(second=0, microsecond=0)
+    date = datetime.now().replace(second=0, microsecond=0, tzinfo=ZoneInfo('Europe/Moscow'))
 
     if match := TIME_ONLY_RE.match(date_string):
         return int(
             date.replace(
                 hour=int(match.group('h')),
                 minute=int(match.group('m')),
-                second=int(match.group('s') or 0)
+                second=int(match.group('s') or 0),
             ).timestamp()
         )
 
     if match := SHORT_DATE_RE.match(date_string):
         return int(
-            datetime(
+            date.replace(
                 year=int(match.group('year')) + 2000,
                 month=int(match.group('month')),
                 day=int(match.group('day')),
                 hour=0,
                 minute=0,
-                second=0,
-                microsecond=0,
             ).timestamp()
         )
 
@@ -124,7 +130,7 @@ def parse_date_string(date_string: str, /) -> int:
         day = match.group('day')
         date = date.replace(
             hour=int(match.group('h')),
-            minute=int(match.group('m'))
+            minute=int(match.group('m')),
         )
         if day in TODAY_WORDS:
             return int(date.timestamp())
@@ -140,7 +146,7 @@ def parse_date_string(date_string: str, /) -> int:
                 day=int(match.group('day')),
                 hour=int(match.group('h')),
                 minute=int(match.group('m')),
-                second=int(match.group('s') or 0)
+                second=int(match.group('s') or 0),
             ).timestamp()
         )
 
@@ -154,7 +160,7 @@ def parse_date_string(date_string: str, /) -> int:
                 day=int(match.group('day')),
                 hour=int(match.group('h')),
                 minute=int(match.group('m')),
-                second=int(match.group('s') or 0)
+                second=int(match.group('s') or 0),
             ).timestamp()
         )
 
