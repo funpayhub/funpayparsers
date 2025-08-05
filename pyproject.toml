@@ -2,13 +2,14 @@
 name = "funpayparsers"
 description = "Set of parsers for FunPay website."
 keywords = ["funpay", "parser", "bot", "api", "funpayapi", "funpayparser", "funpaybot"]
-version = "0.4.1"
+version = "0.4.2"
 readme = "README.md"
 license = "MIT"
 
 requires-python = ">=3.10"
 dependencies = [
     "selectolax>=0.3.31",
+    "tzdata; platform_system == \"Windows\""
 ]
 
 authors = [
