@@ -110,3 +110,15 @@ html of message (inner html of `div.chat-msg-text`) and returns `MessageMeta` ob
 ### Fixes
 
 - `funpayparsers.parsers.utils.parse_date_string` now respects machines timezone.
+
+
+## FunPay Parsers 0.4.3
+
+
+### Features
+
+- Added property `price` to `funpayparsers.types.offers.OfferFields`.
+
+### Fixes
+
+- `funpayparsers.parsers.offer_fields_parser.OfferFieldsParser` now can parse offer fields from full page HTML.
