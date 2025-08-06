@@ -231,7 +231,12 @@ def resolve_messages_senders(messages: Iterable[Message], /) -> None:
             )
             continue
 
-        m.sender_username, m.sender_id, m.badge, m.send_date_text = username, userid, badge, send_time
+        m.sender_username, m.sender_id, m.badge, m.send_date_text = (
+            username,
+            userid,
+            badge,
+            send_time,
+        )
 
 
 @overload

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
+import pytest
 
 from funpayparsers.parsers.utils import (
     MONTHS,
@@ -10,57 +11,49 @@ from funpayparsers.parsers.utils import (
     parse_date_string,
 )
 
+CURR_DATE = datetime.now().replace(
+    hour=0,
+    minute=0,
+    second=0,
+    microsecond=0,
+    tzinfo=ZoneInfo('Europe/Moscow')
+)
 
-CURR_DATE = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-ZONEINFO = ZoneInfo('Europe/Moscow')
-
-
-time_str = "12:20:24"
-short_date_str = "12.05.24"
-today_date_strs = [f'{word}, 12:20' for word in TODAY_WORDS]
-yesterday_date_strs = [f'{word}, 12:20' for word in YESTERDAY_WORDS]
-current_year_date_strs = [f'12 {month}, 12:20' for month in MONTHS.keys()]
-full_date_strs = [f'12 {month} 2024, 12:20' for month in MONTHS.keys()]
-
-time_obj = CURR_DATE.replace(hour=12, minute=20, second=24)
-short_date_obj = datetime(day=12, month=5, year=2024, hour=0, minute=0, second=0, microsecond=0)
-today_date_obj = CURR_DATE.replace(hour=12, minute=20)
-yesterday_date_obj = CURR_DATE.replace(hour=12, minute=20) - timedelta(days=1)
-current_year_date_objs = [datetime(year=CURR_DATE.year, month=i, day=12, hour=12, minute=20, second=0, microsecond=0)
-                          for i in MONTHS.values()]
-full_date_objs = [datetime(year=2024, month=i, day=12, hour=12, minute=20, second=0, microsecond=0)
-                          for i in MONTHS.values()]
-
-
-def test_time_str_parsing():
-    result = parse_date_string(time_str)
-    assert datetime.fromtimestamp(result) == time_obj
-
-
-def test_short_date_str_parsing():
-    result = parse_date_string(short_date_str)
-    assert datetime.fromtimestamp(result) == short_date_obj
-
-
-def test_today_date_str_parsing():
-    for i in today_date_strs:
-        result = parse_date_string(i)
-        assert datetime.fromtimestamp(result) == today_date_obj
-
-
-def test_yesterday_date_str_parsing():
-    for i in yesterday_date_strs:
-        result = parse_date_string(i)
-        assert datetime.fromtimestamp(result) == yesterday_date_obj
-
-
-def test_current_year_date_str_parsing():
-    for i in zip(current_year_date_strs, current_year_date_objs):
-        result = parse_date_string(i[0])
-        assert datetime.fromtimestamp(result) == i[1]
-
-
-def test_full_date_str_parsing():
-    for i in zip(full_date_strs, full_date_objs):
-        result = parse_date_string(i[0])
-        assert datetime.fromtimestamp(result) == i[1]
+@pytest.mark.parametrize(
+    'date_str,expected', [
+        (
+            '12:20:24',
+            CURR_DATE.replace(hour=12, minute=20, second=24).timestamp()
+        ),
+        (
+            '12.05.24',
+            CURR_DATE.replace(day=12, month=5, year=2024).timestamp()
+        ),
+        *[
+            (
+                f'{word}, 12:20',
+                CURR_DATE.replace(hour=12, minute=20).timestamp()
+            ) for word in TODAY_WORDS
+        ],
+        *[
+            (
+                f'{word}, 12:20',
+                (CURR_DATE.replace(hour=12, minute=20) - timedelta(days=1)).timestamp()
+            ) for word in YESTERDAY_WORDS
+        ],
+        *[
+            (
+                f'12 {month_name}, 12:20',
+                CURR_DATE.replace(month=month, day=12, hour=12, minute=20).timestamp()
+            ) for month_name, month in MONTHS.items()
+        ],
+        *[
+            (
+                f'12 {month_name} 2024, 12:20',
+                CURR_DATE.replace(year=2024, month=month, day=12, hour=12, minute=20).timestamp()
+            ) for month_name, month in MONTHS.items()
+        ],
+    ]
+)
+def test_date_string_parsing(date_str: str, expected: datetime) -> None:
+    assert parse_date_string(date_str) == expected

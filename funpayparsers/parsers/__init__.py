@@ -13,6 +13,7 @@ from .categories_parser import *
 from .achievement_parser import *
 from .money_value_parser import *
 from .page_header_parser import *
+from .message_meta_parser import *
 from .offer_fields_parser import *
 from .user_preview_parser import *
 from .chat_previews_parser import *
@@ -20,4 +21,3 @@ from .offer_previews_parser import *
 from .order_previews_parser import *
 from .private_chat_info_parser import *
 from .transaction_previews_parser import *
-from .message_meta_parser import *

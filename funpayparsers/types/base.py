@@ -3,12 +3,12 @@ from __future__ import annotations
 
 __all__ = ('FunPayObject',)
 
-from typing import Any, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Type, TypeVar
 from dataclasses import field, asdict, dataclass
-from typing import TYPE_CHECKING
+
 
 if TYPE_CHECKING:
-    from funpayparsers.parsers.base import ParsingOptions
+    pass
 
 
 SelfT = TypeVar('SelfT', bound='FunPayObject')

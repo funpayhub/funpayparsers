@@ -295,3 +295,13 @@ class OfferFields(FunPayObject):
             'deactivate_after_sale',
             'on' if value else '' if value is not None else None,
         )
+
+    @property
+    def price(self) -> float | None:
+        if not self.fields_dict.get('price'):
+            return None
+        return float(self.fields_dict['price'])
+
+    @price.setter
+    def price(self, value: float) -> None:
+        self.set_field('price', str(value))
