@@ -12,6 +12,7 @@ from funpayparsers.types.enums import BadgeType
         ('some_cls label-primary some_cls2', BadgeType.NOTIFICATIONS),
         ('some_cls label-success some_cls2', BadgeType.SUPPORT),
         ('some_cls label-default some_cls2', BadgeType.AUTO_DELIVERY),
+        ('some_cls label-warning some_cls2', BadgeType.NOT_ACTIVATED),
         ('some_cls some_cls2', BadgeType.UNKNOWN),
     ]
 )
