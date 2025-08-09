@@ -211,6 +211,7 @@ class BadgeType(Enum):
     NOTIFICATIONS = 'label-primary'
     SUPPORT = 'label-success'
     AUTO_DELIVERY = 'label-default'
+    NOT_ACTIVATED = 'label-warning'
     UNKNOWN = ''
 
     @staticmethod
