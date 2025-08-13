@@ -124,7 +124,7 @@ html of message (inner html of `div.chat-msg-text`) and returns `MessageMeta` ob
 - `funpayparsers.parsers.offer_fields_parser.OfferFieldsParser` now can parse offer fields from full page HTML.
 
 
-## FunPay Parsers 0.4.4
+## FunPay Parsers 0.5.0
 
 
 ### Features
@@ -157,3 +157,15 @@ html of message (inner html of `div.chat-msg-text`) and returns `MessageMeta` ob
   - Added type checks to existing `@property`'s. Some properties are applicable for *currency-type* offers only, some
 for *common-type* offers only.
   - Improved doc-strings.
+  
+    
+### Improvements
+
+- `funpayparsers.types.offers.OfferFields.set_field`` now automatically converts value into `str`.
+- `funpayparsers.types.offers.OfferFields` now automatically removes `csrf_token` field after initialization
+  (in `__post_init__`).
+
+
+### Changes
+
+- Removed `funpayparsers.types.offers.OfferFields.csrf_token`.
