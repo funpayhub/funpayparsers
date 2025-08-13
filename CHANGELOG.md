@@ -164,6 +164,11 @@ for *common-type* offers only.
 - `funpayparsers.types.offers.OfferFields.set_field`` now automatically converts value into `str`.
 - `funpayparsers.types.offers.OfferFields` now automatically removes `csrf_token` field after initialization
   (in `__post_init__`).
+- Improved `funpayparsers.parsers.utils.parse_date_string`:
+  - Removed redundant regular expressions.
+  - Optimized existing regular expressions.
+  - Added support of new time formats (review time format for all languages). 
+  - Added related tests.
 
 
 ### Changes

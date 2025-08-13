@@ -19,6 +19,9 @@ CURR_DATE = datetime.now().replace(
     tzinfo=ZoneInfo('Europe/Moscow')
 )
 
+SEPARATORS = (',', 'at', 'в', 'о')
+
+
 @pytest.mark.parametrize(
     'date_str,expected', [
         (
@@ -31,27 +34,27 @@ CURR_DATE = datetime.now().replace(
         ),
         *[
             (
-                f'{word}, 12:20',
+                f'{word}{sep} 12:20',
                 CURR_DATE.replace(hour=12, minute=20).timestamp()
-            ) for word in TODAY_WORDS
+            ) for word in TODAY_WORDS for sep in SEPARATORS
         ],
         *[
             (
-                f'{word}, 12:20',
+                f'{word}{sep} 12:20',
                 (CURR_DATE.replace(hour=12, minute=20) - timedelta(days=1)).timestamp()
-            ) for word in YESTERDAY_WORDS
+            ) for word in YESTERDAY_WORDS for sep in SEPARATORS
         ],
         *[
             (
-                f'12 {month_name}, 12:20',
+                f'12 {month_name}{sep} 12:20',
                 CURR_DATE.replace(month=month, day=12, hour=12, minute=20).timestamp()
-            ) for month_name, month in MONTHS.items()
+            ) for month_name, month in MONTHS.items() for sep in SEPARATORS
         ],
         *[
             (
-                f'12 {month_name} 2024, 12:20',
+                f'12 {month_name} 2024{sep} 12:20',
                 CURR_DATE.replace(year=2024, month=month, day=12, hour=12, minute=20).timestamp()
-            ) for month_name, month in MONTHS.items()
+            ) for month_name, month in MONTHS.items() for sep in SEPARATORS
         ],
     ]
 )

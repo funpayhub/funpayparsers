@@ -77,18 +77,20 @@ DAY_RE = r'[01]?\d|2[0-9]|3[01]'  # day number (1-31 or 01-31)
 HOUR_RE = r'[01]?\d|2[0-3]'  # hour number (0-23 or 00-23)
 MIN_OR_SEC_RE = r'[0-5]?\d'  # minute/second number (0-59 or 00-59)
 TIME_RE = rf'(?P<h>{HOUR_RE}):(?P<m>{MIN_OR_SEC_RE})(?::(?P<s>{MIN_OR_SEC_RE}))?'
+SEP = rf'\s*(,|в|at|о)?\s*'
 
 TIME_ONLY_RE = re.compile(rf'^{TIME_RE}$')
 SHORT_DATE_RE = re.compile(rf'^(?P<day>{DAY_RE})\.(?P<month>{MONTH_NUM_RE})\.(?P<year>\d{{2}})$')
 
-TODAY_OR_YESTERDAY_RE = re.compile(rf'^(?P<day>{TODAY_YESTERDAY_RE}),?\s*{TIME_RE}$')
-
-CURR_YEAR_DATE_RE = re.compile(
-    rf'^(?P<day>{DAY_RE})\s*(?P<month>{MONTHS_NAMES_RE}),?\s*{TIME_RE}$',
-)
+TODAY_OR_YESTERDAY_RE = re.compile(rf'^(?P<day>{TODAY_YESTERDAY_RE}){SEP}?\s*{TIME_RE}(?:.*)?$')
 
 DATE_RE = re.compile(
-    rf'^(?P<day>{DAY_RE})\s*(?P<month>{MONTHS_NAMES_RE})\s*(?P<year>\d{{4}}),?\s*{TIME_RE}$',
+    rf'^(?P<day>{DAY_RE})\s*'
+    rf'(?P<month>{MONTHS_NAMES_RE})'
+    rf'(?:\s*(?P<year>\d{{4}}))?'
+    rf'{SEP}'
+    rf'{TIME_RE}'
+    rf'(?:.*)?$',
 )
 
 
@@ -136,26 +138,12 @@ def parse_date_string(date_string: str, /) -> int:
             return int(date.timestamp())
         return int((date - timedelta(days=1)).timestamp())
 
-    if match := CURR_YEAR_DATE_RE.match(date_string):
-        month = match.group('month')
-        month = MONTHS[month]
-        return int(
-            date.replace(
-                year=date.year,
-                month=month,
-                day=int(match.group('day')),
-                hour=int(match.group('h')),
-                minute=int(match.group('m')),
-                second=int(match.group('s') or 0),
-            ).timestamp()
-        )
-
     if match := DATE_RE.match(date_string):
         month = match.group('month')
         month = MONTHS[month]
         return int(
             date.replace(
-                year=int(match.group('year')),
+                year=int(match.group('year') or date.year),
                 month=month,
                 day=int(match.group('day')),
                 hour=int(match.group('h')),
