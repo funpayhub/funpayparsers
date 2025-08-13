@@ -122,3 +122,38 @@ html of message (inner html of `div.chat-msg-text`) and returns `MessageMeta` ob
 ### Fixes
 
 - `funpayparsers.parsers.offer_fields_parser.OfferFieldsParser` now can parse offer fields from full page HTML.
+
+
+## FunPay Parsers 0.4.4
+
+
+### Features
+
+- Added new badge type: `funpayparsers.types.enums.BadgeType.NOT_ACTIVATED` (#88)
+- Improved `funpayparsers.types.offers.OfferFields`
+  - Added new methods:
+    - Method `.convert_to_currency` that converts `OfferFields` instance to *currency-type* fields.
+    - Method `.convert_to_common` that converts `OfferFields` instance to *common-type* fields.
+    - Method `.get_currency_amount` that returns currency amount of specified currency. Applicable for 
+*currency-type* offers only.
+    - Method `.set_currency_amount` that sets currency amount of specified currency. Applicable for 
+*currency-type* offers only.
+    - Method `.get_currency_price` that returns currency price of specified currency. Applicable for 
+*currency-type* offers only.
+    - Method `.set_currency_price` that sets currency price of specified currency. Applicable for 
+*currency-type* offers only.
+    - Method `.get_currency_status` that returns currency active status of specified currency. Applicable for 
+*currency-type* offers only.
+    - Method `.set_currency_status` that sets currency active status of specified currency. Applicable for 
+*currency-type* offers only.
+  - Added new `@property`'s:
+    - Property `.is_currency`, that indicates whether `OfferFields` instance is *currency-type* or not.
+    - Property `.is_common`, that indicates whether `OfferFields` instance is *common-type* or not.
+    - Property `.subcategory_id` (field name: `chip` for *currency-type*, `node_id` for *common-type* offers).
+    - Property `.category_id` (field name: `game`, applicable for *currency-type* offers only).
+    - Property `.min_sum` (field name: `chip_min_sum`, applicable for *currency-type* offers only).
+    - Property `.offer_id` (field name: `offer_id`, applicable for *common-type* offers only).
+    - Property `.price` (field name: `price`, applicable for *common-type* offers only).
+  - Added type checks to existing `@property`'s. Some properties are applicable for *currency-type* offers only, some
+for *common-type* offers only.
+  - Improved doc-strings.
