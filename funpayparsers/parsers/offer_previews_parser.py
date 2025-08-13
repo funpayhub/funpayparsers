@@ -173,7 +173,7 @@ class OfferPreviewsParser(
             username=username,
             online=bool(offer_tag.attributes.get('data-online')),
             avatar_url=extract_css_url(avatar_tag_style),
-            register_date_text=(
+            registration_date_text=(
                 user_div.css('div.media-user-info')[0].text(deep=True, strip=True)
             ),
             rating=stars_amount,

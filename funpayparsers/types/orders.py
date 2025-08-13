@@ -41,6 +41,19 @@ class OrderPreview(FunPayObject):
     counterparty: UserPreview
     """Associated counterparty info."""
 
+    @property
+    def timestamp(self) -> int:
+        """
+        Order timestamp.
+
+        ``0``, if an error occurred while parsing.
+        """
+        from funpayparsers.parsers.utils import parse_date_string
+        try:
+            return parse_date_string(self.date_text)
+        except ValueError:
+            return 0
+
 
 @dataclass
 class OrderPreviewsBatch(FunPayObject):

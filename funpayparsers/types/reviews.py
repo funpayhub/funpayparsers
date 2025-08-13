@@ -63,7 +63,7 @@ class Review(FunPayObject):
     order_id: str | None
     """Order ID associated with this review."""
 
-    time_ago_str: str | None
+    date_text: str | None
     """
     Human-readable relative timestamp indicating when the order that review refers to 
     was made.
@@ -73,6 +73,23 @@ class Review(FunPayObject):
 
     reply: str | None
     """Sellers reply to this review."""
+
+    @property
+    def timestamp(self) -> int:
+        """
+        Review timestamp.
+
+        Available only for owned reviews (from your profile page or that has been written by you).
+
+        ``0``, if an error occurred while parsing.
+        """
+        from funpayparsers.parsers.utils import parse_date_string
+        if self.date_text is None:
+            return 0
+        try:
+            return parse_date_string(self.date_text)
+        except ValueError:
+            return 0
 
 
 @dataclass

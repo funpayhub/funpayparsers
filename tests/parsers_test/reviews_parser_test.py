@@ -63,7 +63,7 @@ public_review_obj = ReviewsBatch(
             sender_id=None,
             sender_avatar_url='/img/layout/avatar.png',
             order_id=None,
-            time_ago_str='2 месяца назад',
+            date_text='2 месяца назад',
             reply='ReviewReply'
         )
     ],
@@ -132,7 +132,7 @@ my_public_review_obj = ReviewsBatch(
             sender_id=54321,
             sender_avatar_url='/img/layout/avatar.png',
             order_id='ABCDEFGH',
-            time_ago_str='20 января в 12:58, 3 месяца назад',
+            date_text='20 января в 12:58, 3 месяца назад',
             reply='ReviewReply'
         )
     ],
@@ -209,7 +209,7 @@ order_page_review_obj = ReviewsBatch(
             sender_id=54321,
             sender_avatar_url='/img/layout/avatar.png',
             order_id='ABCDEFGH',
-            time_ago_str='2 месяца назад',
+            date_text='2 месяца назад',
             reply='ReviewReply'
         )
     ],

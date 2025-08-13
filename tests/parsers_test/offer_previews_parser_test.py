@@ -69,7 +69,7 @@ common_lot_obj = OfferPreview(
         username='SellerUsername',
         online=True,
         avatar_url='path/to/avatar',
-        register_date_text='на сайте 2 года',
+        registration_date_text='на сайте 2 года',
         rating=5,
         reviews_amount=105
     ),
@@ -131,7 +131,7 @@ currency_lot_obj = OfferPreview(
         username='SellerUsername',
         online=False,
         avatar_url='path/to/avatar',
-        register_date_text='на сайте 2 недели',
+        registration_date_text='на сайте 2 недели',
         rating=0,
         reviews_amount=2
     ),
