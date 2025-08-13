@@ -157,7 +157,11 @@ html of message (inner html of `div.chat-msg-text`) and returns `MessageMeta` ob
   - Added type checks to existing `@property`'s. Some properties are applicable for *currency-type* offers only, some
 for *common-type* offers only.
   - Improved doc-strings.
-  
+- Added timestamp `@property`'s to objects with date fields (returns `0` if an error occurred while parsing date text):
+  - `funpayparsers.types.chat.PrivateChatInfo.registration_timestamp`.
+  - `funpayparsers.types.finances.TransactionPreview.timestamp`.
+  - `funpayparsers.types.offers.OfferSeller.registration_timestamp`.
+  - `funpayparsers.types.reviews.Review.timestamp` (available only for owned reviews).
     
 ### Improvements
 
@@ -174,3 +178,6 @@ for *common-type* offers only.
 ### Changes
 
 - Removed `funpayparsers.types.offers.OfferFields.csrf_token`.
+- `funpayparsers.types.offers.OfferSeller.register_date_text` changed to 
+`funpayparsers.types.offers.OfferSeller.registration_date_text`.
+- `funpayparsers.types.reviews.Review.time_ago_str` changed to `funpayparsers.types.reviews.Review.date_text`.

@@ -28,7 +28,7 @@ class OfferSeller(FunPayObject):
     avatar_url: str
     """URL of the seller's avatar."""
 
-    register_date_text: str
+    registration_date_text: str
     """The seller's registration date (as a formatted string)."""
 
     rating: int
@@ -36,6 +36,19 @@ class OfferSeller(FunPayObject):
 
     reviews_amount: int
     """The total number of reviews received by the seller."""
+
+    @property
+    def registration_timestamp(self) -> int:
+        """
+        The seller's registration timestamp.
+
+        ``0``, if an error occurred while parsing.
+        """
+        from funpayparsers.parsers.utils import parse_date_string
+        try:
+            return parse_date_string(self.registration_date_text)
+        except ValueError:
+            return 0
 
 
 @dataclass

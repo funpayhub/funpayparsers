@@ -118,3 +118,16 @@ class PrivateChatInfo(FunPayObject):
     """
     Info about the offer currently being viewed by the interlocutor.
     """
+
+    @property
+    def registration_timestamp(self) -> int:
+        """
+        Interlocutors registration timestamp.
+
+        ``0``, if an error occurred while parsing.
+        """
+        from funpayparsers.parsers.utils import parse_date_string
+        try:
+            return parse_date_string(self.registration_date_text)
+        except ValueError:
+            return 0

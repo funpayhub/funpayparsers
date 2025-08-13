@@ -110,7 +110,7 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
             else None,
             sender_avatar_url=user_tag.css('img')[0].attributes['src'],
             order_id=order_id,
-            time_ago_str=date_str,
+            date_text=date_str,
             reply=self._parse_reply(review_div),
         )
 
@@ -142,7 +142,7 @@ class ReviewsParser(FunPayHTMLObjectParser[ReviewsBatch, ReviewsParsingOptions])
             sender_id=author_id,
             sender_avatar_url=avatar_url,
             order_id=order_id,
-            time_ago_str=date_str,
+            date_text=date_str,
             reply=self._parse_reply(review_div),
         )
 
