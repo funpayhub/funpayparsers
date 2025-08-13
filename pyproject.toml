@@ -2,7 +2,7 @@
 name = "funpayparsers"
 description = "Set of parsers for FunPay website."
 keywords = ["funpay", "parser", "bot", "api", "funpayapi", "funpayparser", "funpaybot"]
-version = "0.4.3"
+version = "0.5.0"
 readme = "README.md"
 license = "MIT"
 
