@@ -177,8 +177,8 @@ class TransactionStatus(Enum):
 
 
 class MessageType(Enum):
-    NON_SYSTEM = None
-    UNKNOWN_SYSTEM = None
+    NON_SYSTEM = 'NON_SYSTEM'
+    UNKNOWN_SYSTEM = 'UNKNOWN_SYSTEM'
     NEW_ORDER = msg_re.NEW_ORDER
     ORDER_CLOSED = msg_re.ORDER_CLOSED
     ORDER_CLOSED_BY_ADMIN = msg_re.ORDER_CLOSED_BY_ADMIN
@@ -195,7 +195,7 @@ class MessageType(Enum):
     @staticmethod
     def get_by_message_text(message_text: str, /) -> MessageType:
         for i in MessageType:
-            if i.value is None:
+            if isinstance(i.value, str):
                 continue
 
             if i.value.fullmatch(message_text):
