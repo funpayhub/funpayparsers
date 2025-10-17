@@ -181,3 +181,10 @@ for *common-type* offers only.
 - `funpayparsers.types.offers.OfferSeller.register_date_text` changed to 
 `funpayparsers.types.offers.OfferSeller.registration_date_text`.
 - `funpayparsers.types.reviews.Review.time_ago_str` changed to `funpayparsers.types.reviews.Review.date_text`.
+
+
+## FunPay Parsers 0.5.1
+
+### Fixes
+
+- `funpayparsers.parsers.page_parsers.transactions_page_parser` updated for new transactions page.
