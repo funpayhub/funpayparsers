@@ -77,7 +77,7 @@ DAY_RE = r'[01]?\d|2[0-9]|3[01]'  # day number (1-31 or 01-31)
 HOUR_RE = r'[01]?\d|2[0-3]'  # hour number (0-23 or 00-23)
 MIN_OR_SEC_RE = r'[0-5]?\d'  # minute/second number (0-59 or 00-59)
 TIME_RE = rf'(?P<h>{HOUR_RE}):(?P<m>{MIN_OR_SEC_RE})(?::(?P<s>{MIN_OR_SEC_RE}))?'
-SEP = rf'\s*(,|в|at|о)?\s*'
+SEP = r'\s*(,|в|at|о)?\s*'
 
 TIME_ONLY_RE = re.compile(rf'^{TIME_RE}$')
 SHORT_DATE_RE = re.compile(rf'^(?P<day>{DAY_RE})\.(?P<month>{MONTH_NUM_RE})\.(?P<year>\d{{2}})$')

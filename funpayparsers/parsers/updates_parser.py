@@ -87,6 +87,8 @@ class UpdatesParser(FunPayJSONObjectParser[RunnerResponse, UpdatesParsingOptions
         action_response = self.data.get('response')  # type: ignore[union-attr]  # raise if not dict
         if action_response:
             updates_obj.response = self._parse_action_response(action_response)
+            if updates_obj.response.error:
+                return updates_obj
 
         objects = self.data.get('objects')  # type: ignore[union-attr]  # raise if not dict
         if not objects:

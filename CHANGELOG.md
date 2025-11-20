@@ -165,7 +165,7 @@ for *common-type* offers only.
     
 ### Improvements
 
-- `funpayparsers.types.offers.OfferFields.set_field`` now automatically converts value into `str`.
+- `funpayparsers.types.offers.OfferFields.set_field` now automatically converts value into `str`.
 - `funpayparsers.types.offers.OfferFields` now automatically removes `csrf_token` field after initialization
   (in `__post_init__`).
 - Improved `funpayparsers.parsers.utils.parse_date_string`:
@@ -181,3 +181,18 @@ for *common-type* offers only.
 - `funpayparsers.types.offers.OfferSeller.register_date_text` changed to 
 `funpayparsers.types.offers.OfferSeller.registration_date_text`.
 - `funpayparsers.types.reviews.Review.time_ago_str` changed to `funpayparsers.types.reviews.Review.date_text`.
+
+
+## FunPay Parsers 0.5.1
+
+### Fixes
+
+- `funpayparsers.parsers.page_parsers.transactions_page_parser` updated for new transactions page.
+
+
+## FunPay Parsers 0.5.2
+
+### Features
+
+- Added `sales_available` field to `funpayparsers.types.common_page_elements.PageHeader`.
+- Added parsing of `sales_available` field.

@@ -80,6 +80,8 @@ class TransactionsPageParser(
                     parsing_mode=MoneyValueParsingMode.FROM_STRING,
                 ).parse(),
             )
+            if len(money_values) == 3:
+                break
 
         rub_balance = [i for i in money_values if i.currency is Currency.RUB]
         usd_balance = [i for i in money_values if i.currency is Currency.USD]
