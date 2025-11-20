@@ -3,13 +3,14 @@ from __future__ import annotations
 
 __all__ = ('OfferPreview', 'OfferSeller', 'OfferFields')
 
-from dataclasses import field, dataclass
 from typing import Any, TypeVar, ParamSpec
+from dataclasses import field, dataclass
+from collections.abc import Callable
+
+from typing_extensions import Self
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.common import MoneyValue
-from typing_extensions import Self
-from collections.abc import Callable
 
 
 @dataclass
@@ -45,6 +46,7 @@ class OfferSeller(FunPayObject):
         ``0``, if an error occurred while parsing.
         """
         from funpayparsers.parsers.utils import parse_date_string
+
         try:
             return parse_date_string(self.registration_date_text)
         except ValueError:
@@ -94,6 +96,7 @@ class OfferPreview(FunPayObject):
 T = TypeVar('T')
 P = ParamSpec('P')
 
+
 def chips_only(func: Callable[P, T]) -> Callable[P, T]:
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
         obj: OfferFields = args[0]  # type: ignore
@@ -103,6 +106,7 @@ def chips_only(func: Callable[P, T]) -> Callable[P, T]:
                 f'Use {obj.__class__.__name__}.convert_to_chip to convert it to chips lot fields.'
             )
         return func(*args, **kwargs)
+
     return wrapper
 
 
@@ -115,6 +119,7 @@ def common_only(func: Callable[P, T]) -> Callable[P, T]:
                 f'Use {obj.__class__.__name__}.convert_to_common to convert it to common lot fields.'
             )
         return func(*args, **kwargs)
+
     return wrapper
 
 
@@ -241,7 +246,9 @@ class OfferFields(FunPayObject):
         return float(self.fields_dict[f'offer[{server_id}][{side_id}][amount]'])
 
     @chips_only
-    def set_currency_amount(self, server_id: int, side_id: int, amount: int | float | None) -> None:
+    def set_currency_amount(
+        self, server_id: int, side_id: int, amount: int | float | None
+    ) -> None:
         """
         Sets the currency amount.
 
@@ -313,7 +320,7 @@ class OfferFields(FunPayObject):
         """
         self.set_field(
             f'offer[{server_id}][{side_id}][active]',
-            'on' if status else '' if status is not None else None
+            'on' if status else '' if status is not None else None,
         )
 
     @property

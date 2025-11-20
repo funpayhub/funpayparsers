@@ -95,6 +95,7 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             sales=int(sales_div[0].text().strip()) if sales_div else None,
             chats=int(chats_div[0].text().strip()) if chats_div else None,
             balance=money_value,
+            sales_available=bool(sales_div),
         )
 
     def _parse_anonymous_header(self, header: LexborNode) -> PageHeader:
@@ -121,4 +122,5 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             sales=None,
             chats=None,
             balance=None,
+            sales_available=False,
         )
