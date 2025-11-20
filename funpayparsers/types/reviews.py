@@ -84,6 +84,7 @@ class Review(FunPayObject):
         ``0``, if an error occurred while parsing.
         """
         from funpayparsers.parsers.utils import parse_date_string
+
         if self.date_text is None:
             return 0
         try:
