@@ -188,3 +188,11 @@ for *common-type* offers only.
 ### Fixes
 
 - `funpayparsers.parsers.page_parsers.transactions_page_parser` updated for new transactions page.
+
+
+## FunPay Parsers 0.5.2
+
+### Features
+
+- Added `sales_available` field to `funpayparsers.types.common_page_elements.PageHeader`.
+- Added parsing of `sales_available` field.
