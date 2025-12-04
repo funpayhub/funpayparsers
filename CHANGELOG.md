@@ -196,3 +196,12 @@ for *common-type* offers only.
 
 - Added `sales_available` field to `funpayparsers.types.common_page_elements.PageHeader`.
 - Added parsing of `sales_available` field.
+
+
+
+## FunPay Parser 0.5.3
+
+### Features
+
+- Added `logout_token` to `funpayparsers.types.common_page_elements.PageHeader`.
+- Added parsing of `logout_token` field.
