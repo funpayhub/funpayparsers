@@ -10,5 +10,6 @@ from .reviews import *
 from .updates import *
 from .finances import *
 from .messages import *
+from .settings import *
 from .categories import *
 from .common_page_elements import *

@@ -98,7 +98,9 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             chats=int(chats_div[0].text().strip()) if chats_div else None,
             balance=money_value,
             sales_available=bool(sales_div),
-            logout_token=None if not logout_button else logout_button[0].attributes['href'].split('=')[1]
+            logout_token=None
+            if not logout_button
+            else logout_button[0].attributes['href'].split('=')[1],
         )
 
     def _parse_anonymous_header(self, header: LexborNode) -> PageHeader:
@@ -126,5 +128,5 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             chats=None,
             balance=None,
             sales_available=False,
-            logout_token=None
+            logout_token=None,
         )
