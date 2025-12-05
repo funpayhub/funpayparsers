@@ -199,9 +199,22 @@ for *common-type* offers only.
 
 
 
-## FunPay Parser 0.5.3
+## FunPay Parsers 0.5.3
 
 ### Features
 
 - Added `logout_token` to `funpayparsers.types.common_page_elements.PageHeader`.
 - Added parsing of `logout_token` field.
+
+
+## FunPay Parsers 0.5.4
+
+### Features
+
+- Added `funpayparsers.types.settings.Settings` type.
+- Added `funpayparsers.types.pages.settings_page.SettingsPage` type.
+- Added `funpayparsers.parsers.page_parsers.settings_page_parser.SettingsPageParser`.
+
+# Fixes
+
+- Added spaces to word separators in date parsing tests.
