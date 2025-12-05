@@ -19,7 +19,7 @@ CURR_DATE = datetime.now().replace(
     tzinfo=ZoneInfo('Europe/Moscow')
 )
 
-SEPARATORS = (',', 'at', 'в', 'о')
+SEPARATORS = (',', ' at', ' в', ' о')
 
 
 @pytest.mark.parametrize(
