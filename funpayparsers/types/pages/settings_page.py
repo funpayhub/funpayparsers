@@ -24,9 +24,7 @@ class SettingsPage(FunPayPage):
 
     @classmethod
     def from_raw_source(
-        cls,
-        raw_source: str,
-        options: SettingsPageParsingOptions | None = None
+        cls, raw_source: str, options: SettingsPageParsingOptions | None = None
     ) -> SettingsPage:
         from funpayparsers.parsers.page_parsers.settings_page_parser import (
             SettingsPageParser,
