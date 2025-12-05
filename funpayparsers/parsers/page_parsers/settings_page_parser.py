@@ -46,8 +46,9 @@ class SettingsPageParser(FunPayHTMLObjectParser[SettingsPage, SettingsPageParsin
             options=self.options.page_header_parsing_options,
         ).parse()
 
-        settings_list = self.tree.css_first('div.settings-list')
-        settings_groups = settings_list.css('div.settings-group')
+        settings_list = self.tree.css_first('div.setting-list')
+
+        settings_groups = settings_list.css('div.setting-group')
 
         notifications = {}
         telegram_username = None
@@ -57,9 +58,9 @@ class SettingsPageParser(FunPayHTMLObjectParser[SettingsPage, SettingsPageParsin
         for button in notifications_block.css('button.btn-notice-channel'):
             if (
                 button.attributes['data-channel'] == '3'
-                and button.attributes.get('disabled') is not None
+                and 'disabled' not in button.attributes
             ):
-                telegram_username = button.parent.parent.css_first('p.b').text(strip=True)[1:]
+                telegram_username = button.parent.parent.css_first('b').text(strip=True)[1:]
 
             notifications[button.attributes['data-channel']] = (
                 button.attributes['data-active'] == '1'
