@@ -18,7 +18,4 @@ class SettingsPage(FunPayPage):
     """User settings."""
 
     @classmethod
-    def from_raw_source(
-        cls, raw_source: str, options: None = None
-    ) -> SettingsPage:
-        ...
+    def from_raw_source(cls, raw_source: str, options: None = None) -> SettingsPage: ...
