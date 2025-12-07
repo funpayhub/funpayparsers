@@ -12,7 +12,7 @@ __all__ = (
     'RunnerResponse',
 )
 
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, Literal
 from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
@@ -126,7 +126,7 @@ class RunnerResponseObject(FunPayObject, Generic[UpdateData]):
     tag: str
     """Runner tag."""
 
-    data: UpdateData
+    data: UpdateData | Literal[False]
     """Runner object data."""
 
 

@@ -175,7 +175,8 @@ class UpdatesParser(FunPayJSONObjectParser[RunnerResponse, UpdatesParsingOptions
             return None
 
         method = self.__parsing_methods__[update_type]
-        obj = method(self, update_dict['data'])
+        data = update_dict.get('data')
+        obj = method(self, update_dict['data']) if data else False
 
         return RunnerResponseObject(
             raw_source=str(update_dict),
