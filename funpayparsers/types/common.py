@@ -143,8 +143,8 @@ class Achievement(FunPayObject):
 class CurrentlyViewingOfferInfo(FunPayObject):
     """represents a currently viewing offer info."""
 
-    id: int | str
+    id: int | str | None
     """Offer ID."""
 
-    title: str
+    title: str | None
     """Offer title."""

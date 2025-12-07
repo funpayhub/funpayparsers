@@ -143,7 +143,7 @@ class RunnerResponse(FunPayObject):
     chat_bookmarks: RunnerResponseObject[ChatBookmarks] | None
     """Chat bookmarks data."""
 
-    cpu: RunnerResponseObject[CurrentlyViewingOfferInfo] | None
+    cpu: list[RunnerResponseObject[CurrentlyViewingOfferInfo]] | None
     """Currently viewing offer info."""
 
     nodes: list[RunnerResponseObject[ChatNode]] | None

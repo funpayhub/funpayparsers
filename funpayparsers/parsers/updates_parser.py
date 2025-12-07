@@ -78,7 +78,7 @@ class UpdatesParser(FunPayJSONObjectParser[RunnerResponse, UpdatesParsingOptions
             orders_counters=None,
             chat_counter=None,
             chat_bookmarks=None,
-            cpu=None,
+            cpu=[],
             nodes=[],
             unknown_objects=[],
             response=None,
@@ -100,11 +100,14 @@ class UpdatesParser(FunPayJSONObjectParser[RunnerResponse, UpdatesParsingOptions
                 updates_obj.unknown_objects.append(obj)  # type: ignore[union-attr]
             elif result.type is RunnerDataType.CHAT_NODE:
                 updates_obj.nodes.append(result)  # type: ignore[union-attr]
+            elif result.type is RunnerDataType.CPU:
+                updates_obj.cpu.append(result)
             else:
                 setattr(updates_obj, self.__update_fields__[result.type], result)
 
         updates_obj.nodes = updates_obj.nodes or None
         updates_obj.unknown_objects = updates_obj.unknown_objects or None
+        updates_obj.cpu = updates_obj.cpu or None
 
         return updates_obj
 
@@ -135,6 +138,14 @@ class UpdatesParser(FunPayJSONObjectParser[RunnerResponse, UpdatesParsingOptions
         )
 
     def _parse_cpu(self, obj: dict[str, Any]) -> CurrentlyViewingOfferInfo:
+        html_ = obj.get('html')
+        if not html_:
+            return CurrentlyViewingOfferInfo(
+                raw_source=json.dumps(obj, ensure_ascii=False),
+                id=None,
+                title=None
+            )
+
         html_ = obj['html']['desktop']
         return CurrentlyViewingOfferInfoParser(
             html_,
