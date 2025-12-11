@@ -112,12 +112,16 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
             or None,
             order_subcategory_id=int(subcategory_url.split('/')[-2]),
             order_subcategory_type=SubcategoryType.get_by_url(subcategory_url),
-            review=ReviewsParser(
-                self.tree.css_first('div.review-container').html or '',
-                options=self.options.reviews_parsing_options,
-            )
-            .parse()
-            .reviews[0],
+            review=(
+                ReviewsParser(
+                    self.tree.css_first('div.review-container').html or '',
+                    options=self.options.reviews_parsing_options,
+                )
+                .parse()
+                .reviews[0]
+                if self.tree.css('div.review-container')
+                else None
+            ),
             chat=ChatParser(
                 self.tree.css_first('div.chat').html or '',
                 options=self.options.chat_parsing_options,

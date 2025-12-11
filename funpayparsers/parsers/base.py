@@ -94,7 +94,7 @@ class ParsingOptions:
         for k in self_fields:
             if k in other_fields and (non_explicit or k in other_explicit_fields):
                 if k == 'context':
-                    self_fields[k] = other_fields[k] | other_fields[k]
+                    self_fields[k] = self_fields[k] | other_fields[k]
                 else:
                     self_fields[k] = other_fields[k]
 

@@ -12,7 +12,7 @@ __all__ = (
     'RunnerResponse',
 )
 
-from typing import Any, Generic, TypeVar, Literal
+from typing import Any, Generic, Literal, TypeVar
 from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
