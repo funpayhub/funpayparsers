@@ -116,6 +116,5 @@ class MyLotsPageParser(FunPayHTMLObjectParser[MyLotsPage, MyLotsPageParsingOptio
             seller=None,
             other_data={},
             other_data_names={},
-            is_disabled='warning' in classes,
             disabled='warning' in classes,
         )
