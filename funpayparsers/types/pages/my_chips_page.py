@@ -21,7 +21,7 @@ class MyChipsPage(FunPayPage):
     subcategory_id: int
     """Subcategory ID of the chips."""
 
-    game_id: int | None
+    category_id: int | None
     """Game ID (hidden input `name="game"`)."""
 
     fields: OfferFields

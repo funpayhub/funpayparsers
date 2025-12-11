@@ -7,13 +7,15 @@ from typing import cast
 from dataclasses import dataclass
 
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
-from funpayparsers.types.offers import OfferFields
-from funpayparsers.parsers.utils import serialize_form
 from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
 from funpayparsers.types.pages.my_chips_page import MyChipsPage
 from funpayparsers.parsers.page_header_parser import (
     PageHeaderParser,
     PageHeaderParsingOptions,
+)
+from funpayparsers.parsers.offer_fields_parser import (
+    OfferFieldsParser,
+    OfferFieldsParsingOptions,
 )
 
 
@@ -29,6 +31,11 @@ class MyChipsPageParsingOptions(ParsingOptions):
     app_data_parsing_options: AppDataParsingOptions = AppDataParsingOptions()
     """
     Options for ``AppDataParser``.
+    """
+
+    offer_fields_parsing_options: OfferFieldsParsingOptions = OfferFieldsParsingOptions()
+    """
+    Options for ``OfferFieldsParser``.
     """
 
 
@@ -49,13 +56,16 @@ class MyChipsPageParser(FunPayHTMLObjectParser[MyChipsPage, MyChipsPageParsingOp
         ).parse()
 
         form = self.tree.css_first('form.form-ajax-simple')
-        fields_dict = serialize_form(form)
+        fields_obj = OfferFieldsParser(
+            raw_source=form.html or '',
+            options=self.options.offer_fields_parsing_options,
+        ).parse()
 
         # game id is stored as hidden input "game"
-        game_id = None
-        game_val = fields_dict.get('game')
+        category_id = None
+        game_val = fields_obj.fields_dict.get('game')
         if game_val and str(game_val).isnumeric():
-            game_id = int(game_val)
+            category_id = int(game_val)
 
         # subcategory from alternate link: https://funpay.com/chips/<id>/trade
         subcategory_id = None
@@ -70,6 +80,6 @@ class MyChipsPageParser(FunPayHTMLObjectParser[MyChipsPage, MyChipsPageParsingOp
             header=header,
             app_data=app_data,
             subcategory_id=subcategory_id if subcategory_id is not None else 0,
-            game_id=game_id,
-            fields=OfferFields(raw_source=form.html or '', fields_dict=fields_dict),
+            category_id=category_id,
+            fields=fields_obj,
         )

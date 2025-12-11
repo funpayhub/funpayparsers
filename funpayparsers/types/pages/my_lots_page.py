@@ -21,7 +21,7 @@ class MyLotsPage(FunPayPage):
     subcategory_id: int
     """Subcategory ID of the lots."""
 
-    game_id: int | None
+    category_id: int | None
     """Game ID (from raise button data-game, if present)."""
 
     offers: dict[int | str, OfferPreview]
