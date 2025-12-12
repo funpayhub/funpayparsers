@@ -22,7 +22,7 @@ class MyOffersPage(FunPayPage):
     """Category ID (from raise button data-game, if present)."""
 
     subcategory_id: int
-    """Subcategory ID of the lots."""
+    """Subcategory ID."""
 
     offers: dict[int | str, OfferPreview]
     """Owned offers mapped by offer ID."""

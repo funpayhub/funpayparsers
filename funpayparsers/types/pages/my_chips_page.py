@@ -18,11 +18,11 @@ if TYPE_CHECKING:
 class MyChipsPage(FunPayPage):
     """Represents personal chips page (`/chips/<subcategory_id>/trade`)."""
 
-    subcategory_id: int
-    """Subcategory ID of the chips."""
-
     category_id: int | None
-    """Game ID (hidden input `name="game"`)."""
+    """Category ID (hidden input `name="game"`)."""
+
+    subcategory_id: int
+    """Subcategory ID."""
 
     fields: OfferFields
     """All form fields for chips offers (editable values)."""
