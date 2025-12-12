@@ -1,18 +1,18 @@
 from __future__ import annotations
 
 
-__all__ = ('MyLotsPageParsingOptions', 'MyLotsPageParser')
+__all__ = ('MyOffersPageParsingOptions', 'MyOffersPageParser')
 
 from typing import cast
 from dataclasses import dataclass
 
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
-from funpayparsers.types.pages.my_lots_page import MyLotsPage
 from funpayparsers.parsers.page_header_parser import (
     PageHeaderParser,
     PageHeaderParsingOptions,
 )
+from funpayparsers.types.pages.my_offers_page import MyOffersPage
 from funpayparsers.parsers.offer_previews_parser import (
     OfferPreviewsParser,
     OfferPreviewsParsingOptions,
@@ -20,8 +20,8 @@ from funpayparsers.parsers.offer_previews_parser import (
 
 
 @dataclass(frozen=True)
-class MyLotsPageParsingOptions(ParsingOptions):
-    """Options class for ``MyLotsPageParser``."""
+class MyOffersPageParsingOptions(ParsingOptions):
+    """Options class for ``MyOffersPageParser``."""
 
     page_header_parsing_options: PageHeaderParsingOptions = PageHeaderParsingOptions()
     """
@@ -39,12 +39,12 @@ class MyLotsPageParsingOptions(ParsingOptions):
     """
 
 
-class MyLotsPageParser(FunPayHTMLObjectParser[MyLotsPage, MyLotsPageParsingOptions]):
+class MyOffersPageParser(FunPayHTMLObjectParser[MyOffersPage, MyOffersPageParsingOptions]):
     """
     Parser for personal lots page (`/lots/<subcategory_id>/trade`).
     """
 
-    def _parse(self) -> MyLotsPage:
+    def _parse(self) -> MyOffersPage:
         header = PageHeaderParser(
             self.tree.css_first('header').html or '',
             options=self.options.page_header_parsing_options,
@@ -73,7 +73,7 @@ class MyLotsPageParser(FunPayHTMLObjectParser[MyLotsPage, MyLotsPageParsingOptio
             game_str = raise_btn.attributes.get('data-game')
             category_id = int(game_str) if game_str and game_str.isnumeric() else None
 
-        return MyLotsPage(
+        return MyOffersPage(
             raw_source=self.raw_source,
             header=header,
             app_data=app_data,

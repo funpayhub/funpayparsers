@@ -113,24 +113,21 @@ class OfferPreviewsParser(
                     continue
                 names[data_key] = divs[0].text(strip=True)
 
-            offer = OfferPreview(
-                raw_source=offer_div.html or '',
-                id=int(offer_id_str) if offer_id_str.isnumeric() else offer_id_str,
-                auto_delivery=bool(offer_div.attributes.get('data-auto')),
-                is_pinned=bool(offer_div.attributes.get('data-user')),
-                title=desc,
-                amount=amount,
-                price=price,
-                seller=seller,
-                other_data=additional_data,
-                other_data_names=names,
+            result.append(
+                OfferPreview(
+                    raw_source=offer_div.html or '',
+                    id=int(offer_id_str) if offer_id_str.isnumeric() else offer_id_str,
+                    auto_delivery=bool(offer_div.attributes.get('data-auto')),
+                    is_pinned=bool(offer_div.attributes.get('data-user')),
+                    title=desc,
+                    amount=amount,
+                    price=price,
+                    seller=seller,
+                    other_data=additional_data,
+                    other_data_names=names,
+                    disabled='warning' in (offer_div.attributes.get('class') or ''),
+                )
             )
-
-            # Personal lots pages mark disabled offers via class "warning".
-            if 'warning' in offer_div.attributes.get('class', ''):  # type: ignore # always has class
-                offer.disabled = True
-
-            result.append(offer)
 
         return result
 
