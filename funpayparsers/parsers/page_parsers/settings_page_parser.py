@@ -56,10 +56,7 @@ class SettingsPageParser(FunPayHTMLObjectParser[SettingsPage, SettingsPageParsin
 
         notifications_block = settings_groups[-1]
         for button in notifications_block.css('button.btn-notice-channel'):
-            if (
-                button.attributes['data-channel'] == '3'
-                and 'disabled' not in button.attributes
-            ):
+            if button.attributes['data-channel'] == '3' and 'disabled' not in button.attributes:
                 telegram_username = button.parent.parent.css_first('b').text(strip=True)[1:]
 
             notifications[button.attributes['data-channel']] = (

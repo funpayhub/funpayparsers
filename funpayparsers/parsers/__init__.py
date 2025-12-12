@@ -4,6 +4,7 @@ from .base import *
 from .cpu_parser import *
 from .chat_parser import *
 from .badge_parser import *
+from .page_parsers import *
 from .rating_parser import *
 from .appdata_parser import *
 from .reviews_parser import *

@@ -125,6 +125,7 @@ class OfferPreviewsParser(
                     seller=seller,
                     other_data=additional_data,
                     other_data_names=names,
+                    disabled='warning' in (offer_div.attributes.get('class') or ''),
                 )
             )
 

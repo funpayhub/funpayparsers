@@ -114,7 +114,7 @@ class UpdatesParser(FunPayJSONObjectParser[RunnerResponse, UpdatesParsingOptions
     def _parse_orders_counters(self, obj: dict[str, Any]) -> OrdersCounters:
         return OrdersCounters(
             raw_source=json.dumps(obj, ensure_ascii=False),
-            purchases=int(cast(str, obj.get('buyer'))) if obj.get('seller') else 0,
+            purchases=int(cast(str, obj.get('buyer'))) if obj.get('buyer') else 0,
             sales=int(cast(str, obj.get('seller'))) if obj.get('seller') else 0,
         )
 
@@ -141,9 +141,7 @@ class UpdatesParser(FunPayJSONObjectParser[RunnerResponse, UpdatesParsingOptions
         html_ = obj.get('html')
         if not html_:
             return CurrentlyViewingOfferInfo(
-                raw_source=json.dumps(obj, ensure_ascii=False),
-                id=None,
-                title=None
+                raw_source=json.dumps(obj, ensure_ascii=False), id=None, title=None
             )
 
         html_ = obj['html']['desktop']

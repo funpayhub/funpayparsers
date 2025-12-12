@@ -92,6 +92,9 @@ class OfferPreview(FunPayObject):
     (not all entries have a name).
     """
 
+    disabled: bool = False
+    """Whether the offer is disabled (alias, defaults to ``False``)."""
+
 
 T = TypeVar('T')
 P = ParamSpec('P')
