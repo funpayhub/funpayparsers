@@ -218,3 +218,17 @@ for *common-type* offers only.
 # Fixes
 
 - Added spaces to word separators in date parsing tests.
+
+
+# FunPay Parsers 0.5.8
+
+### Features
+
+- Added `funpayparsers.types.pages.offer_page.OfferPage` type.
+- Added `funpayparsers.types.common.DetailedUserBalance` type.
+- Added `funpayparsers.types.common.PaymentOption` type.
+- Added `funpayparsers.parsers.page_parsers.OfferPageParser` parser.
+
+# Fixes
+
+- `funpayparsers.parsers.utils.parse_money_value_string` now can parser money value strings with more than 1 currency characters (e.g., `USDT`.)
