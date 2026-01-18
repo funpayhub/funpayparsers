@@ -24,7 +24,7 @@ from funpayparsers.types.messages import Message
 
 
 CSS_URL_RE = re.compile(r'url\(([^()]+)\)', re.IGNORECASE)
-MONEY_VALUE_RE = re.compile(r'^([+\-]?\d+(?:\.\d+)?)(.)$')
+MONEY_VALUE_RE = re.compile(r'^([+\-]?\d+(?:\.\d+)?)(.+)$')
 
 
 TODAY_WORDS = ['сегодня', 'сьогодні', 'today']

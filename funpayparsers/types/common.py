@@ -8,10 +8,13 @@ __all__ = (
     'UserRating',
     'Achievement',
     'CurrentlyViewingOfferInfo',
+    'DetailedUserBalance',
+    'PaymentOption',
 )
 
 from dataclasses import dataclass
 
+from funpayparsers.types import FunPayObject
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.enums import Currency, BadgeType
 
@@ -148,3 +151,43 @@ class CurrentlyViewingOfferInfo(FunPayObject):
 
     title: str | None
     """Offer title."""
+
+
+@dataclass
+class PaymentOption(FunPayObject):
+    """Represents an offer payment option (typically from offer page)."""
+
+    id: str
+    """Payment option ID."""
+
+    title: str
+    """Payment option title."""
+
+    price: MoneyValue
+    """Payment option price."""
+
+    factors: list[float]
+    """No idea what this is."""
+
+
+@dataclass
+class DetailedUserBalance(FunPayObject):
+    """Represents a detailed user balance (typically from offer page)."""
+
+    total_rub: float
+    """Total RUB balance."""
+
+    withdrawable_rub: float
+    """Available to withdraw RUB balance."""
+
+    total_usd: float
+    """Total USD balance."""
+
+    withdrawable_usd: float
+    """Available to deposit USD balance."""
+
+    total_eur: float
+    """Total EUR balance."""
+
+    withdrawable_eur: float
+    """Available to withdraw EUR balance."""
