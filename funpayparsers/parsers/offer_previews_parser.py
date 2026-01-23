@@ -61,7 +61,12 @@ class OfferPreviewsParser(
 
         for offer_div in self.tree.css('a.tc-item'):
             url: str = offer_div.attributes['href']  # type: ignore[assignment] # always has href
-            offer_id_str = url.split('id=')[1]
+
+            if data_offer := offer_div.attributes.get('data-offer', None):
+                offer_id_str = data_offer
+            else:
+                offer_id_str = url.split('id=')[1]
+
             desc_divs = offer_div.css('div.tc-desc-text')
             # currency offers don't have description.
             desc = desc_divs[0].text(strip=True) if desc_divs else None

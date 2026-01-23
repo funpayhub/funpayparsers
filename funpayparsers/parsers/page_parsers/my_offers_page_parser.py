@@ -56,9 +56,8 @@ class MyOffersPageParser(FunPayHTMLObjectParser[MyOffersPage, MyOffersPageParsin
         ).parse()
 
         # subcategory from alternate link: https://funpay.com/lots/<id>/trade
-        alt_links = self.tree.css('link[rel="alternate"]')
         subcategory_id = None
-        for link in alt_links:
+        for link in self.tree.css('link[rel="alternate"]'):
             href = cast(str, link.attributes.get('href', ''))
             if '/lots/' in href and '/trade' in href:
                 subcategory_id = int(href.split('/')[-2])

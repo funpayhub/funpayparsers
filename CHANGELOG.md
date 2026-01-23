@@ -232,3 +232,11 @@ for *common-type* offers only.
 # Fixes
 
 - `funpayparsers.parsers.utils.parse_money_value_string` now can parser money value strings with more than 1 currency characters (e.g., `USDT`.)
+
+
+# FunPay Parsers 0.5.9
+
+
+# Fixes
+
+- Fixed `funpayparsers.parsers.offer_previews_parser.OfferPreviewsParser`: now it can parse offer previews from my offers page.
