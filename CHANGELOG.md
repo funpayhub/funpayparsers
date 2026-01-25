@@ -215,12 +215,12 @@ for *common-type* offers only.
 - Added `funpayparsers.types.pages.settings_page.SettingsPage` type.
 - Added `funpayparsers.parsers.page_parsers.settings_page_parser.SettingsPageParser`.
 
-# Fixes
+### Fixes
 
 - Added spaces to word separators in date parsing tests.
 
 
-# FunPay Parsers 0.5.8
+## FunPay Parsers 0.5.8
 
 ### Features
 
@@ -229,14 +229,20 @@ for *common-type* offers only.
 - Added `funpayparsers.types.common.PaymentOption` type.
 - Added `funpayparsers.parsers.page_parsers.OfferPageParser` parser.
 
-# Fixes
+### Fixes
 
 - `funpayparsers.parsers.utils.parse_money_value_string` now can parser money value strings with more than 1 currency characters (e.g., `USDT`.)
 
 
-# FunPay Parsers 0.5.9
+## FunPay Parsers 0.5.9
 
-
-# Fixes
+### Fixes
 
 - Fixed `funpayparsers.parsers.offer_previews_parser.OfferPreviewsParser`: now it can parse offer previews from my offers page.
+
+
+## FunPay Parsers 0.5.10
+
+### Features
+- Added field `.unit` to `funpayparsers.types.offers.OfferPreview`.
+- Added parsing of unit field in offer preview.
