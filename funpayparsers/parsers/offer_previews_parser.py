@@ -84,8 +84,14 @@ class OfferPreviewsParser(
                     strip=True
                 )
                 amount = int(amount_str) if amount_str.isnumeric() else None
+                unit_div = amount_div[0].css_first('span', strict=False)
+                if unit_div:
+                    unit = unit_div.text(strip=True)
+                else:
+                    unit = None
             else:
                 amount = None
+                unit = None
 
             price_div = offer_div.css('div.tc-price')[0]
             price = MoneyValueParser(
@@ -126,6 +132,7 @@ class OfferPreviewsParser(
                     is_pinned=bool(offer_div.attributes.get('data-user')),
                     title=desc,
                     amount=amount,
+                    unit=unit,
                     price=price,
                     seller=seller,
                     other_data=additional_data,

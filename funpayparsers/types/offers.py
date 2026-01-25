@@ -72,6 +72,8 @@ class OfferPreview(FunPayObject):
     amount: int | None
     """The quantity of goods available in this offer, if specified."""
 
+    unit: str | None
+
     price: MoneyValue
     """The price of the offer."""
 
