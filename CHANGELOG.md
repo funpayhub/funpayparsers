@@ -246,3 +246,10 @@ for *common-type* offers only.
 ### Features
 - Added field `.unit` to `funpayparsers.types.offers.OfferPreview`.
 - Added parsing of unit field in offer preview.
+
+
+## FunPay Parsers 0.5.11
+
+### Features
+- Added field `.fields_names` to `funpayparsers.types.offers.OfferFields`, that contains field ID to field human-readable name mapping.
+- Added parsing of `.fields_names`.

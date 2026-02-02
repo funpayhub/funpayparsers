@@ -164,6 +164,9 @@ class OfferFields(FunPayObject):
     fields_dict: dict[str, str] = field(default_factory=dict)
     """All fields as dict."""
 
+    fields_names: dict[str, str] = field(default_factory=dict)
+    """Field names."""
+
     def __post_init__(self) -> None:
         if 'csrf_token' in self.fields_dict:
             del self.fields_dict['csrf_token']
