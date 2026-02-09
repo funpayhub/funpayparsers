@@ -253,3 +253,9 @@ for *common-type* offers only.
 ### Features
 - Added field `.fields_names` to `funpayparsers.types.offers.OfferFields`, that contains field ID to field human-readable name mapping.
 - Added parsing of `.fields_names`.
+
+
+## FunPay Parsers 0.5.12
+
+### Fixes
+- `NEW_ORDER` regular expression now covers currency orders.

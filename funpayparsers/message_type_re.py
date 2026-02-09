@@ -28,9 +28,10 @@ _f_dict = {'urs': _urs, 'oirs': _oirs}
 
 NEW_ORDER = re.compile(
     r'(?m:Покупатель (?P<u>%(urs)s) оплатил заказ #%(oirs)s\. .+\n'
-    r'(?P=u), не забудьте потом нажать кнопку «Подтвердить выполнение заказа»\.)|'
+    r'(?P=u), не забудьте потом нажать кнопку «Подтвердить (?:выполнение заказа|получение валюты)»\.)|'
     r'(?m:The buyer (?P<e_u>%(urs)s) has paid for order #%(oirs)s\. .+\n'
-    r'(?P=e_u), do not forget to press the «Confirm order fulfilment» button once you finish.)'
+    r'(?P=e_u), do not forget to press the '
+    r'«Confirm (?:order fulfilment|currency receipt)» button once you finish.)'
     % _f_dict
 )
 """
