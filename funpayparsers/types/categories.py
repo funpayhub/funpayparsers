@@ -42,8 +42,8 @@ class Subcategory(FunPayObject):
     .. warning:: 
         Subcategory ID is not always unique. 
         IDs are unique per subcategory type but may repeat across types.
-        That means, that some common category (``CategoryType.COMMON``) 
-        can have same ID as some currency category (``CategoryType.CURRENCY``).
+        That means, that some common category (``CategoryType.OFFERS``) 
+        can have same ID as some currency category (``CategoryType.CHIPS``).
     
     Example:
         Common category `Lineage 2 Items (RU)` (category ID: ``1``): 

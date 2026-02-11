@@ -135,8 +135,8 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
 
         if offer_divs:
             offers: dict[SubcategoryType, dict[int, list[OfferPreview]]] | None = {
-                SubcategoryType.COMMON: {},
-                SubcategoryType.CURRENCY: {},
+                SubcategoryType.OFFERS: {},
+                SubcategoryType.CHIPS: {},
                 SubcategoryType.UNKNOWN: {},
             }
             for offer_div in offer_divs:

@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from enum import Enum
 from types import MappingProxyType
 from functools import cache
+import warnings
 
 from funpayparsers import message_type_re as msg_re
 
@@ -60,10 +61,10 @@ class _SubcategoryTypeAliases:
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
 
-    COMMON = _SubcategoryTypeAliases('lots', 'lot')
+    OFFERS = _SubcategoryTypeAliases('lots', 'lot')
     """Common lots."""
 
-    CURRENCY = _SubcategoryTypeAliases('chips', 'chip')
+    CHIPS = _SubcategoryTypeAliases('chips', 'chip')
     """Currency lots (/chips/)."""
 
     UNKNOWN = _SubcategoryTypeAliases('', '')
@@ -92,6 +93,22 @@ class SubcategoryType(Enum):
             if i.value.showcase_alias in showcase_data_section:
                 return i
         return SubcategoryType.UNKNOWN
+
+    @property
+    def COMMON(self) -> SubcategoryType:
+        warnings.warn(
+            '`SubcategoryType.COMMON` is deprecated. Use `SubcategoryType.OFFERS` instead.',
+            DeprecationWarning
+        )
+        return self.OFFERS
+
+    @property
+    def CURRENCY(self) -> SubcategoryType:
+        warnings.warn(
+            '`SubcategoryType.CURRENCY` is deprecated. Use `SubcategoryType.CHIPS` instead.',
+            DeprecationWarning
+        )
+        return self.CHIPS
 
 
 class OrderStatus(Enum):

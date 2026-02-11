@@ -259,3 +259,14 @@ for *common-type* offers only.
 
 ### Fixes
 - `NEW_ORDER` regular expression now covers currency orders.
+
+
+## FunPay Parser 0.5.13
+
+### Features
+- Added `SubcategoryType.CHIPS`.
+- Added `SubcategoryType.OFFER`.
+
+### Deprecations
+- Deprecated `SubcategoryType.CURRENCY`.
+- Deprecated `SubcategoryType.COMMON`.
