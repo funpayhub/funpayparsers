@@ -157,6 +157,9 @@ class Currency(Enum):
     @staticmethod
     def get_by_character(character: str, /) -> Currency:
         """Determine the currency based on a given currency string."""
+        if character == '¤':
+            return Currency.RUB
+
         for i in Currency:
             if i.value == character:
                 return i
