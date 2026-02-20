@@ -42,7 +42,7 @@ class MessageMetaParser(FunPayHTMLObjectParser[MessageMeta, MessageMetaParsingOp
             MessageType.FEEDBACK_REPLY_DELETED: self.parse_feedback_reply_message,
         }
 
-        msg_type = MessageType.get_by_message_text(self.tree.text())
+        msg_type = MessageType.from_message_text(self.tree.text())
 
         if msg_type not in parse_mapping:
             return MessageMeta(raw_source=self.raw_source, type=msg_type)

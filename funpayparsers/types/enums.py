@@ -201,29 +201,50 @@ class TransactionStatus(Enum):
 class MessageType(Enum):
     NON_SYSTEM = 'NON_SYSTEM'
     UNKNOWN_SYSTEM = 'UNKNOWN_SYSTEM'
-    NEW_ORDER = msg_re.NEW_ORDER
-    ORDER_CLOSED = msg_re.ORDER_CLOSED
-    ORDER_CLOSED_BY_ADMIN = msg_re.ORDER_CLOSED_BY_ADMIN
-    ORDER_REOPENED = msg_re.ORDER_REOPENED
-    ORDER_REFUNDED = msg_re.ORDER_REFUNDED
-    ORDER_PARTIALLY_REFUNDED = msg_re.ORDER_PARTIALLY_REFUND
-    NEW_FEEDBACK = msg_re.NEW_FEEDBACK
-    FEEDBACK_CHANGED = msg_re.FEEDBACK_CHANGED
-    FEEDBACK_DELETED = msg_re.FEEDBACK_DELETED
-    NEW_FEEDBACK_REPLY = msg_re.NEW_FEEDBACK_REPLY
-    FEEDBACK_REPLY_CHANGED = msg_re.FEEDBACK_REPLY_CHANGED
-    FEEDBACK_REPLY_DELETED = msg_re.FEEDBACK_REPLY_DELETED
+    NEW_ORDER = 'NEW_ORDER'
+    ORDER_CLOSED = 'ORDER_CLOSED'
+    ORDER_CLOSED_BY_ADMIN = 'ORDER_CLOSED_BY_ADMIN'
+    ORDER_REOPENED = 'ORDER_REOPENED'
+    ORDER_REFUNDED = 'ORDER_REFUNDED'
+    ORDER_PARTIALLY_REFUNDED = 'ORDER_PARTIALLY_REFUND'
+    NEW_FEEDBACK = 'NEW_FEEDBACK'
+    FEEDBACK_CHANGED = 'FEEDBACK_CHANGED'
+    FEEDBACK_DELETED = 'FEEDBACK_DELETED'
+    NEW_FEEDBACK_REPLY = 'NEW_FEEDBACK_REPLY'
+    FEEDBACK_REPLY_CHANGED = 'FEEDBACK_REPLY_CHANGED'
+    FEEDBACK_REPLY_DELETED = 'FEEDBACK_REPLY_DELETED'
 
     @staticmethod
     def get_by_message_text(message_text: str, /) -> MessageType:
-        for i in MessageType:
-            if isinstance(i.value, str):
-                continue
+        warnings.warn(
+            '`MessageType.get_by_message_text` is deprecated. '
+            'Use `MessageType.from_message_text` instead.',
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return MessageType.from_message_text(message_text)
 
-            if i.value.fullmatch(message_text):
-                return i
-
+    @classmethod
+    def from_message_text(cls, message_text: str, /) -> MessageType:
+        for t, regexp in _MESSAGE_RE.items():
+            if regexp.fullmatch(message_text):
+                return t
         return MessageType.NON_SYSTEM
+
+_MESSAGE_RE = {
+    MessageType.NEW_ORDER: msg_re.NEW_ORDER,
+    MessageType.ORDER_CLOSED: msg_re.ORDER_CLOSED,
+    MessageType.ORDER_CLOSED_BY_ADMIN: msg_re.ORDER_CLOSED_BY_ADMIN,
+    MessageType.ORDER_REOPENED: msg_re.ORDER_REOPENED,
+    MessageType.ORDER_REFUNDED: msg_re.ORDER_REFUNDED,
+    MessageType.ORDER_PARTIALLY_REFUNDED: msg_re.ORDER_PARTIALLY_REFUND,
+    MessageType.NEW_FEEDBACK: msg_re.NEW_FEEDBACK,
+    MessageType.FEEDBACK_CHANGED: msg_re.FEEDBACK_CHANGED,
+    MessageType.FEEDBACK_DELETED: msg_re.FEEDBACK_DELETED,
+    MessageType.NEW_FEEDBACK_REPLY: msg_re.NEW_FEEDBACK_REPLY,
+    MessageType.FEEDBACK_REPLY_CHANGED: msg_re.FEEDBACK_REPLY_CHANGED,
+    MessageType.FEEDBACK_REPLY_DELETED: msg_re.FEEDBACK_REPLY_DELETED,
+}
 
 
 class BadgeType(Enum):

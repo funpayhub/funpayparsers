@@ -166,4 +166,4 @@ def feedback_reply_deleted_en() -> str:
 )
 def test_message_type_determination(message, expected, request):
     message_text = request.getfixturevalue(message)
-    assert MessageType.get_by_message_text(message_text) is expected
+    assert MessageType.from_message_text(message_text) is expected
