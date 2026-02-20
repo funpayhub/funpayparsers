@@ -205,23 +205,35 @@ _ORDER_STATUSES = {
 class Currency(Enum):
     """Currencies enumeration."""
 
-    UNKNOWN = ''
+    UNKNOWN = 'UNKNOWN'
     """Unknown currency. Just in case, for future FunPay updates."""
 
-    RUB = '₽'
-    USD = '$'
-    EUR = '€'
+    RUB = 'RUB'
+    USD = 'USD'
+    EUR = 'EUR'
 
     @staticmethod
     def get_by_character(character: str, /) -> Currency:
         """Determine the currency based on a given currency string."""
-        if character == '¤':
-            return Currency.RUB
+        warnings.warn(
+            '`Currency.get_by_character` is deprecated. Use `Currency.from_character` instead.',
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return Currency.from_character(character)
 
-        for i in Currency:
-            if i.value == character:
-                return i
-        return Currency.UNKNOWN
+    @classmethod
+    def from_character(cls, character: str, /) -> Currency:
+        """Determine the currency based on a given currency string."""
+        return _CURRENCIES.get(character, Currency.UNKNOWN)
+
+
+_CURRENCIES = {
+    '₽': Currency.RUB,
+    '$': Currency.USD,
+    '€': Currency.EUR,
+    '¤': Currency.RUB,
+}
 
 
 class TransactionStatus(Enum):

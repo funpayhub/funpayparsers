@@ -39,7 +39,7 @@ class MoneyValue(FunPayObject):
 
     @property
     def currency(self) -> Currency:
-        return Currency.get_by_character(self.character)
+        return Currency.from_character(self.character)
 
 
 @dataclass

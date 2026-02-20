@@ -15,4 +15,4 @@ from funpayparsers.types.enums import Currency
     ]
 )
 def test_currency_determination(char, expected_value):
-    assert Currency.get_by_character(char) is expected_value
+    assert Currency.from_character(char) is expected_value
