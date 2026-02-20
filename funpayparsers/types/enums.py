@@ -65,12 +65,6 @@ class RunnerDataType(Enum):
         return data.get(type_str.lower())
 
 
-@dataclass(frozen=True)
-class _SubcategoryTypeAliases:
-    url_alias: str
-    showcase_alias: str
-
-
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
 
@@ -128,7 +122,6 @@ class SubcategoryType(Enum):
                 return enm
         return SubcategoryType.UNKNOWN
 
-
     @property
     def COMMON(self) -> SubcategoryType:
         warnings.warn(
@@ -145,9 +138,24 @@ class SubcategoryType(Enum):
         )
         return self.CHIPS
 
+    @property
+    def url_alias(self) -> str:
+        return _SUBCATEGORY_TYPE_ALIASES[self].url_alias
+
+    @property
+    def showcase_alias(self) -> str:
+        return _SUBCATEGORY_TYPE_ALIASES[self].showcase_alias
+
+
+@dataclass(frozen=True)
+class _SubcategoryTypeAliases:
+    url_alias: str
+    showcase_alias: str
+
 _SUBCATEGORY_TYPE_ALIASES = {
     SubcategoryType.OFFERS: _SubcategoryTypeAliases('lots', 'lot'),
-    SubcategoryType.CHIPS: _SubcategoryTypeAliases('chips', 'chip')
+    SubcategoryType.CHIPS: _SubcategoryTypeAliases('chips', 'chip'),
+    SubcategoryType.UNKNOWN: _SubcategoryTypeAliases('', '')
 }
 
 
