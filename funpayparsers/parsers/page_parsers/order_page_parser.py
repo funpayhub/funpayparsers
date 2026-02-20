@@ -111,7 +111,7 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
             images=[cast(str, i.attributes['href']) for i in self.tree.css('a.attachments-thumb')]
             or None,
             order_subcategory_id=int(subcategory_url.split('/')[-2]),
-            order_subcategory_type=SubcategoryType.get_by_url(subcategory_url),
+            order_subcategory_type=SubcategoryType.from_url(subcategory_url),
             review=(
                 ReviewsParser(
                     self.tree.css_first('div.review-container').html or '',

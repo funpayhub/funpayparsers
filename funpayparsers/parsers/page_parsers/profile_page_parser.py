@@ -146,7 +146,7 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
                     offer_div.html or '',
                     options=self.options.offer_previews_parsing_options,
                 ).parse()
-                offers[SubcategoryType.get_by_url(url)][id_] = offers_objs  # type: ignore[index] # it is indexable, stupid mypy.
+                offers[SubcategoryType.from_url(url)][id_] = offers_objs  # type: ignore[index] # it is indexable, stupid mypy.
         else:
             offers = None
 

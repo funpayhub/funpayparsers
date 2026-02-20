@@ -74,13 +74,13 @@ class _SubcategoryTypeAliases:
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
 
-    OFFERS = _SubcategoryTypeAliases('lots', 'lot')
+    OFFERS = 'OFFERS'
     """Common lots."""
 
-    CHIPS = _SubcategoryTypeAliases('chips', 'chip')
+    CHIPS = 'CHIPS'
     """Currency lots (/chips/)."""
 
-    UNKNOWN = _SubcategoryTypeAliases('', '')
+    UNKNOWN = 'UNKNOWN'
     """Unknown type. Just in case, for future FunPay updates."""
 
     @staticmethod
@@ -88,24 +88,47 @@ class SubcategoryType(Enum):
         """
         Determine a subcategory type by URL.
         """
-        for i in SubcategoryType:
-            if i is SubcategoryType.UNKNOWN:
-                continue
-            if i.value.url_alias in url:
-                return i
-        return SubcategoryType.UNKNOWN
+        warnings.warn(
+            '`SubcategoryType.get_by_url` is deprecated. Use `SubcategoryType.from_url` instead.',
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return SubcategoryType.from_url(url)
 
     @staticmethod
     def get_by_showcase_data_section(showcase_data_section: str, /) -> SubcategoryType:
         """
         Determine a subcategory type by showcase data section value.
         """
+        warnings.warn(
+            '`SubcategoryType.get_by_showcase_data_section` is deprecated. '
+            'Use `SubcategoryType.from_showcase_data_section` instead.',
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return SubcategoryType.from_showcase_data_section(showcase_data_section)
+
+    @classmethod
+    def from_url(cls, url: str, /) -> SubcategoryType:
+        """
+        Determine a subcategory type by URL.
+        """
         for i in SubcategoryType:
             if i is SubcategoryType.UNKNOWN:
                 continue
-            if i.value.showcase_alias in showcase_data_section:
+            if _SUBCATEGORY_TYPE_ALIASES[i].url_alias in url:
                 return i
         return SubcategoryType.UNKNOWN
+
+    @classmethod
+    def from_showcase_data_section(cls, showcase_data_section: str, /) -> SubcategoryType:
+        for i in SubcategoryType:
+            if i is SubcategoryType.UNKNOWN:
+                continue
+            if _SUBCATEGORY_TYPE_ALIASES[i].showcase_alias in showcase_data_section:
+                return i
+        return SubcategoryType.UNKNOWN
+
 
     @property
     def COMMON(self) -> SubcategoryType:
@@ -122,6 +145,11 @@ class SubcategoryType(Enum):
             DeprecationWarning
         )
         return self.CHIPS
+
+_SUBCATEGORY_TYPE_ALIASES = {
+    SubcategoryType.OFFERS: _SubcategoryTypeAliases('lots', 'lot'),
+    SubcategoryType.CHIPS: _SubcategoryTypeAliases('chips', 'chip')
+}
 
 
 class OrderStatus(Enum):

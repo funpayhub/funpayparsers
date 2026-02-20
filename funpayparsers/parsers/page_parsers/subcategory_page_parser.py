@@ -66,7 +66,7 @@ class SubcategoryPageParser(
         subcategory_id_str: str = showcase.attributes['data-section']  # type: ignore[assignment]
         # always has 'data-section'
         related_subcategories = []
-        subcategory_type = SubcategoryType.get_by_showcase_data_section(subcategory_id_str)
+        subcategory_type = SubcategoryType.from_showcase_data_section(subcategory_id_str)
 
         for i in self.tree.css('a.counter-item'):
             url: str = i.attributes['href']  # type: ignore[assignment]
