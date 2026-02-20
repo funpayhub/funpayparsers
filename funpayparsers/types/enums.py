@@ -159,16 +159,16 @@ class OrderStatus(Enum):
     Each value is a css class, that identifies order status.
     """
 
-    PAID = 'text-primary'
+    PAID = 'PAID'
     """Paid, but not COMPLETED order."""
 
-    COMPLETED = 'text-success'
+    COMPLETED = 'COMPLETED'
     """Completed order."""
 
-    REFUNDED = 'text-warning'
+    REFUNDED = 'REFUNDED'
     """Refunded order."""
 
-    UNKNOWN = ''
+    UNKNOWN = 'UNKNOWN'
     """Unknown status. Just in case, for future FunPay updates."""
 
     @staticmethod
@@ -176,13 +176,30 @@ class OrderStatus(Enum):
         """
         Determine the order status based on a given CSS class string.
         """
-        for i in OrderStatus:
-            if i is OrderStatus.UNKNOWN:
-                continue
+        warnings.warn(
+            '`OrderStatus.get_by_css_class` is deprecated. '
+            'Use `OrderStatus.from_css_class` instead.',
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return OrderStatus.from_css_class(css_class)
 
-            if i.value in css_class:
-                return i
+    @classmethod
+    def from_css_class(cls, css_class: str, /) -> OrderStatus:
+        """
+        Determine the order status based on a given CSS class string.
+        """
+        for css, enm in _ORDER_STATUSES.items():
+            if css in css_class:
+                return enm
         return OrderStatus.UNKNOWN
+
+
+_ORDER_STATUSES = {
+    'text-primary': OrderStatus.PAID,
+    'text-success': OrderStatus.COMPLETED,
+    'text-warning': OrderStatus.REFUNDED
+}
 
 
 class Currency(Enum):
