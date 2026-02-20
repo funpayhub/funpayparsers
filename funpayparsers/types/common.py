@@ -75,7 +75,7 @@ class UserBadge(FunPayObject):
     def type(self) -> BadgeType:
         """Badge type."""
 
-        return BadgeType.get_by_css_class(self.css_class)
+        return BadgeType.from_css_class(self.css_class)
 
 
 @dataclass

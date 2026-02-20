@@ -229,24 +229,41 @@ class MessageType(Enum):
 class BadgeType(Enum):
     """Badge types enumeration."""
 
-    BANNED = 'label-danger'
-    NOTIFICATIONS = 'label-primary'
-    SUPPORT = 'label-success'
-    AUTO_DELIVERY = 'label-default'
-    NOT_ACTIVATED = 'label-warning'
-    UNKNOWN = ''
+    BANNED = 'BANNED'
+    NOTIFICATIONS = 'NOTIFICATIONS'
+    SUPPORT = 'SUPPORT'
+    AUTO_DELIVERY = 'AUTO_DELIVERY'
+    NOT_ACTIVATED = 'NOT_ACTIVATED'
+    UNKNOWN = 'UNKNOWN'
 
     @staticmethod
     def get_by_css_class(css_class: str, /) -> BadgeType:
         """
         Determine the badge type based on a given CSS class string.
         """
-        for i in BadgeType:
-            if i is BadgeType.UNKNOWN:
-                continue
+        warnings.warn(
+            '`BadgeType.get_by_css_class` is deprecated. '
+            'Use `BadgeType.from_css_class` instead.',
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return BadgeType.from_css_class(css_class)
 
-            if i.value in css_class:
-                return i
+    @classmethod
+    def from_css_class(cls, css_class: str, /) -> BadgeType:
+        """
+        Determine the badge type based on a given CSS class string.
+        """
+        data = {
+            'label-danger': BadgeType.BANNED,
+            'label-primary': BadgeType.NOTIFICATIONS,
+            'label-success': BadgeType.SUPPORT,
+            'label-default': BadgeType.AUTO_DELIVERY,
+            'label-warning': BadgeType.NOT_ACTIVATED,
+        }
+        for k, v in data.items():
+            if k in css_class:
+                return v
         return BadgeType.UNKNOWN
 
 
@@ -441,7 +458,7 @@ class PaymentMethod(Enum):
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=64``.
     """
 
-    UNKNOWN = ('',)
+    UNKNOWN = 'UNKNOWN'
     """Unknown payment method."""
 
     # MIR = 26, ('UNKNOWN', ), (345, Y)  =(
