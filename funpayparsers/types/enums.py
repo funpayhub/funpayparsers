@@ -26,19 +26,19 @@ from funpayparsers import message_type_re as msg_re
 class RunnerDataType(Enum):
     """Runner data types enumeration."""
 
-    ORDERS_COUNTERS = 'orders_counters'
+    ORDERS_COUNTERS = 'ORDERS_COUNTERS'
     """Orders counters data."""
 
-    CHAT_COUNTER = 'chat_counter'
+    CHAT_COUNTER = 'CHAT_COUNTER'
     """Chat counter data."""
 
-    CHAT_BOOKMARKS = 'chat_bookmarks'
+    CHAT_BOOKMARKS = 'CHAT_BOOKMARKS'
     """Chat bookmarks data."""
 
-    CHAT_NODE = 'chat_node'
+    CHAT_NODE = 'CHAT_NODE'
     """Chat node data."""
 
-    CPU = 'c-p-u'
+    CPU = 'CPU'
     """Currently viewing offer info."""
 
     @staticmethod
@@ -113,20 +113,19 @@ class SubcategoryType(Enum):
         """
         Determine a subcategory type by URL.
         """
-        for i in SubcategoryType:
-            if i is SubcategoryType.UNKNOWN:
-                continue
-            if _SUBCATEGORY_TYPE_ALIASES[i].url_alias in url:
-                return i
+        for enm, alias in _SUBCATEGORY_TYPE_ALIASES.items():
+            if alias.url_alias in url.lower():
+                return enm
         return SubcategoryType.UNKNOWN
 
     @classmethod
     def from_showcase_data_section(cls, showcase_data_section: str, /) -> SubcategoryType:
-        for i in SubcategoryType:
-            if i is SubcategoryType.UNKNOWN:
-                continue
-            if _SUBCATEGORY_TYPE_ALIASES[i].showcase_alias in showcase_data_section:
-                return i
+        """
+        Determine a subcategory type by showcase data section value.
+        """
+        for enm, alias in _SUBCATEGORY_TYPE_ALIASES.items():
+            if alias.showcase_alias in showcase_data_section.lower():
+                return enm
         return SubcategoryType.UNKNOWN
 
 
@@ -190,7 +189,7 @@ class OrderStatus(Enum):
         Determine the order status based on a given CSS class string.
         """
         for css, enm in _ORDER_STATUSES.items():
-            if css in css_class:
+            if css in css_class.lower():
                 return enm
         return OrderStatus.UNKNOWN
 
@@ -239,16 +238,16 @@ _CURRENCIES = {
 class TransactionStatus(Enum):
     """Transaction statuses enumeration."""
 
-    PENDING = 'transaction-status-waiting'
+    PENDING = 'PENDING'
     """Pending transaction."""
 
-    COMPLETED = 'transaction-status-complete'
+    COMPLETED = 'COMPLETED'
     """Completed transaction."""
 
-    CANCELLED = 'transaction-status-cancel'
+    CANCELLED = 'CANCELLED'
     """Cancelled transaction."""
 
-    UNKNOWN = ''
+    UNKNOWN = 'UNKNOWN'
     """Unknown transaction status. Just in case, for future FunPay updates."""
 
     @staticmethod
@@ -256,14 +255,29 @@ class TransactionStatus(Enum):
         """
         Determine the transaction type based on a given CSS class string.
         """
+        warnings.warn(
+            '`TransactionStatus.get_by_css_class` is deprecated. '
+            'Use `TransactionStatus.from_css_class` instead.',
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return TransactionStatus.from_css_class(css_class)
 
-        for i in TransactionStatus:
-            if i is TransactionStatus.UNKNOWN:
-                continue
-
-            if i.value in css_class:
-                return i
+    @classmethod
+    def from_css_class(cls, css_class: str, /) -> TransactionStatus:
+        """
+        Determine the transaction type based on a given CSS class string.
+        """
+        for css, enm in _TRANSACTION_STATUSES.items():
+            if css in css_class.lower():
+                return enm
         return TransactionStatus.UNKNOWN
+
+_TRANSACTION_STATUSES = {
+    'transaction-status-waiting': TransactionStatus.PENDING,
+    'transaction-status-complete': TransactionStatus.COMPLETED,
+    'transaction-status-cancel': TransactionStatus.CANCELLED,
+}
 
 
 class MessageType(Enum):
