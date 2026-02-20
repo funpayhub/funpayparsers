@@ -15,7 +15,7 @@ from funpayparsers.types.enums import Language
     ]
 )
 def test_language_by_appdata_determination(appdata_alias, expected_value):
-    assert Language.get_by_lang_code(appdata_alias) is expected_value
+    assert Language.from_lang_code(appdata_alias) is expected_value
 
 
 @pytest.mark.parametrize(
@@ -28,4 +28,4 @@ def test_language_by_appdata_determination(appdata_alias, expected_value):
     ]
 )
 def test_language_by_header_css_class_determination(css_class, expected_value):
-    assert Language.get_by_header_menu_css_class(css_class) is expected_value
+    assert Language.from_header_menu_css_class(css_class) is expected_value

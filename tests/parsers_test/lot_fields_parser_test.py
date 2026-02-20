@@ -135,6 +135,17 @@ lot_fields_obj = OfferFields(
         'price': '',
         'amount': '',
         'active': 'on'
+    },
+    fields_names={
+        'amount': 'Наличие',
+        'fields[desc][en]': 'Detailed description',
+        'fields[desc][ru]': 'Подробное описание',
+        'fields[payment_msg][en]': 'Message to the buyer after payment',
+        'fields[payment_msg][ru]': 'Сообщение покупателю после оплаты',
+        'fields[summary][en]': 'Short description',
+        'fields[summary][ru]': 'Краткое описание',
+        'price': 'Цена за 1 шт.',
+        'secrets': 'Товары',
     }
 )
 

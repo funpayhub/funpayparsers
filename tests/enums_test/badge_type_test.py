@@ -17,4 +17,4 @@ from funpayparsers.types.enums import BadgeType
     ]
 )
 def test_badge_type_determination(css_class, expected_value):
-    assert BadgeType.get_by_css_class(css_class) is expected_value
+    assert BadgeType.from_css_class(css_class) is expected_value

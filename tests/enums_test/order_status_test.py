@@ -15,4 +15,4 @@ from funpayparsers.types.enums import OrderStatus
     ]
 )
 def test_order_status_determination(css_class, expected_value):
-    assert OrderStatus.get_by_css_class(css_class) is expected_value
+    assert OrderStatus.from_css_class(css_class) is expected_value

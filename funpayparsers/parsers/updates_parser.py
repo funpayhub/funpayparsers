@@ -179,7 +179,7 @@ class UpdatesParser(FunPayJSONObjectParser[RunnerResponse, UpdatesParsingOptions
         )
 
     def _parse_update(self, update_dict: dict[str, Any]) -> RunnerResponseObject[Any] | None:
-        update_type = RunnerDataType.get_by_type_str(cast(str, update_dict.get('type')))
+        update_type = RunnerDataType.from_type_str(cast(str, update_dict.get('type')))
         if update_type not in self.__parsing_methods__:
             return None
 

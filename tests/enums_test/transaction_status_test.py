@@ -15,4 +15,4 @@ from funpayparsers.types.enums import TransactionStatus
     ]
 )
 def test_currency_determination(css_cls, expected_value):
-    assert TransactionStatus.get_by_css_class(css_cls) is expected_value
+    assert TransactionStatus.from_css_class(css_cls) is expected_value

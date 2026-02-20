@@ -39,7 +39,7 @@ class MoneyValue(FunPayObject):
 
     @property
     def currency(self) -> Currency:
-        return Currency.get_by_character(self.character)
+        return Currency.from_character(self.character)
 
 
 @dataclass
@@ -75,7 +75,7 @@ class UserBadge(FunPayObject):
     def type(self) -> BadgeType:
         """Badge type."""
 
-        return BadgeType.get_by_css_class(self.css_class)
+        return BadgeType.from_css_class(self.css_class)
 
 
 @dataclass

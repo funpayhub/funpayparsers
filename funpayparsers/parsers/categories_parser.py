@@ -66,7 +66,7 @@ class CategoriesParser(
                     raw_source=link.html or '',
                     id=int(url.split('/')[-2]),
                     name=link.text(strip=True),
-                    type=SubcategoryType.get_by_url(url),
+                    type=SubcategoryType.from_url(url),
                     offers_amount=None,
                 )
             )

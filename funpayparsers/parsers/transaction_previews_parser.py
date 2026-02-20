@@ -56,7 +56,7 @@ class TransactionPreviewsParser(
 
             payment_method_divs = i.css('span.payment-logo')
             payment_method = (
-                PaymentMethod.get_by_css_class(
+                PaymentMethod.from_css_class(
                     payment_method_divs[0].attributes['class'],  # type: ignore[arg-type]
                     # always has a class
                 )
@@ -70,7 +70,7 @@ class TransactionPreviewsParser(
                     id=int(cast(str, i.attributes['data-transaction'])),
                     date_text=i.css('span.tc-date-time')[0].text(strip=True),
                     desc=i.css('span.tc-title')[0].text(strip=True),
-                    status=TransactionStatus.get_by_css_class(cast(str, i.attributes['class'])),
+                    status=TransactionStatus.from_css_class(cast(str, i.attributes['class'])),
                     amount=value,
                     payment_method=payment_method,
                     withdrawal_number=(

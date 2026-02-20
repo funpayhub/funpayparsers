@@ -17,7 +17,7 @@ from funpayparsers.types.enums import SubcategoryType
     ]
 )
 def test_subcategory_type_by_url_determination(url, expected_value):
-    assert SubcategoryType.get_by_url(url) is expected_value
+    assert SubcategoryType.from_url(url) is expected_value
 
 
 @pytest.mark.parametrize(
@@ -29,4 +29,4 @@ def test_subcategory_type_by_url_determination(url, expected_value):
     ]
 )
 def test_subcategory_type_by_showcase_determination(url, expected_value):
-    assert SubcategoryType.get_by_showcase_data_section(url) is expected_value
+    assert SubcategoryType.from_showcase_data_section(url) is expected_value
