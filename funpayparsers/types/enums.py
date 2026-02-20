@@ -477,6 +477,66 @@ class PaymentMethod(Enum):
         return PaymentMethod.css_class_to_method_map().get(css_class) or PaymentMethod.UNKNOWN
 
 
+class Language(Enum):
+    """Page languages enumeration."""
+
+    UNKNOWN = 'UNKNOWN'
+    RU = 'RU'
+    EN = 'EN'
+    UK = 'UK'
+
+    @staticmethod
+    def get_by_lang_code(lang_code: Any, /) -> Language:
+        warnings.warn(
+            '`Language.get_by_lang_code` is deprecated. Use `Language.from_lang_code` instead.',
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return Language.from_lang_code(lang_code)
+
+    @staticmethod
+    def get_by_header_menu_css_class(css_class: str, /) -> Language:
+        warnings.warn(
+            '`Language.get_by_header_menu_css_class` is deprecated. '
+            'Use `Language.from_header_menu_css_class` instead.',
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return Language.from_header_menu_css_class(css_class)
+
+    @classmethod
+    def from_lang_code(cls, lang_code: str, /) -> Language:
+        for i in Language:
+            if i is Language.UNKNOWN:
+                continue
+
+            if lang_code == _LANGUAGE_ALIASES[i].appdata_alias:
+                return i
+        return Language.UNKNOWN
+
+    @classmethod
+    def from_header_menu_css_class(cls, css_class: str, /) -> Language:
+        for i in Language:
+            if i is Language.UNKNOWN:
+                continue
+
+            if _LANGUAGE_ALIASES[i].header_menu_css_class in css_class:
+                return i
+        return Language.UNKNOWN
+
+    @property
+    def url_alias(self) -> str:
+        return _LANGUAGE_ALIASES[self].url_alias
+
+    @property
+    def appdata_alias(self) -> str:
+        return _LANGUAGE_ALIASES[self].appdata_alias
+
+    @property
+    def header_menu_css_class(self) -> str:
+        return _LANGUAGE_ALIASES[self].header_menu_css_class
+
+
 @dataclass(frozen=True)
 class _LanguageAliases:
     appdata_alias: str
@@ -484,30 +544,9 @@ class _LanguageAliases:
     header_menu_css_class: str
 
 
-class Language(Enum):
-    """Page languages enumeration."""
-
-    UNKNOWN = _LanguageAliases('', '', '')
-    RU = _LanguageAliases('ru', '', 'menu-icon-lang-ru')
-    EN = _LanguageAliases('en', 'en', 'menu-icon-lang-en')
-    UK = _LanguageAliases('uk', 'uk', 'menu-icon-lang-uk')
-
-    @staticmethod
-    def get_by_lang_code(lang_code: Any, /) -> Language:
-        for i in Language:
-            if i is Language.UNKNOWN:
-                continue
-
-            if i.value.appdata_alias == lang_code:
-                return i
-        return Language.UNKNOWN
-
-    @staticmethod
-    def get_by_header_menu_css_class(css_class: str, /) -> Language:
-        for i in Language:
-            if i is Language.UNKNOWN:
-                continue
-
-            if i.value.header_menu_css_class in css_class:
-                return i
-        return Language.UNKNOWN
+_LANGUAGE_ALIASES = {
+    Language.UNKNOWN: _LanguageAliases('', '', ''),
+    Language.RU: _LanguageAliases('ru', '', 'menu-icon-lang-ru'),
+    Language.EN: _LanguageAliases('en', 'en', 'menu-icon-lang-en'),
+    Language.UK: _LanguageAliases('uk', 'uk', 'menu-icon-lang-uk'),
+}

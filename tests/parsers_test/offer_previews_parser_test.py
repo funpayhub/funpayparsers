@@ -80,7 +80,8 @@ common_lot_obj = OfferPreview(
     },
     other_data_names={
         'with_name': 'Data name'
-    }
+    },
+    unit=None
 )
 
 
@@ -140,7 +141,8 @@ currency_lot_obj = OfferPreview(
     },
     other_data_names={
         'server': 'Эллиан (F2P)'
-    }
+    },
+    unit='кк'
 )
 
 

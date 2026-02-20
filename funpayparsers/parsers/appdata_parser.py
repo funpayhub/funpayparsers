@@ -43,7 +43,7 @@ class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParsingOptions]):
             raw_source=json.dumps(self.raw_source)
             if not isinstance(self.raw_source, str)
             else self.raw_source,
-            locale=Language.get_by_lang_code(self.data.get('locale')),
+            locale=Language.from_lang_code(self.data.get('locale')),
             csrf_token=cast(str, self.data.get('csrf-token')),
             user_id=self.data.get('userId'),
             webpush=webpush,
