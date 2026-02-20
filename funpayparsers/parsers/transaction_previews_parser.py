@@ -56,7 +56,7 @@ class TransactionPreviewsParser(
 
             payment_method_divs = i.css('span.payment-logo')
             payment_method = (
-                PaymentMethod.get_by_css_class(
+                PaymentMethod.from_css_class(
                     payment_method_divs[0].attributes['class'],  # type: ignore[arg-type]
                     # always has a class
                 )

@@ -22,6 +22,8 @@ from types import MappingProxyType
 from functools import cache
 import warnings
 
+from urllib3 import PoolManager
+
 from funpayparsers import message_type_re as msg_re
 
 
@@ -261,91 +263,225 @@ class PaymentMethod(Enum):
         - CSS: https://funpay.com/687/css/main.css
     """
 
-    QIWI = ('payment-method-1', 'payment-method-qiwi')
+    QIWI = 'QIWI'
     """
     Qiwi wallett payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=94``.
     """
 
-    YANDEX = ('payment-method-2', 'payment-method-yandex', 'payment-method-fps')
+    YANDEX = 'YANDEX'
     """
     Yandex payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=34``.
     """
 
-    FPS = ('payment-method-21',)
+    FPS = 'FPS'
     """
     FPS (what) payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=364``.
     """
 
-    WEBMONEY_WME = ('payment-method-3', 'payment-method-wme')
+    WEBMONEY_WME = 'WEBMONEY_WME'
     """
     WebMoney WME payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=64``.
     """
 
-    WEBMONEY_WMP = ('payment-method-4', 'payment-method-wmp')
+    WEBMONEY_WMP = 'WEBMONEY_WMP'
     """
     WebMoney WMP payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=64``.
     """
 
-    WEBMONEY_WMR = ('payment-method-5', 'payment-method-wmr')
+    WEBMONEY_WMR = 'WEBMONEY_WMR'
     """
     WebMoney WMR payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=64``.
     """
 
-    WEBMONEY_WMZ = ('payment-method-6', 'payment-method-wmz')
+    WEBMONEY_WMZ = 'WEBMONEY_WMZ'
     """
     WebMoney WMZ payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=64``.
     """
 
-    WEBMONEY_UNKNOWN = ('payment-method-10',)
+    WEBMONEY_UNKNOWN = 'WEBMONEY_UNKNOWN'
     """
     WebMoney unknown type. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=64``.
     """
 
-    CARD_RUB = ('payment-method-7', 'payment-method-card_rub')
+    CARD_RUB = 'CARD_RUB'
     """
     Card RUB payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=4``.
     """
 
-    CARD_USD = ('payment-method-card_usd',)
+    CARD_USD = 'CARD_USD'
     """
     Card USD payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=4``.
     """
 
-    CARD_EUR = ('payment-method-card_eur',)
+    CARD_EUR = 'CARD_EUR'
     """
     Card EUR payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=4``.
     """
 
-    CARD_UAH = ('payment-method-card_uah',)
+    CARD_UAH = 'CARD_UAH'
     """
     Card UAH payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=4``.
     """
 
-    CARD_UNKNOWN = (
+    CARD_UNKNOWN = 'CARD_UNKNOWN'
+    """
+    Unknown card, maybe it will added soon. 
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=4``.
+    """
+
+    MOBILE = 'MOBILE'
+    """
+    Mobile payment method. 
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=124``.
+    """
+
+    APPLE = 'APPLE'
+    """
+    Apple Pay payment method. 
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=154``.
+    """
+
+    MASTERCARD = 'MASTERCARD'
+    """
+    MasterCard payment method. 
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=274``.
+    """
+
+    VISA = 'VISA'
+    """
+    Visa payment method. 
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=304``.
+    """
+
+    GOOGLE = 'GOOGLE'
+    """
+    Google Pay payment method. 
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=244``.
+    """
+
+    FUNPAY = 'FUNPAY'
+    """
+    FunPay balance payment method.
+    
+    You can pay from your balance if the funds remain on your balance for
+    48 hours from the moment of receipt, or if you have an instant withdraw.
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=214``.
+    """
+
+    LITECOIN = 'LITECOIN'
+    """
+    Litecoin (LTC) payment method. 
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=4``.
+    """
+
+    BINANCE = 'BINANCE'
+    """
+    Binance generic payment method. 
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=34``.
+    """
+
+    BINANCE_USDT = 'BINANCE_USDT'
+    """
+    Binance USDT payment method. 
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=34``.
+    """
+
+    BINANCE_USDC = 'BINANCE_USDC'
+    """
+    Binance USDC payment method. 
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=34``.
+    """
+
+    PAYPAL = 'PAYPAL'
+    """
+    PayPal payment method. 
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=184``.
+    """
+
+    USDT_TRC = 'USDT_TRC'
+    """
+    USDT TRC-20 payment method. 
+    
+    Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=64``.
+    """
+
+    UNKNOWN = ('',)
+    """Unknown payment method."""
+
+    # MIR = 26, ('UNKNOWN', ), (345, Y)  =(
+
+    @staticmethod
+    def get_by_css_class(css_class: str, /) -> PaymentMethod:
+        """Determine the payment method based on a given CSS class string."""
+        warnings.warn(
+            '`PaymentMethod.get_by_css_class` is deprecated. '
+            'Use `PaymentMethod.from_css_class` instead.',
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return PaymentMethod.from_css_class(css_class)
+
+    @classmethod
+    def from_css_class(cls, css_class: str, /) -> PaymentMethod:
+        """Determine the payment method based on a given CSS class string."""
+        match = _PAYMENT_METHOD_CLS_RE.search(css_class)
+        if not match:
+            return PaymentMethod.UNKNOWN
+
+        css_class = match.group()
+        return _CSS_CLASS_TO_PAYMENT_METHOD.get(css_class, PaymentMethod.UNKNOWN)
+
+
+_PAYMENT_METHODS = {
+    PaymentMethod.QIWI: ('payment-method-1', 'payment-method-qiwi'),
+    PaymentMethod.YANDEX: ('payment-method-2', 'payment-method-yandex', 'payment-method-fps'),
+    PaymentMethod.FPS: ('payment-method-21',),
+    PaymentMethod.WEBMONEY_WME: ('payment-method-3', 'payment-method-wme'),
+    PaymentMethod.WEBMONEY_WMP: ('payment-method-4', 'payment-method-wmp'),
+    PaymentMethod.WEBMONEY_WMR: ('payment-method-5', 'payment-method-wmr'),
+    PaymentMethod.WEBMONEY_WMZ: ('payment-method-6', 'payment-method-wmz'),
+    PaymentMethod.WEBMONEY_UNKNOWN: ('payment-method-10',),
+    PaymentMethod.CARD_RUB: ('payment-method-7', 'payment-method-card_rub'),
+    PaymentMethod.CARD_USD: ('payment-method-card_usd',),
+    PaymentMethod.CARD_EUR: ('payment-method-card_eur',),
+    PaymentMethod.CARD_UAH: ('payment-method-card_uah',),
+    PaymentMethod.CARD_UNKNOWN: (
         'payment-method-11',
         'payment-method-15',
         'payment-method-16',
@@ -360,121 +496,24 @@ class PaymentMethod(Enum):
         'payment-method-38',
         'payment-method-39',
         'payment-method-40',
-    )
-    """
-    Unknown card, maybe it will added soon. 
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=4``.
-    """
+    ),
+    PaymentMethod.MOBILE: ('payment-method-8',),
+    PaymentMethod.APPLE: ('payment-method-9', 'payment-method-19', 'payment-method-20'),
+    PaymentMethod.MASTERCARD: ('payment-method-12', 'payment-method-22', 'payment-method-23'),
+    PaymentMethod.VISA: ('payment-method-13', 'payment-method-28', 'payment-method-29'),
+    PaymentMethod.GOOGLE: ('payment-method-14', 'payment-method-17', 'payment-method-18'),
+    PaymentMethod.FUNPAY: ('payment-method-24',),
+    PaymentMethod.LITECOIN: ('payment-method-30',),
+    PaymentMethod.BINANCE: ('payment-method-31',),
+    PaymentMethod.BINANCE_USDT: ('payment-method-binance_usdt',),
+    PaymentMethod.BINANCE_USDC: ('payment-method-binance_usdc',),
+    PaymentMethod.PAYPAL: ('payment-method-36', 'payment-method-paypal'),
+    PaymentMethod.USDT_TRC: ('payment-method-usdt_trc',),
+}
 
-    MOBILE = ('payment-method-8',)
-    """
-    Mobile payment method. 
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=124``.
-    """
-
-    APPLE = ('payment-method-9', 'payment-method-19', 'payment-method-20')
-    """
-    Apple Pay payment method. 
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=154``.
-    """
-
-    MASTERCARD = ('payment-method-12', 'payment-method-22', 'payment-method-23')
-    """
-    MasterCard payment method. 
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=274``.
-    """
-
-    VISA = ('payment-method-13', 'payment-method-28', 'payment-method-29')
-    """
-    Visa payment method. 
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=304``.
-    """
-
-    GOOGLE = ('payment-method-14', 'payment-method-17', 'payment-method-18')
-    """
-    Google Pay payment method. 
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=244``.
-    """
-
-    FUNPAY = ('payment-method-24',)
-    """
-    FunPay balance payment method.
-    
-    You can pay from your balance if the funds remain on your balance for
-    48 hours from the moment of receipt, or if you have an instant withdraw.
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=214``.
-    """
-
-    LITECOIN = ('payment-method-30',)
-    """
-    Litecoin (LTC) payment method. 
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=4``.
-    """
-
-    BINANCE = ('payment-method-31',)
-    """
-    Binance generic payment method. 
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=34``.
-    """
-
-    BINANCE_USDT = ('payment-method-binance_usdt',)
-    """
-    Binance USDT payment method. 
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=34``.
-    """
-
-    BINANCE_USDC = ('payment-method-binance_usdc',)
-    """
-    Binance USDC payment method. 
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=34``.
-    """
-
-    PAYPAL = ('payment-method-36', 'payment-method-paypal')
-    """
-    PayPal payment method. 
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=184``.
-    """
-
-    USDT_TRC = ('payment-method-usdt_trc',)
-    """
-    USDT TRC-20 payment method. 
-    
-    Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=64``.
-    """
-
-    UNKNOWN = ('',)
-    """Unknown payment method."""
-
-    # MIR = 26, ('UNKNOWN', ), (345, Y)  =(
-
-    @staticmethod
-    @cache
-    def css_class_to_method_map() -> MappingProxyType[str, PaymentMethod]:
-        return MappingProxyType(
-            {css_class: method for method in PaymentMethod for css_class in method.value}
-        )
-
-    @staticmethod
-    def get_by_css_class(css_class: str, /) -> PaymentMethod:
-        """Determine the payment method based on a given CSS class string."""
-        match = _PAYMENT_METHOD_CLS_RE.search(css_class)
-        if not match:
-            return PaymentMethod.UNKNOWN
-
-        css_class = match.string[match.start() : match.end()]
-        return PaymentMethod.css_class_to_method_map().get(css_class) or PaymentMethod.UNKNOWN
+_CSS_CLASS_TO_PAYMENT_METHOD = {
+    css: enm for enm, classes in _PAYMENT_METHODS.items() for css in classes
+}
 
 
 class Language(Enum):
