@@ -17,4 +17,4 @@ from funpayparsers.types.enums import RunnerDataType
     ]
 )
 def test_update_type_determination(update_type_str, expected_value):
-    assert RunnerDataType.get_by_type_str(update_type_str) is expected_value
+    assert RunnerDataType.from_type_str(update_type_str) is expected_value

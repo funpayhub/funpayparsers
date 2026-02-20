@@ -18,11 +18,7 @@ import re
 from typing import Any
 from dataclasses import dataclass
 from enum import Enum
-from types import MappingProxyType
-from functools import cache
 import warnings
-
-from urllib3 import PoolManager
 
 from funpayparsers import message_type_re as msg_re
 
@@ -48,10 +44,25 @@ class RunnerDataType(Enum):
     @staticmethod
     def get_by_type_str(type_str: str, /) -> RunnerDataType | None:
         """Determine an update type by its type string."""
-        for i in RunnerDataType:
-            if i.value == type_str:
-                return i
-        return None
+        warnings.warn(
+            '`RunnerDataType.get_by_type_str` is deprecated. '
+            'Use `RunnerDataType.from_type_str` instead.',
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return RunnerDataType.from_type_str(type_str)
+
+    @classmethod
+    def from_type_str(cls, type_str: str, /) -> RunnerDataType | None:
+        """Determine an update type by its type string."""
+        data = {
+            'orders_counters': RunnerDataType.ORDERS_COUNTERS,
+            'chat_counter': RunnerDataType.CHAT_COUNTER,
+            'chat_bookmarks': RunnerDataType.CHAT_BOOKMARKS,
+            'chat_node': RunnerDataType.CHAT_NODE,
+            'c-p-u': RunnerDataType.CPU
+        }
+        return data.get(type_str.lower())
 
 
 @dataclass(frozen=True)
