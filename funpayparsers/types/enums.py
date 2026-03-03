@@ -15,10 +15,10 @@ __all__ = (
 
 
 import re
+import warnings
 from typing import Any
 from dataclasses import dataclass
 from enum import Enum
-import warnings
 
 from funpayparsers import message_type_re as msg_re
 
@@ -48,7 +48,7 @@ class RunnerDataType(Enum):
             '`RunnerDataType.get_by_type_str` is deprecated. '
             'Use `RunnerDataType.from_type_str` instead.',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return RunnerDataType.from_type_str(type_str)
 
@@ -60,7 +60,7 @@ class RunnerDataType(Enum):
             'chat_counter': RunnerDataType.CHAT_COUNTER,
             'chat_bookmarks': RunnerDataType.CHAT_BOOKMARKS,
             'chat_node': RunnerDataType.CHAT_NODE,
-            'c-p-u': RunnerDataType.CPU
+            'c-p-u': RunnerDataType.CPU,
         }
         return data.get(type_str.lower())
 
@@ -85,7 +85,7 @@ class SubcategoryType(Enum):
         warnings.warn(
             '`SubcategoryType.get_by_url` is deprecated. Use `SubcategoryType.from_url` instead.',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return SubcategoryType.from_url(url)
 
@@ -98,7 +98,7 @@ class SubcategoryType(Enum):
             '`SubcategoryType.get_by_showcase_data_section` is deprecated. '
             'Use `SubcategoryType.from_showcase_data_section` instead.',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return SubcategoryType.from_showcase_data_section(showcase_data_section)
 
@@ -126,7 +126,7 @@ class SubcategoryType(Enum):
     def COMMON(self) -> SubcategoryType:
         warnings.warn(
             '`SubcategoryType.COMMON` is deprecated. Use `SubcategoryType.OFFERS` instead.',
-            DeprecationWarning
+            DeprecationWarning,
         )
         return self.OFFERS
 
@@ -134,7 +134,7 @@ class SubcategoryType(Enum):
     def CURRENCY(self) -> SubcategoryType:
         warnings.warn(
             '`SubcategoryType.CURRENCY` is deprecated. Use `SubcategoryType.CHIPS` instead.',
-            DeprecationWarning
+            DeprecationWarning,
         )
         return self.CHIPS
 
@@ -152,10 +152,11 @@ class _SubcategoryTypeAliases:
     url_alias: str
     showcase_alias: str
 
+
 _SUBCATEGORY_TYPE_ALIASES = {
     SubcategoryType.OFFERS: _SubcategoryTypeAliases('lots', 'lot'),
     SubcategoryType.CHIPS: _SubcategoryTypeAliases('chips', 'chip'),
-    SubcategoryType.UNKNOWN: _SubcategoryTypeAliases('', '')
+    SubcategoryType.UNKNOWN: _SubcategoryTypeAliases('', ''),
 }
 
 
@@ -187,7 +188,7 @@ class OrderStatus(Enum):
             '`OrderStatus.get_by_css_class` is deprecated. '
             'Use `OrderStatus.from_css_class` instead.',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return OrderStatus.from_css_class(css_class)
 
@@ -205,7 +206,7 @@ class OrderStatus(Enum):
 _ORDER_STATUSES = {
     'text-primary': OrderStatus.PAID,
     'text-success': OrderStatus.COMPLETED,
-    'text-warning': OrderStatus.REFUNDED
+    'text-warning': OrderStatus.REFUNDED,
 }
 
 
@@ -225,7 +226,7 @@ class Currency(Enum):
         warnings.warn(
             '`Currency.get_by_character` is deprecated. Use `Currency.from_character` instead.',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return Currency.from_character(character)
 
@@ -267,7 +268,7 @@ class TransactionStatus(Enum):
             '`TransactionStatus.get_by_css_class` is deprecated. '
             'Use `TransactionStatus.from_css_class` instead.',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return TransactionStatus.from_css_class(css_class)
 
@@ -280,6 +281,7 @@ class TransactionStatus(Enum):
             if css in css_class.lower():
                 return enm
         return TransactionStatus.UNKNOWN
+
 
 _TRANSACTION_STATUSES = {
     'transaction-status-waiting': TransactionStatus.PENDING,
@@ -321,6 +323,7 @@ class MessageType(Enum):
                 return t
         return MessageType.NON_SYSTEM
 
+
 _MESSAGE_RE = {
     MessageType.NEW_ORDER: msg_re.NEW_ORDER,
     MessageType.ORDER_CLOSED: msg_re.ORDER_CLOSED,
@@ -353,10 +356,9 @@ class BadgeType(Enum):
         Determine the badge type based on a given CSS class string.
         """
         warnings.warn(
-            '`BadgeType.get_by_css_class` is deprecated. '
-            'Use `BadgeType.from_css_class` instead.',
+            '`BadgeType.get_by_css_class` is deprecated. Use `BadgeType.from_css_class` instead.',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return BadgeType.from_css_class(css_class)
 
@@ -581,7 +583,7 @@ class PaymentMethod(Enum):
             '`PaymentMethod.get_by_css_class` is deprecated. '
             'Use `PaymentMethod.from_css_class` instead.',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return PaymentMethod.from_css_class(css_class)
 
@@ -657,7 +659,7 @@ class Language(Enum):
         warnings.warn(
             '`Language.get_by_lang_code` is deprecated. Use `Language.from_lang_code` instead.',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return Language.from_lang_code(lang_code)
 
@@ -667,7 +669,7 @@ class Language(Enum):
             '`Language.get_by_header_menu_css_class` is deprecated. '
             'Use `Language.from_header_menu_css_class` instead.',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return Language.from_header_menu_css_class(css_class)
 

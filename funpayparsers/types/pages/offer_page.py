@@ -9,9 +9,10 @@ from dataclasses import dataclass
 
 from funpayparsers.types.pages.base import FunPayPage
 
+
 if TYPE_CHECKING:
-    from funpayparsers.types.common import PaymentOption, DetailedUserBalance
     from funpayparsers.types.chat import Chat
+    from funpayparsers.types.common import PaymentOption, DetailedUserBalance
     from funpayparsers.parsers.page_parsers.offer_page_parser import OfferPageParsingOptions
 
 
@@ -41,7 +42,7 @@ class OfferPage(FunPayPage):
     ) -> OfferPage:
         from funpayparsers.parsers.page_parsers.offer_page_parser import (
             OfferPageParser,
-            OfferPageParsingOptions
+            OfferPageParsingOptions,
         )
 
         options = options or OfferPageParsingOptions()

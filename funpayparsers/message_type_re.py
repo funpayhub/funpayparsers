@@ -31,8 +31,7 @@ NEW_ORDER = re.compile(
     r'(?P=u), не забудьте потом нажать кнопку «Подтвердить (?:выполнение заказа|получение валюты)»\.)|'
     r'(?m:The buyer (?P<e_u>%(urs)s) has paid for order #%(oirs)s\. .+\n'
     r'(?P=e_u), do not forget to press the '
-    r'«Confirm (?:order fulfilment|currency receipt)» button once you finish.)'
-    % _f_dict
+    r'«Confirm (?:order fulfilment|currency receipt)» button once you finish.)' % _f_dict
 )
 """
 Покупатель <ИМЯ ПОКУПАТЕЛЯ> оплатил заказ #<ID ЗАКАЗА>. <НАЗВАНИЕ ЛОТА>.

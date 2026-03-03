@@ -43,7 +43,5 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
             field_names[k] = label.text(strip=True)
 
         return OfferFields(
-            raw_source=form.html or '',
-            fields_dict=fields_dict,
-            fields_names=field_names
+            raw_source=form.html or '', fields_dict=fields_dict, fields_names=field_names
         )

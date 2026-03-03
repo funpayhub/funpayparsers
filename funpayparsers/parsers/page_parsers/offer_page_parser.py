@@ -5,17 +5,22 @@ __all__ = ('OfferPageParsingOptions', 'OfferPageParser')
 
 from dataclasses import dataclass
 
-from funpayparsers.parsers import ChatParsingOptions, ChatParser
+from selectolax.lexbor import LexborNode, LexborHTMLParser
+
+from funpayparsers.parsers import ChatParser, ChatParsingOptions
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
+from funpayparsers.types.common import PaymentOption, DetailedUserBalance
 from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
+from funpayparsers.types.pages.offer_page import OfferPage
+from funpayparsers.parsers.money_value_parser import (
+    MoneyValueParser,
+    MoneyValueParsingMode,
+    MoneyValueParsingOptions,
+)
 from funpayparsers.parsers.page_header_parser import (
     PageHeaderParser,
     PageHeaderParsingOptions,
 )
-from funpayparsers.parsers.money_value_parser import MoneyValueParser, MoneyValueParsingOptions, MoneyValueParsingMode
-from funpayparsers.types.pages.offer_page import OfferPage
-from funpayparsers.types.common import PaymentOption, DetailedUserBalance
-from selectolax.lexbor import LexborNode, LexborHTMLParser
 
 
 @dataclass(frozen=True)
@@ -43,6 +48,7 @@ class OfferPageParsingOptions(ParsingOptions):
     """
     Options for ``MoneyValueParser``.
     """
+
 
 class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]):
     """
@@ -75,11 +81,10 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
                 title=tree.css_first('span.payment-title').text(strip=True),
                 price=MoneyValueParser(
                     raw_source=tree.css_first('span.payment-value').text(strip=True),
-                    options=self.options.money_value_parsing_options
+                    options=self.options.money_value_parsing_options,
                 ).parse(),
                 factors=[float(i) for i in option.attributes['data-factors'].split(',')],
             )
-
 
         return OfferPage(
             raw_source=self.raw_source,
@@ -96,7 +101,7 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
             fields=fields,
             chat=ChatParser(
                 self.tree.css_first('div.chat').html or '',
-                options=self.options.chat_parsing_options
+                options=self.options.chat_parsing_options,
             ).parse(),
             payment_options=payment_options,
             user_balance=DetailedUserBalance(
@@ -107,5 +112,5 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
                 withdrawable_usd=float(payment_select.attributes['data-balance-usd']),
                 total_eur=float(payment_select.attributes['data-balance-total-eur']),
                 withdrawable_eur=float(payment_select.attributes['data-balance-eur']),
-            )
+            ),
         )

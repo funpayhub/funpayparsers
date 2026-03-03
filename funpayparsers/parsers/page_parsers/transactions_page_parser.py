@@ -5,6 +5,8 @@ __all__ = ('TransactionsPageParsingOptions', 'TransactionsPageParser')
 
 from dataclasses import dataclass
 
+from funpayparsers.types import MoneyValue
+from funpayparsers.exceptions import ParsingError
 from funpayparsers.types.enums import Currency
 from funpayparsers.types.pages import TransactionsPage
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
@@ -72,7 +74,8 @@ class TransactionsPageParser(
 
     def _parse(self) -> TransactionsPage:
         money_values = []
-        for i in self.tree.css('span.balances-value'):
+        balances = self.tree.css('span.balances-value')
+        for i in balances[:3]:
             money_values.append(
                 MoneyValueParser(
                     i.text().strip(),
@@ -80,12 +83,22 @@ class TransactionsPageParser(
                     parsing_mode=MoneyValueParsingMode.FROM_STRING,
                 ).parse(),
             )
-            if len(money_values) == 3:
-                break
 
         rub_balance = [i for i in money_values if i.currency is Currency.RUB]
         usd_balance = [i for i in money_values if i.currency is Currency.USD]
         eur_balance = [i for i in money_values if i.currency is Currency.EUR]
+
+        deals_balance = None
+        if len(balances) > 3:
+            deals_text = balances[3].text().strip().split(' ', 1)[-1]
+            try:
+                deals_balance = MoneyValueParser(
+                    deals_text,
+                    options=self.options.money_value_parsing_options,
+                    parsing_mode=MoneyValueParsingMode.FROM_STRING,
+                ).parse()
+            except ParsingError:
+                deals_balance = MoneyValue(raw_source='0₽', value=0, character='₽')
 
         transactions_div = self.tree.css('div.tc-finance:not(.hidden)')
         if not transactions_div:
@@ -109,5 +122,6 @@ class TransactionsPageParser(
             rub_balance=rub_balance[0] if rub_balance else None,
             usd_balance=usd_balance[0] if usd_balance else None,
             eur_balance=eur_balance[0] if eur_balance else None,
+            deals_balance=deals_balance,
             transactions=transactions,
         )

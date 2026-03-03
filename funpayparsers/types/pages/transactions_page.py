@@ -30,6 +30,9 @@ class TransactionsPage(FunPayPage):
     eur_balance: MoneyValue | None
     """EUR balance."""
 
+    deals_balance: MoneyValue | None
+    """Deals balance."""
+
     transactions: TransactionPreviewsBatch | None
     """Transaction previews."""
 

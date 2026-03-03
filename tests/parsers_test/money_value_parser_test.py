@@ -50,6 +50,20 @@ string_money_value_obj = MoneyValue(
     character='₽'
 )
 
+deals_money_value_str_ru = """Сделки 1 282.95 ₽"""
+deals_money_value_obj_ru = MoneyValue(
+    raw_source='',
+    value=1282.95,
+    character='₽'
+)
+
+deals_money_value_str_en = """Deals 50.00 ₽"""
+deals_money_value_obj_en = MoneyValue(
+    raw_source='',
+    value=50.0,
+    character='₽'
+)
+
 
 def test_transaction_preview_money_value_parsing():
     options = MoneyValueParsingOptions(parsing_mode=MoneyValueParsingMode.FROM_TRANSACTION_PREVIEW)
@@ -80,3 +94,17 @@ def test_string_money_value_parsing():
     options = MoneyValueParsingOptions(parsing_mode=MoneyValueParsingMode.FROM_STRING)
     parser = MoneyValueParser(string_money_value_str, options=options & OPTIONS)
     assert parser.parse() == string_money_value_obj
+
+
+def test_deals_money_value_ru_parsing():
+    options = MoneyValueParsingOptions(parsing_mode=MoneyValueParsingMode.FROM_STRING)
+    raw = deals_money_value_str_ru.strip().split(' ', 1)[-1]
+    parser = MoneyValueParser(raw, options=options & OPTIONS)
+    assert parser.parse() == deals_money_value_obj_ru
+
+
+def test_deals_money_value_en_parsing():
+    options = MoneyValueParsingOptions(parsing_mode=MoneyValueParsingMode.FROM_STRING)
+    raw = deals_money_value_str_en.strip().split(' ', 1)[-1]
+    parser = MoneyValueParser(raw, options=options & OPTIONS)
+    assert parser.parse() == deals_money_value_obj_en
