@@ -5,6 +5,8 @@ __all__ = ('TransactionsPageParsingOptions', 'TransactionsPageParser')
 
 from dataclasses import dataclass
 
+from funpayparsers.types import MoneyValue
+from funpayparsers.exceptions import ParsingError
 from funpayparsers.types.enums import Currency
 from funpayparsers.types.pages import TransactionsPage
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
@@ -89,11 +91,14 @@ class TransactionsPageParser(
         deals_balance = None
         if len(balances) > 3:
             deals_text = balances[3].text().strip().split(' ', 1)[-1]
-            deals_balance = MoneyValueParser(
-                deals_text,
-                options=self.options.money_value_parsing_options,
-                parsing_mode=MoneyValueParsingMode.FROM_STRING,
-            ).parse()
+            try:
+                deals_balance = MoneyValueParser(
+                    deals_text,
+                    options=self.options.money_value_parsing_options,
+                    parsing_mode=MoneyValueParsingMode.FROM_STRING,
+                ).parse()
+            except ParsingError:
+                deals_balance = MoneyValue(raw_source='0₽', value=0, character='₽')
 
         transactions_div = self.tree.css('div.tc-finance:not(.hidden)')
         if not transactions_div:
