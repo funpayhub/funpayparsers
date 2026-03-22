@@ -46,9 +46,6 @@ class SrasInfoPageParser(FunPayHTMLObjectParser[SrasInfoPage, SrasInfoPageParsin
         body_tag = self.tree.css_first('body')
         content_tag = self.tree.css_first('div.page-content-full')
 
-        if header_tag is None or body_tag is None or content_tag is None:
-            raise LookupError('Unable to locate required SRAS page elements.')
-
         restrictions: dict[SubcategoryType, dict[int, SrasSectionRestriction]] = {}
 
         for row in content_tag.css('table tbody tr'):
@@ -71,16 +68,8 @@ class SrasInfoPageParser(FunPayHTMLObjectParser[SrasInfoPage, SrasInfoPageParsin
 
     def _parse_restriction(self, row: LexborNode) -> SrasSectionRestriction:
         cells = row.css('td')
-        if len(cells) < 2:
-            raise LookupError('SRAS restriction row must have two columns.')
-
         link = cells[0].css_first('a')
-        if link is None:
-            raise LookupError('SRAS restriction row must contain a link.')
-
-        href = link.attributes.get('href')
-        if not href:
-            raise LookupError('SRAS restriction link must contain href.')
+        href = link.attributes['href']  # type: ignore[union-attr]
 
         subcategory_type = SubcategoryType.from_url(href)
         subcategory_id = self._parse_subcategory_id(href)
@@ -95,12 +84,7 @@ class SrasInfoPageParser(FunPayHTMLObjectParser[SrasInfoPage, SrasInfoPageParsin
 
     def _parse_subcategory_id(self, href: str) -> int:
         path_parts = [part for part in urlparse(href).path.split('/') if part]
-        if not path_parts:
-            raise LookupError('Unable to parse SRAS subcategory id from href.')
         return int(path_parts[-1])
 
     def _parse_max_rating(self, text: str) -> int:
-        match = RATING_RE.search(text)
-        if match is None:
-            raise LookupError('Unable to parse SRAS max rating.')
-        return int(match.group(1))
+        return int(RATING_RE.search(text).group(1))  # type: ignore[union-attr]
