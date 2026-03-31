@@ -69,15 +69,17 @@ class OrderPreview(FunPayObject):
         """
         Parse field values from the offer-title portion using the given subcategory structure.
 
-        Strips the order-specific suffix (``recipient`` and, when ``quantity > 1``,
-        the ``N шт.`` token) before applying structure-based parsing, so the result
-        is equivalent to calling ``parse_title_fields`` on the matching ``OfferPreview``.
+        Strips the order-specific suffix before applying structure-based parsing:
+        always removes the last part (recipient), and also removes the
+        second-to-last part when it matches the ``N шт.`` pattern.
 
         Returns a mapping of field ID → value.  ``NUMERIC_RANGE`` fields are
         returned as ``int``.
         """
         parts = self.title.split(', ')
-        strip = 1 + (1 if self.quantity > 1 else 0)
+        strip = 1
+        if len(parts) >= 3 and re.match(r'^\d+\s+шт\.$', parts[-2].strip()):
+            strip = 2
         offer_title = ', '.join(parts[:-strip]) if strip < len(parts) else ''
         if not offer_title:
             return {}

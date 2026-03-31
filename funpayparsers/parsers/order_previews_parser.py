@@ -3,7 +3,6 @@ from __future__ import annotations
 
 __all__ = ('OrderPreviewsParsingOptions', 'OrderPreviewsParser')
 
-import re
 from dataclasses import dataclass
 
 from funpayparsers.types.enums import OrderStatus
@@ -80,27 +79,17 @@ class OrderPreviewsParser(
                 parsing_mode=UserPreviewParsingMode.FROM_ORDER_PREVIEW,
             ).parse()
 
-            title = order.css('div.order-desc > div')[0].text(deep=False, strip=True)
-            parts = [p.strip() for p in title.split(', ')]
-            recipient: str | None = parts[-1] if len(parts) >= 2 else None
-            qty_match = (
-                re.match(r'^(\d+)\s+шт\.$', parts[-2]) if len(parts) >= 3 else None
-            )
-            quantity = int(qty_match.group(1)) if qty_match else 1
-
             result.append(
                 OrderPreview(
                     raw_source=order.html or '',
                     id=order.attributes['href'].split('/')[-2],  # type: ignore[union-attr]
                     # always has href
                     date_text=order.css('div.tc-date-time')[0].text(strip=True),
-                    title=title,
+                    title=order.css('div.order-desc > div')[0].text(deep=False, strip=True),
                     category_text=order.css('div.text-muted')[0].text(strip=True),
                     status=OrderStatus.from_css_class(status_class),
                     total=value,
                     counterparty=counterparty,
-                    quantity=quantity,
-                    recipient=recipient,
                 )
             )
 
