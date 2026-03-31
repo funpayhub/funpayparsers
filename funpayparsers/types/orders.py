@@ -7,10 +7,6 @@ __all__ = ('OrderPreview', 'OrderPreviewsBatch')
 from typing import TYPE_CHECKING
 from dataclasses import dataclass
 
-
-if TYPE_CHECKING:
-    from funpayparsers.types.subcategory_structure import SubcategoryStructure
-
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.enums import OrderStatus, SubcategoryType
 from funpayparsers.types.common import MoneyValue
@@ -46,6 +42,21 @@ class OrderPreview(FunPayObject):
     counterparty: UserPreview
     """Associated counterparty info."""
 
+    quantity: int = 1
+    """
+    Number of units ordered.
+
+    Parsed from the ``N шт.`` token in the title (second-to-last comma-separated
+    part).  Defaults to ``1`` when the token is absent.
+    """
+
+    recipient: str | None = None
+    """
+    Target identifier provided by the buyer (e.g. ``@username`` or plain username).
+
+    Always the last comma-separated part of the title, if present.
+    """
+
     subcategory_id: int | None = None
     """ID of the subcategory this order belongs to, if known."""
 
@@ -54,13 +65,22 @@ class OrderPreview(FunPayObject):
 
     def parse_title_fields(self, structure: SubcategoryStructure) -> dict[str, str | int]:
         """
-        Parse field values from the order title using the given subcategory structure.
+        Parse field values from the offer-title portion using the given subcategory structure.
+
+        Strips the order-specific suffix (``recipient`` and, when ``quantity > 1``,
+        the ``N шт.`` token) before applying structure-based parsing, so the result
+        is equivalent to calling ``parse_title_fields`` on the matching ``OfferPreview``.
 
         Returns a mapping of field ID → value.  ``NUMERIC_RANGE`` fields are
         returned as ``int``.
         """
+        parts = self.title.split(', ')
+        strip = 1 + (1 if self.quantity > 1 else 0)
+        offer_title = ', '.join(parts[:-strip]) if strip < len(parts) else ''
+        if not offer_title:
+            return {}
         from funpayparsers.types.subcategory_structure import _parse_title_fields
-        return _parse_title_fields(self.title, structure)
+        return _parse_title_fields(offer_title, structure)
 
     @property
     def timestamp(self) -> int:
