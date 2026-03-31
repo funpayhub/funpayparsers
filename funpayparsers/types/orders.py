@@ -7,6 +7,10 @@ __all__ = ('OrderPreview', 'OrderPreviewsBatch')
 from typing import TYPE_CHECKING
 from dataclasses import dataclass
 
+
+if TYPE_CHECKING:
+    from funpayparsers.types.subcategory_structure import SubcategoryStructure
+
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.enums import OrderStatus, SubcategoryType
 from funpayparsers.types.common import MoneyValue
@@ -14,6 +18,7 @@ from funpayparsers.types.common import MoneyValue
 
 if TYPE_CHECKING:
     from funpayparsers.types.common import UserPreview
+    from funpayparsers.types.subcategory_structure import SubcategoryStructure
 
 
 @dataclass
@@ -46,6 +51,16 @@ class OrderPreview(FunPayObject):
 
     subcategory_type: SubcategoryType | None = None
     """Type of the subcategory (OFFERS/CHIPS), if known."""
+
+    def parse_title_fields(self, structure: SubcategoryStructure) -> dict[str, str | int]:
+        """
+        Parse field values from the order title using the given subcategory structure.
+
+        Returns a mapping of field ID → value.  ``NUMERIC_RANGE`` fields are
+        returned as ``int``.
+        """
+        from funpayparsers.types.subcategory_structure import _parse_title_fields
+        return _parse_title_fields(self.title, structure)
 
     @property
     def timestamp(self) -> int:

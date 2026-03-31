@@ -3,6 +3,7 @@ from __future__ import annotations
 
 __all__ = ('FieldCondition', 'SubcategoryFieldDef', 'SubcategoryStructure')
 
+import re
 from typing import TYPE_CHECKING
 from dataclasses import field, dataclass
 
@@ -12,6 +13,37 @@ from funpayparsers.types.enums import SubcategoryFieldType
 
 if TYPE_CHECKING:
     from funpayparsers.types.offers import OfferFields
+
+
+_TITLE_SUFFIX_TYPES = frozenset({
+    SubcategoryFieldType.NUMERIC_RANGE,
+    SubcategoryFieldType.SELECT,
+    SubcategoryFieldType.DROPDOWN,
+})
+
+
+def _parse_title_fields(title: str, structure: SubcategoryStructure) -> dict[str, str | int]:
+    """
+    Extract field values from a comma-separated offer title suffix.
+
+    FunPay appends ``NUMERIC_RANGE``, ``SELECT``, and ``DROPDOWN`` field values
+    to the offer title in declaration order, separated by ``', '``.
+
+    Returns a mapping of field ID → parsed value.  ``NUMERIC_RANGE`` values are
+    returned as ``int`` (the leading numeric portion is extracted).
+    """
+    suffix_fields = [f for f in structure.fields if f.type in _TITLE_SUFFIX_TYPES]
+    if not suffix_fields:
+        return {}
+    parts = title.rsplit(', ', maxsplit=len(suffix_fields))
+    result: dict[str, str | int] = {}
+    for field_def, raw_val in zip(suffix_fields, parts[1:]):
+        if field_def.type is SubcategoryFieldType.NUMERIC_RANGE:
+            m = re.match(r'^(\d+(?:\.\d+)?)', raw_val.strip())
+            result[field_def.id] = int(float(m.group(1))) if m else raw_val
+        else:
+            result[field_def.id] = raw_val
+    return result
 
 
 @dataclass(frozen=True)

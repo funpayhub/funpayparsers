@@ -167,9 +167,19 @@ class OfferPreviewsParser(
                             names[k] = struct.field_map[k].label
                 elif desc is not None:
                     # Case B: profile/sells page — extract field values from title.
-                    title_data, title_names = self._extract_title_fields(desc, struct)
+                    from funpayparsers.types.subcategory_structure import _parse_title_fields
+                    title_data = _parse_title_fields(desc, struct)
                     additional_data.update(title_data)
-                    names.update(title_names)
+                    suffix_types = {
+                        SubcategoryFieldType.NUMERIC_RANGE,
+                        SubcategoryFieldType.SELECT,
+                        SubcategoryFieldType.DROPDOWN,
+                    }
+                    names.update({
+                        fd.id: fd.label
+                        for fd in struct.fields
+                        if fd.type in suffix_types and fd.id in title_data
+                    })
 
             result.append(
                 OfferPreview(
@@ -191,48 +201,6 @@ class OfferPreviewsParser(
             )
 
         return result
-
-    @staticmethod
-    def _extract_title_fields(
-        title: str, struct: SubcategoryStructure
-    ) -> tuple[dict[str, str | int], dict[str, str]]:
-        """
-        Extract field values from a comma-separated offer title suffix.
-
-        FunPay builds offer titles as ``<summary>, <field1>, <field2>, ...`` where
-        each ``<fieldN>`` is the display value for a ``NUMERIC_RANGE``, ``SELECT``,
-        or ``DROPDOWN`` field, in declaration order.
-
-        For ``NUMERIC_RANGE`` fields the numeric portion is extracted (e.g.
-        ``'15 арена'`` → ``15``).  For select fields the raw string is kept.
-
-        This is best-effort: conditional fields are treated as always visible,
-        so subcategories with competing conditions may produce misaligned results.
-        """
-        suffix_types = {
-            SubcategoryFieldType.NUMERIC_RANGE,
-            SubcategoryFieldType.SELECT,
-            SubcategoryFieldType.DROPDOWN,
-        }
-        suffix_fields = [f for f in struct.fields if f.type in suffix_types]
-        if not suffix_fields:
-            return {}, {}
-
-        parts = title.rsplit(', ', maxsplit=len(suffix_fields))
-        field_values = parts[1:]  # parts[0] = summary text (may contain commas itself)
-
-        other_data: dict[str, str | int] = {}
-        for field_def, raw_val in zip(suffix_fields, field_values):
-            if field_def.type == SubcategoryFieldType.NUMERIC_RANGE:
-                m = re.match(r'^(\d+(?:\.\d+)?)', raw_val.strip())
-                other_data[field_def.id] = int(float(m.group(1))) if m else raw_val
-            else:
-                other_data[field_def.id] = raw_val
-
-        other_data_names: dict[str, str] = {
-            fd.id: fd.label for fd in suffix_fields if fd.id in other_data
-        }
-        return other_data, other_data_names
 
     @staticmethod
     def _parse_user_tag(

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, ParamSpec
 
 
 if TYPE_CHECKING:
-    from funpayparsers.types.subcategory_structure import SubcategoryFieldDef
+    from funpayparsers.types.subcategory_structure import SubcategoryFieldDef, SubcategoryStructure
 from dataclasses import field, dataclass
 from collections.abc import Callable
 
@@ -107,6 +107,18 @@ class OfferPreview(FunPayObject):
 
     subcategory_type: SubcategoryType | None = None
     """Type of the subcategory (OFFERS/CHIPS), if known."""
+
+    def parse_title_fields(self, structure: SubcategoryStructure) -> dict[str, str | int]:
+        """
+        Parse field values from the offer title using the given subcategory structure.
+
+        Returns a mapping of field ID → value.  ``NUMERIC_RANGE`` fields are
+        returned as ``int``.  Returns an empty dict if ``title`` is ``None``.
+        """
+        if self.title is None:
+            return {}
+        from funpayparsers.types.subcategory_structure import _parse_title_fields
+        return _parse_title_fields(self.title, structure)
 
 
 T = TypeVar('T')
