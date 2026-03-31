@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
-from funpayparsers.types.enums import OrderStatus
+from funpayparsers.types.enums import OrderStatus, SubcategoryType
 from funpayparsers.types.common import MoneyValue
 
 
@@ -40,6 +40,12 @@ class OrderPreview(FunPayObject):
 
     counterparty: UserPreview
     """Associated counterparty info."""
+
+    subcategory_id: int | None = None
+    """ID of the subcategory this order belongs to, if known."""
+
+    subcategory_type: SubcategoryType | None = None
+    """Type of the subcategory (OFFERS/CHIPS), if known."""
 
     @property
     def timestamp(self) -> int:
