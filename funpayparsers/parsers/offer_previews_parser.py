@@ -53,6 +53,20 @@ class OfferPreviewsParsingOptions(ParsingOptions):
     Defaults to ``None``.
     """
 
+    skip_without_structure: bool = False
+    """
+    When ``True``, skip all ``other_data`` and ``other_data_names`` collection if
+    ``subcategory_structure`` is ``None``.
+
+    Use this on profile / sells / buys pages where offer previews belong to mixed
+    subcategories — without a matching structure the extracted keys would be
+    meaningless or misaligned.
+
+    Has no effect when ``subcategory_structure`` is provided.
+
+    Defaults to ``False``.
+    """
+
 
 class OfferPreviewsParser(
     FunPayHTMLObjectParser[list[OfferPreview], OfferPreviewsParsingOptions],
@@ -125,29 +139,32 @@ class OfferPreviewsParser(
 
             seller = self._parse_user_tag(offer_div, processed_users)
 
-            additional_data: dict[str, str | int] = {}
-            for key, data in offer_div.attributes.items():
-                if not key.startswith('data-') or key in skip_data:
-                    continue
-                if data is None:
-                    continue
-                # Strip data-f- prefix for subcategory field keys, data- for others.
-                normalized_key = (
-                    key[len('data-f-'):] if key.startswith('data-f-') else key[len('data-'):]
-                )
-                additional_data[normalized_key] = int(data) if data.isnumeric() else data
+            struct = self.options.subcategory_structure
 
+            additional_data: dict[str, str | int] = {}
             names: dict[str, str] = {}
-            for data_key in additional_data:
-                if data_key in skip_match_data:
-                    continue
-                divs = offer_div.css(f'div.tc-{data_key}')
-                if not divs:
-                    continue
-                names[data_key] = divs[0].text(strip=True)
+
+            if struct is not None or not self.options.skip_without_structure:
+                for key, data in offer_div.attributes.items():
+                    if not key.startswith('data-') or key in skip_data:
+                        continue
+                    if data is None:
+                        continue
+                    # Strip data-f- prefix for subcategory field keys, data- for others.
+                    normalized_key = (
+                        key[len('data-f-'):] if key.startswith('data-f-') else key[len('data-'):]
+                    )
+                    additional_data[normalized_key] = int(data) if data.isnumeric() else data
+
+                for data_key in additional_data:
+                    if data_key in skip_match_data:
+                        continue
+                    divs = offer_div.css(f'div.tc-{data_key}')
+                    if not divs:
+                        continue
+                    names[data_key] = divs[0].text(strip=True)
 
             # Enrich from SubcategoryStructure when provided.
-            struct = self.options.subcategory_structure
             if struct is not None:
                 has_field_data = any(k in struct.field_map for k in additional_data)
                 if has_field_data:

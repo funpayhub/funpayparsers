@@ -270,3 +270,34 @@ def test_case_b_no_structure_no_fields():
     preview = result[0]
     assert preview.other_data == {}
     assert preview.other_data_names == {}
+
+
+# ---------------------------------------------------------------------------
+# skip_without_structure: catalog page with data-f-* should still be skipped
+# ---------------------------------------------------------------------------
+
+def test_skip_without_structure_suppresses_data_extraction():
+    """With skip_without_structure=True and no structure, other_data is always empty."""
+    opts = OfferPreviewsParsingOptions(empty_raw_source=True, skip_without_structure=True)
+    result = OfferPreviewsParser(_field_lot_html, options=opts).parse()
+    assert len(result) == 1
+    preview = result[0]
+    assert preview.other_data == {}
+    assert preview.other_data_names == {}
+
+
+def test_skip_without_structure_has_no_effect_when_structure_provided():
+    """skip_without_structure=True is ignored when subcategory_structure is given."""
+    from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParsingOptions
+
+    struct = _make_structure()
+    opts = OfferPreviewsParsingOptions(
+        empty_raw_source=True,
+        subcategory_structure=struct,
+        skip_without_structure=True,
+    )
+    result = OfferPreviewsParser(_field_lot_html, options=opts).parse()
+    assert len(result) == 1
+    preview = result[0]
+    assert preview.other_data.get('arena') == 15
+    assert preview.other_data_names.get('arena') == 'Арена'
