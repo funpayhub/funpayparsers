@@ -59,12 +59,6 @@ class OfferPreviewsParsingOptions(ParsingOptions):
     subcategory_type: SubcategoryType | None = None
     """Subcategory type to stamp on every parsed ``OfferPreview``. Defaults to ``None``."""
 
-    category_text: str | None = None
-    """
-    Raw category label to stamp on every parsed ``OfferPreview``.
-    Use when only a text description of the category is available.
-    Defaults to ``None``.
-    """
 
 
 
@@ -193,7 +187,6 @@ class OfferPreviewsParser(
                     disabled='warning' in (offer_div.attributes.get('class') or ''),
                     subcategory_id=self.options.subcategory_id,
                     subcategory_type=self.options.subcategory_type,
-                    category_text=self.options.category_text,
                 )
             )
 

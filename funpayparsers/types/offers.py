@@ -108,12 +108,6 @@ class OfferPreview(FunPayObject):
     subcategory_type: SubcategoryType | None = None
     """Type of the subcategory (OFFERS/CHIPS), if known."""
 
-    category_text: str | None = None
-    """
-    Raw category label string, populated when structured subcategory info is
-    unavailable (e.g. sells/buys pages where only a text description exists).
-    """
-
 
 T = TypeVar('T')
 P = ParamSpec('P')
