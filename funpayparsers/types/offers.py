@@ -14,6 +14,7 @@ from collections.abc import Callable
 from typing_extensions import Self
 
 from funpayparsers.types.base import FunPayObject
+from funpayparsers.types.enums import SubcategoryType
 from funpayparsers.types.common import MoneyValue
 
 
@@ -100,6 +101,18 @@ class OfferPreview(FunPayObject):
 
     disabled: bool = False
     """Whether the offer is disabled (alias, defaults to ``False``)."""
+
+    subcategory_id: int | None = None
+    """ID of the subcategory this offer belongs to, if known."""
+
+    subcategory_type: SubcategoryType | None = None
+    """Type of the subcategory (OFFERS/CHIPS), if known."""
+
+    category_text: str | None = None
+    """
+    Raw category label string, populated when structured subcategory info is
+    unavailable (e.g. sells/buys pages where only a text description exists).
+    """
 
 
 T = TypeVar('T')

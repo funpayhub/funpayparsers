@@ -142,11 +142,16 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
             for offer_div in offer_divs:
                 url: str = offer_div.css_first('div.offer-list-title a').attributes['href']  # type: ignore[assignment]  # 'a' always contains href.
                 id_ = int(url.split('/')[-2])
+                subcategory_type = SubcategoryType.from_url(url)
+                section_opts = self.options.offer_previews_parsing_options & OfferPreviewsParsingOptions(
+                    subcategory_id=id_,
+                    subcategory_type=subcategory_type,
+                )
                 offers_objs = OfferPreviewsParser(
                     offer_div.html or '',
-                    options=self.options.offer_previews_parsing_options,
+                    options=section_opts,
                 ).parse()
-                offers[SubcategoryType.from_url(url)][id_] = offers_objs  # type: ignore[index] # it is indexable, stupid mypy.
+                offers[subcategory_type][id_] = offers_objs  # type: ignore[index] # it is indexable, stupid mypy.
         else:
             offers = None
 

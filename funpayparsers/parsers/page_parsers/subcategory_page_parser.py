@@ -99,7 +99,10 @@ class SubcategoryPageParser(
             related_subcategories=related_subcategories or None,
             offers=OfferPreviewsParser(
                 showcase.html or '',
-                options=self.options.offer_previews_parsing_options,
+                options=self.options.offer_previews_parsing_options & OfferPreviewsParsingOptions(
+                    subcategory_id=int(subcategory_id_str.split('-')[-1]),
+                    subcategory_type=subcategory_type,
+                ),
             ).parse()
             or None,
         )

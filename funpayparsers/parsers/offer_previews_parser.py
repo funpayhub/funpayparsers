@@ -9,7 +9,7 @@ from copy import deepcopy
 
 from selectolax.lexbor import LexborNode
 
-from funpayparsers.types.enums import SubcategoryFieldType
+from funpayparsers.types.enums import SubcategoryType, SubcategoryFieldType
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.offers import OfferSeller, OfferPreview
 from funpayparsers.parsers.utils import extract_css_url
@@ -50,6 +50,19 @@ class OfferPreviewsParsingOptions(ParsingOptions):
       visible, which may cause misalignment for subcategories with competing
       conditions).
 
+    Defaults to ``None``.
+    """
+
+    subcategory_id: int | None = None
+    """Subcategory ID to stamp on every parsed ``OfferPreview``. Defaults to ``None``."""
+
+    subcategory_type: SubcategoryType | None = None
+    """Subcategory type to stamp on every parsed ``OfferPreview``. Defaults to ``None``."""
+
+    category_text: str | None = None
+    """
+    Raw category label to stamp on every parsed ``OfferPreview``.
+    Use when only a text description of the category is available.
     Defaults to ``None``.
     """
 
@@ -178,6 +191,9 @@ class OfferPreviewsParser(
                     other_data=additional_data,
                     other_data_names=names,
                     disabled='warning' in (offer_div.attributes.get('class') or ''),
+                    subcategory_id=self.options.subcategory_id,
+                    subcategory_type=self.options.subcategory_type,
+                    category_text=self.options.category_text,
                 )
             )
 
