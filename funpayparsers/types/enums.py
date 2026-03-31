@@ -11,6 +11,7 @@ __all__ = (
     'RunnerDataType',
     'Language',
     'MessageType',
+    'SubcategoryFieldType',
 )
 
 
@@ -719,3 +720,36 @@ _LANGUAGE_ALIASES = {
     Language.EN: _LanguageAliases('en', 'en', 'menu-icon-lang-en'),
     Language.UK: _LanguageAliases('uk', 'uk', 'menu-icon-lang-uk'),
 }
+
+
+class SubcategoryFieldType(Enum):
+    """Subcategory field type (from ``data-fields`` JSON ``type`` key)."""
+
+    UNKNOWN = 0
+    """Unknown field type. Returned for unrecognized type integers."""
+
+    NUMERIC_RANGE = 1
+    """Numeric text input, used as a range filter on catalog pages."""
+
+    TEXT = 2
+    """Multilingual single-line text input."""
+
+    TEXTAREA = 3
+    """Multilingual multi-line textarea."""
+
+    SELECT = 4
+    """Dropdown select with conditional visibility support."""
+
+    DROPDOWN = 5
+    """Plain dropdown select."""
+
+    IMAGES = 6
+    """Image upload field."""
+
+    @classmethod
+    def from_type_int(cls, type_int: int, /) -> SubcategoryFieldType:
+        """Return the field type corresponding to ``type_int``, or ``UNKNOWN``."""
+        for member in cls:
+            if member.value == type_int:
+                return member
+        return cls.UNKNOWN

@@ -3,7 +3,11 @@ from __future__ import annotations
 
 __all__ = ('OfferPreview', 'OfferSeller', 'OfferFields')
 
-from typing import Any, TypeVar, ParamSpec
+from typing import TYPE_CHECKING, Any, TypeVar, ParamSpec
+
+
+if TYPE_CHECKING:
+    from funpayparsers.types.subcategory_structure import SubcategoryFieldDef
 from dataclasses import field, dataclass
 from collections.abc import Callable
 
@@ -166,6 +170,18 @@ class OfferFields(FunPayObject):
 
     fields_names: dict[str, str] = field(default_factory=dict)
     """Field names."""
+
+    field_schema: list[SubcategoryFieldDef] = field(default_factory=list)
+    """
+    Subcategory field schema parsed from the ``data-fields`` JSON attribute.
+
+    Each entry describes one configurable field of the subcategory, including its
+    type, human-readable label, visibility conditions, and available options
+    (for select fields).
+
+    Empty list when the page does not include a ``div.lot-fields[data-fields]``
+    element (e.g. currency/chips offers, or manually constructed instances).
+    """
 
     def __post_init__(self) -> None:
         if 'csrf_token' in self.fields_dict:

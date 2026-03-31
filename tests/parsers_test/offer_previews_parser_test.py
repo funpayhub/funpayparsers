@@ -154,3 +154,119 @@ def test_common_lot_parsing():
 def test_currency_lot_parsing():
     parser = OfferPreviewsParser(currency_lot_html, options=OPTIONS)
     assert parser.parse() == [currency_lot_obj]
+
+
+# ---------------------------------------------------------------------------
+# data-f-* key normalisation (breaking change: f-arena → arena)
+# ---------------------------------------------------------------------------
+
+_field_lot_html = """
+<a href="https://funpay.com/lots/offer?id=99999" class="tc-item"
+   data-online="1" data-f-arena="15" data-f-level="29" data-f-namechange="Есть">
+  <div class="tc-desc">
+    <div class="tc-desc-text">Крутой аккаунт, 15 арена, 29 уровень, Есть</div>
+  </div>
+  <div class="tc-user">
+    <div class="media media-user online style-circle">
+      <div class="media-left">
+        <div class="avatar-photo pseudo-a" data-href="https://funpay.com/users/1/" style="background-image: url(a);"></div>
+      </div>
+      <div class="media-body">
+        <div class="media-user-name"><span>Seller</span></div>
+        <div class="media-user-reviews">0 отзывов</div>
+        <div class="media-user-info">на сайте 1 день</div>
+      </div>
+    </div>
+  </div>
+  <div class="tc-price" data-s="1000.0">
+    <div>1000 <span class="unit">₽</span></div>
+  </div>
+</a>
+"""
+
+
+def test_data_f_key_normalization():
+    """data-f-arena should be stored as key 'arena', not 'f-arena'."""
+    result = OfferPreviewsParser(_field_lot_html, options=OPTIONS).parse()
+    assert len(result) == 1
+    preview = result[0]
+    assert 'arena' in preview.other_data
+    assert 'f-arena' not in preview.other_data
+    assert preview.other_data['arena'] == 15
+    assert preview.other_data['level'] == 29
+    assert preview.other_data['namechange'] == 'Есть'
+
+
+# ---------------------------------------------------------------------------
+# Case A: catalog page — enrich other_data_names from structure
+# ---------------------------------------------------------------------------
+
+def _make_structure() -> 'SubcategoryStructure':
+    from funpayparsers.types.enums import SubcategoryFieldType
+    from funpayparsers.types.subcategory_structure import SubcategoryFieldDef, SubcategoryStructure
+
+    fields = [
+        SubcategoryFieldDef(raw_source='', id='arena', type=SubcategoryFieldType.NUMERIC_RANGE, label='Арена', conditions=[], options=None),
+        SubcategoryFieldDef(raw_source='', id='level', type=SubcategoryFieldType.NUMERIC_RANGE, label='Уровень', conditions=[], options=None),
+        SubcategoryFieldDef(raw_source='', id='namechange', type=SubcategoryFieldType.DROPDOWN, label='Изменение имени', conditions=[], options=['Есть', 'Нет']),
+    ]
+    return SubcategoryStructure(
+        subcategory_id=149,
+        fields=fields,
+        field_map={f.id: f for f in fields},
+        label_map={f.label: f.id for f in fields},
+    )
+
+
+def test_case_a_names_enriched_from_structure():
+    """With structure on catalog page (data-f-* present), other_data_names is populated."""
+    from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParsingOptions
+
+    struct = _make_structure()
+    opts = OfferPreviewsParsingOptions(empty_raw_source=True, subcategory_structure=struct)
+    result = OfferPreviewsParser(_field_lot_html, options=opts).parse()
+    assert len(result) == 1
+    preview = result[0]
+    assert preview.other_data_names.get('arena') == 'Арена'
+    assert preview.other_data_names.get('level') == 'Уровень'
+    assert preview.other_data_names.get('namechange') == 'Изменение имени'
+
+
+# ---------------------------------------------------------------------------
+# Case B: profile page — extract field values from title suffix
+# ---------------------------------------------------------------------------
+
+_profile_lot_html = """
+<a href="https://funpay.com/lots/offer?id=77777" class="tc-item">
+  <div class="tc-desc">
+    <div class="tc-desc-text">Крутой аккаунт, 15 арена, 29 уровень, Есть</div>
+  </div>
+  <div class="tc-price" data-s="1000.0">
+    <div>1000 <span class="unit">₽</span></div>
+  </div>
+</a>
+"""
+
+
+def test_case_b_title_fields_extracted():
+    """Without data-f-* but with structure, field values are parsed from title suffix."""
+    from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParsingOptions
+
+    struct = _make_structure()
+    opts = OfferPreviewsParsingOptions(empty_raw_source=True, subcategory_structure=struct)
+    result = OfferPreviewsParser(_profile_lot_html, options=opts).parse()
+    assert len(result) == 1
+    preview = result[0]
+    assert preview.other_data.get('arena') == 15
+    assert preview.other_data.get('level') == 29
+    assert preview.other_data.get('namechange') == 'Есть'
+    assert preview.other_data_names.get('arena') == 'Арена'
+
+
+def test_case_b_no_structure_no_fields():
+    """Without structure on profile page, other_data stays empty (no data-f-*)."""
+    result = OfferPreviewsParser(_profile_lot_html, options=OPTIONS).parse()
+    assert len(result) == 1
+    preview = result[0]
+    assert preview.other_data == {}
+    assert preview.other_data_names == {}
