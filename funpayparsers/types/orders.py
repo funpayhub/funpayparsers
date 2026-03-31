@@ -52,9 +52,11 @@ class OrderPreview(FunPayObject):
 
     recipient: str | None = None
     """
-    Target identifier provided by the buyer (e.g. ``@username`` or plain username).
+    Free-text value entered by the buyer as the delivery target (e.g. a username,
+    phone number, email, or any other identifier).
 
-    Always the last comma-separated part of the title, if present.
+    Always the last comma-separated part of the title, stored as-is without
+    any normalisation.  ``None`` when the title has fewer than two parts.
     """
 
     subcategory_id: int | None = None
