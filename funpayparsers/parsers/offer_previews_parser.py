@@ -53,19 +53,6 @@ class OfferPreviewsParsingOptions(ParsingOptions):
     Defaults to ``None``.
     """
 
-    skip_without_structure: bool = False
-    """
-    When ``True``, skip all ``other_data`` and ``other_data_names`` collection if
-    ``subcategory_structure`` is ``None``.
-
-    Use this on profile / sells / buys pages where offer previews belong to mixed
-    subcategories — without a matching structure the extracted keys would be
-    meaningless or misaligned.
-
-    Has no effect when ``subcategory_structure`` is provided.
-
-    Defaults to ``False``.
-    """
 
 
 class OfferPreviewsParser(
@@ -144,7 +131,7 @@ class OfferPreviewsParser(
             additional_data: dict[str, str | int] = {}
             names: dict[str, str] = {}
 
-            if struct is not None or not self.options.skip_without_structure:
+            if struct is not None:
                 for key, data in offer_div.attributes.items():
                     if not key.startswith('data-') or key in skip_data:
                         continue
@@ -164,7 +151,6 @@ class OfferPreviewsParser(
                         continue
                     names[data_key] = divs[0].text(strip=True)
 
-            # Enrich from SubcategoryStructure when provided.
             if struct is not None:
                 has_field_data = any(k in struct.field_map for k in additional_data)
                 if has_field_data:

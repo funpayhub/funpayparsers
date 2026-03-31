@@ -73,14 +73,8 @@ common_lot_obj = OfferPreview(
         rating=5,
         reviews_amount=105
     ),
-    other_data={
-        'user': 54321,
-        'without_name': 'some_data_without_name',
-        'with_name': 'some_data_with_name',
-    },
-    other_data_names={
-        'with_name': 'Data name'
-    },
+    other_data={},
+    other_data_names={},
     unit=None
 )
 
@@ -136,12 +130,8 @@ currency_lot_obj = OfferPreview(
         rating=0,
         reviews_amount=2
     ),
-    other_data={
-        'server': 97,
-    },
-    other_data_names={
-        'server': 'Эллиан (F2P)'
-    },
+    other_data={},
+    other_data_names={},
     unit='кк'
 )
 
@@ -186,8 +176,10 @@ _field_lot_html = """
 
 
 def test_data_f_key_normalization():
-    """data-f-arena should be stored as key 'arena', not 'f-arena'."""
-    result = OfferPreviewsParser(_field_lot_html, options=OPTIONS).parse()
+    """data-f-arena should be stored as key 'arena', not 'f-arena' (requires structure)."""
+    struct = _make_structure()
+    opts = OfferPreviewsParsingOptions(empty_raw_source=True, subcategory_structure=struct)
+    result = OfferPreviewsParser(_field_lot_html, options=opts).parse()
     assert len(result) == 1
     preview = result[0]
     assert 'arena' in preview.other_data
@@ -263,41 +255,10 @@ def test_case_b_title_fields_extracted():
     assert preview.other_data_names.get('arena') == 'Арена'
 
 
-def test_case_b_no_structure_no_fields():
-    """Without structure on profile page, other_data stays empty (no data-f-*)."""
-    result = OfferPreviewsParser(_profile_lot_html, options=OPTIONS).parse()
-    assert len(result) == 1
-    preview = result[0]
-    assert preview.other_data == {}
-    assert preview.other_data_names == {}
-
-
-# ---------------------------------------------------------------------------
-# skip_without_structure: catalog page with data-f-* should still be skipped
-# ---------------------------------------------------------------------------
-
-def test_skip_without_structure_suppresses_data_extraction():
-    """With skip_without_structure=True and no structure, other_data is always empty."""
-    opts = OfferPreviewsParsingOptions(empty_raw_source=True, skip_without_structure=True)
-    result = OfferPreviewsParser(_field_lot_html, options=opts).parse()
-    assert len(result) == 1
-    preview = result[0]
-    assert preview.other_data == {}
-    assert preview.other_data_names == {}
-
-
-def test_skip_without_structure_has_no_effect_when_structure_provided():
-    """skip_without_structure=True is ignored when subcategory_structure is given."""
-    from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParsingOptions
-
-    struct = _make_structure()
-    opts = OfferPreviewsParsingOptions(
-        empty_raw_source=True,
-        subcategory_structure=struct,
-        skip_without_structure=True,
-    )
-    result = OfferPreviewsParser(_field_lot_html, options=opts).parse()
-    assert len(result) == 1
-    preview = result[0]
-    assert preview.other_data.get('arena') == 15
-    assert preview.other_data_names.get('arena') == 'Арена'
+def test_no_structure_yields_empty_data():
+    """Without structure, other_data and other_data_names are always empty."""
+    for html in (_profile_lot_html, _field_lot_html):
+        result = OfferPreviewsParser(html, options=OPTIONS).parse()
+        assert len(result) == 1
+        assert result[0].other_data == {}
+        assert result[0].other_data_names == {}
