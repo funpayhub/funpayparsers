@@ -242,8 +242,8 @@ _profile_lot_html = """
 """
 
 
-def test_case_b_title_fields_extracted():
-    """Without data-f-* but with structure, field values are parsed from title suffix."""
+def test_case_b_no_field_data_without_f_attrs():
+    """Without data-f-* attrs, other_data stays empty even when structure is provided."""
     from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParsingOptions
 
     struct = _make_structure()
@@ -251,10 +251,8 @@ def test_case_b_title_fields_extracted():
     result = OfferPreviewsParser(_profile_lot_html, options=opts).parse()
     assert len(result) == 1
     preview = result[0]
-    assert preview.other_data.get('arena') == 15
-    assert preview.other_data.get('level') == 29
-    assert preview.other_data.get('namechange') == 'Есть'
-    assert preview.other_data_names.get('arena') == 'Арена'
+    assert preview.other_data == {}
+    assert preview.other_data_names == {}
 
 
 def test_no_structure_yields_empty_data():
