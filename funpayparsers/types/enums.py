@@ -19,7 +19,7 @@ import re
 import warnings
 from typing import Any
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, auto
 
 from funpayparsers import message_type_re as msg_re
 
@@ -725,31 +725,38 @@ _LANGUAGE_ALIASES = {
 class SubcategoryFieldType(Enum):
     """Subcategory field type (from ``data-fields`` JSON ``type`` key)."""
 
-    UNKNOWN = 0
+    UNKNOWN = auto()
     """Unknown field type. Returned for unrecognized type integers."""
 
-    NUMERIC_RANGE = 1
+    NUMERIC_RANGE = auto()
     """Numeric text input, used as a range filter on catalog pages."""
 
-    TEXT = 2
+    TEXT = auto()
     """Multilingual single-line text input."""
 
-    TEXTAREA = 3
+    TEXTAREA = auto()
     """Multilingual multi-line textarea."""
 
-    SELECT = 4
+    SELECT = auto()
     """Dropdown select with conditional visibility support."""
 
-    DROPDOWN = 5
+    DROPDOWN = auto()
     """Plain dropdown select."""
 
-    IMAGES = 6
+    IMAGES = auto()
     """Image upload field."""
 
     @classmethod
     def from_type_int(cls, type_int: int, /) -> SubcategoryFieldType:
         """Return the field type corresponding to ``type_int``, or ``UNKNOWN``."""
-        for member in cls:
-            if member.value == type_int:
-                return member
-        return cls.UNKNOWN
+        return _SUBCATEGORY_FIELD_TYPE_MAP.get(type_int, cls.UNKNOWN)
+
+
+_SUBCATEGORY_FIELD_TYPE_MAP: dict[int, SubcategoryFieldType] = {
+    1: SubcategoryFieldType.NUMERIC_RANGE,
+    2: SubcategoryFieldType.TEXT,
+    3: SubcategoryFieldType.TEXTAREA,
+    4: SubcategoryFieldType.SELECT,
+    5: SubcategoryFieldType.DROPDOWN,
+    6: SubcategoryFieldType.IMAGES,
+}
