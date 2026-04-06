@@ -197,16 +197,14 @@ def _make_structure() -> 'SubcategoryStructure':
     from funpayparsers.types.enums import SubcategoryFieldType
     from funpayparsers.types.subcategory_structure import SubcategoryFieldDef, SubcategoryStructure
 
-    fields = [
+    defs = [
         SubcategoryFieldDef(raw_source='', id='arena', type=SubcategoryFieldType.NUMERIC_RANGE, label='Арена', conditions=[], options=None),
         SubcategoryFieldDef(raw_source='', id='level', type=SubcategoryFieldType.NUMERIC_RANGE, label='Уровень', conditions=[], options=None),
         SubcategoryFieldDef(raw_source='', id='namechange', type=SubcategoryFieldType.DROPDOWN, label='Изменение имени', conditions=[], options=['Есть', 'Нет']),
     ]
     return SubcategoryStructure(
         subcategory_id=149,
-        fields=fields,
-        field_map={f.id: f for f in fields},
-        label_map={f.label: f.id for f in fields},
+        fields={f.id: f for f in defs},
     )
 
 

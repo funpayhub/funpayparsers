@@ -158,8 +158,8 @@ class OfferPreviewsParser(
             if struct is not None:
                 # Case A: catalog page — data-f-* keys map to known field IDs.
                 for k in additional_data:
-                    if k in struct.field_map:
-                        names[k] = struct.field_map[k].label
+                    if k in struct.fields:
+                        names[k] = struct.fields[k].label
 
             result.append(
                 OfferPreview(

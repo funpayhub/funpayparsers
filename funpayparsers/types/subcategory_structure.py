@@ -4,7 +4,7 @@ from __future__ import annotations
 __all__ = ('FieldCondition', 'SubcategoryFieldDef', 'SubcategoryStructure')
 
 from typing import TYPE_CHECKING, Any
-from dataclasses import field, dataclass
+from dataclasses import dataclass
 from functools import cached_property
 
 from funpayparsers.types.base import FunPayObject
@@ -84,14 +84,18 @@ class SubcategoryStructure:
     subcategory_id: int | None
     """Subcategory ID. ``None`` for currency (chips) offer fields."""
 
-    fields: list[SubcategoryFieldDef]
-    """All field definitions in declaration order."""
+    fields: dict[str, SubcategoryFieldDef]
+    """
+    Field definitions keyed by field ID, in declaration order.
 
-    field_map: dict[str, SubcategoryFieldDef] = field(compare=False)
-    """Mapping from field ID to its definition for O(1) lookup."""
+    Use ``fields[field_id]`` for O(1) lookup by ID,
+    or iterate over ``fields.values()`` to process fields in declaration order.
+    """
 
-    label_map: dict[str, str] = field(compare=False)
-    """Mapping from FunPay label to field ID for reverse lookup."""
+    @cached_property
+    def label_map(self) -> dict[str, str]:
+        """Mapping from FunPay label to field ID for reverse lookup."""
+        return {f.label: f.id for f in self.fields.values()}
 
     @cached_property
     def lower_label_map(self) -> dict[str, str]:
@@ -104,12 +108,9 @@ class SubcategoryStructure:
         Build a ``SubcategoryStructure`` from ``OfferFields``.
 
         :param offer_fields: An ``OfferFields`` instance returned by ``OfferFieldsParser``.
-        :return: A ``SubcategoryStructure`` with field map and label map populated.
+        :return: A ``SubcategoryStructure`` with field map and label maps populated.
         """
-        fields = offer_fields.field_schema
         return cls(
             subcategory_id=offer_fields.subcategory_id,
-            fields=fields,
-            field_map={f.id: f for f in fields},
-            label_map={f.label: f.id for f in fields},
+            fields={f.id: f for f in offer_fields.field_schema},
         )
