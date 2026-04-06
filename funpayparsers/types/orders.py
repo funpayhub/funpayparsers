@@ -83,7 +83,7 @@ class OrderPreview(FunPayObject):
         offer_title = ', '.join(parts[:-strip]) if strip < len(parts) else ''
         if not offer_title:
             return {}
-        from funpayparsers.types.subcategory_structure import _parse_title_fields
+        from funpayparsers.parsers.utils import _parse_title_fields
         return _parse_title_fields(offer_title, structure)
 
     @property

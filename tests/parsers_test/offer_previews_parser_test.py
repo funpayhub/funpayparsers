@@ -202,13 +202,11 @@ def _make_structure() -> 'SubcategoryStructure':
         SubcategoryFieldDef(raw_source='', id='level', type=SubcategoryFieldType.NUMERIC_RANGE, label='Уровень', conditions=[], options=None),
         SubcategoryFieldDef(raw_source='', id='namechange', type=SubcategoryFieldType.DROPDOWN, label='Изменение имени', conditions=[], options=['Есть', 'Нет']),
     ]
-    label_map = {f.label: f.id for f in fields}
     return SubcategoryStructure(
         subcategory_id=149,
         fields=fields,
         field_map={f.id: f for f in fields},
-        label_map=label_map,
-        lower_label_map={k.lower(): v for k, v in label_map.items()},
+        label_map={f.label: f.id for f in fields},
     )
 
 

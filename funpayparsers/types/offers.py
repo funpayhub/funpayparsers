@@ -117,7 +117,7 @@ class OfferPreview(FunPayObject):
         """
         if self.title is None:
             return {}
-        from funpayparsers.types.subcategory_structure import _parse_title_fields
+        from funpayparsers.parsers.utils import _parse_title_fields
         return _parse_title_fields(self.title, structure)
 
 
@@ -687,3 +687,13 @@ class OfferFields(FunPayObject):
     @common_only
     def amount(self, value: int | None) -> None:
         self.set_field('amount', value)
+
+    @property
+    def subcategory_structure(self) -> SubcategoryStructure:
+        """
+        Build and return a ``SubcategoryStructure`` from ``field_schema``.
+
+        Shorthand for ``SubcategoryStructure.from_offer_fields(self)``.
+        """
+        from funpayparsers.types.subcategory_structure import SubcategoryStructure
+        return SubcategoryStructure.from_offer_fields(self)

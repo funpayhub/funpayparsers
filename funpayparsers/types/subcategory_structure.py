@@ -3,9 +3,9 @@ from __future__ import annotations
 
 __all__ = ('FieldCondition', 'SubcategoryFieldDef', 'SubcategoryStructure')
 
-import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from dataclasses import field, dataclass
+from functools import cached_property
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.enums import SubcategoryFieldType
@@ -13,37 +13,6 @@ from funpayparsers.types.enums import SubcategoryFieldType
 
 if TYPE_CHECKING:
     from funpayparsers.types.offers import OfferFields
-
-
-_TITLE_SUFFIX_TYPES = frozenset({
-    SubcategoryFieldType.NUMERIC_RANGE,
-    SubcategoryFieldType.SELECT,
-    SubcategoryFieldType.DROPDOWN,
-})
-
-
-def _parse_title_fields(title: str, structure: SubcategoryStructure) -> dict[str, str | int]:
-    """
-    Extract field values from a comma-separated offer title suffix.
-
-    FunPay appends ``NUMERIC_RANGE``, ``SELECT``, and ``DROPDOWN`` field values
-    to the offer title in declaration order, separated by ``', '``.
-
-    Returns a mapping of field ID → parsed value.  ``NUMERIC_RANGE`` values are
-    returned as ``int`` (the leading numeric portion is extracted).
-    """
-    suffix_fields = [f for f in structure.fields if f.type in _TITLE_SUFFIX_TYPES]
-    if not suffix_fields:
-        return {}
-    parts = title.rsplit(', ', maxsplit=len(suffix_fields))
-    result: dict[str, str | int] = {}
-    for field_def, raw_val in zip(suffix_fields, parts[1:]):
-        if field_def.type is SubcategoryFieldType.NUMERIC_RANGE:
-            m = re.match(r'^(\d+(?:\.\d+)?)', raw_val.strip())
-            result[field_def.id] = int(float(m.group(1))) if m else raw_val
-        else:
-            result[field_def.id] = raw_val
-    return result
 
 
 @dataclass
@@ -58,12 +27,17 @@ class FieldCondition:
     field_id: str
     """ID of the field whose value controls visibility of the owning field."""
 
-    values: list[str]
+    values: set[str]
     """
     Values of ``field_id`` that make the owning field visible.
 
     Sourced from the ``list`` key in the ``data-fields`` JSON condition object.
+    Stored as a ``set`` — duplicates are not possible by definition.
     """
+
+    def is_satisfied_by(self, value: Any) -> bool:
+        """Return ``True`` if ``str(value)`` is present in ``values``."""
+        return str(value) in self.values
 
 
 @dataclass
@@ -104,7 +78,7 @@ class SubcategoryStructure:
     rather than parsed directly from HTML.
 
     Use ``SubcategoryStructure.from_offer_fields()`` to build an instance
-    from a parsed ``OfferFields``.
+    from ``OfferFields``.
     """
 
     subcategory_id: int | None
@@ -119,23 +93,23 @@ class SubcategoryStructure:
     label_map: dict[str, str] = field(compare=False)
     """Mapping from FunPay label to field ID for reverse lookup."""
 
-    lower_label_map: dict[str, str] = field(compare=False)
-    """Case-insensitive variant of ``label_map`` — keys are lowercased."""
+    @cached_property
+    def lower_label_map(self) -> dict[str, str]:
+        """Case-insensitive variant of ``label_map`` — keys are lowercased."""
+        return {k.lower(): v for k, v in self.label_map.items()}
 
     @classmethod
     def from_offer_fields(cls, offer_fields: OfferFields) -> SubcategoryStructure:
         """
-        Build a ``SubcategoryStructure`` from a parsed ``OfferFields`` instance.
+        Build a ``SubcategoryStructure`` from ``OfferFields``.
 
         :param offer_fields: An ``OfferFields`` instance returned by ``OfferFieldsParser``.
         :return: A ``SubcategoryStructure`` with field map and label map populated.
         """
         fields = offer_fields.field_schema
-        label_map = {f.label: f.id for f in fields}
         return cls(
             subcategory_id=offer_fields.subcategory_id,
             fields=fields,
             field_map={f.id: f for f in fields},
-            label_map=label_map,
-            lower_label_map={k.lower(): v for k, v in label_map.items()},
+            label_map={f.label: f.id for f in fields},
         )
