@@ -102,11 +102,8 @@ class OfferPreview(FunPayObject):
     disabled: bool = False
     """Whether the offer is disabled (alias, defaults to ``False``)."""
 
-    subcategory_id: int | None = None
-    """ID of the subcategory this offer belongs to, if known."""
-
     subcategory_type: SubcategoryType | None = None
-    """Type of the subcategory (OFFERS/CHIPS), if known."""
+    """Type of the subcategory (OFFERS/CHIPS), derived from the offer URL."""
 
     def parse_title_fields(self, structure: SubcategoryStructure) -> dict[str, str | int]:
         """

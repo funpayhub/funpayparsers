@@ -18,7 +18,6 @@ from funpayparsers.parsers.money_value_parser import (
     MoneyValueParsingMode,
     MoneyValueParsingOptions,
 )
-from funpayparsers.types.subcategory_structure import SubcategoryStructure
 
 
 @dataclass(frozen=True)
@@ -32,29 +31,8 @@ class OfferPreviewsParsingOptions(ParsingOptions):
     ``parsing_mode`` and ``parse_value_from_attribute`` options are hardcoded in
     ``OfferPreviewsParser`` and is therefore ignored if provided externally.
 
-    Defaults to ``UserPreviewParsingOptions()``.
+    Defaults to ``MoneyValueParsingOptions()``.
     """
-
-    subcategory_structure: SubcategoryStructure | None = None
-    """
-    Optional subcategory field structure.
-
-    When provided on catalog pages (``data-f-*`` attributes present), ``other_data``
-    is populated from those attributes and ``other_data_names`` is enriched with
-    FunPay labels from the structure (e.g. ``{'arena': 'Арена', 'level': 'Уровень'}``).
-
-    On profile pages there are no ``data-f-*`` attributes, so both dicts stay empty
-    regardless of this option.  Use ``OfferPreview.parse_title_fields(structure)``
-    in business logic to extract field values from the title suffix in that case.
-
-    Defaults to ``None``.
-    """
-
-    subcategory_id: int | None = None
-    """Subcategory ID to stamp on every parsed ``OfferPreview``. Defaults to ``None``."""
-
-    subcategory_type: SubcategoryType | None = None
-    """Subcategory type to stamp on every parsed ``OfferPreview``. Defaults to ``None``."""
 
 
 
@@ -130,36 +108,27 @@ class OfferPreviewsParser(
 
             seller = self._parse_user_tag(offer_div, processed_users)
 
-            struct = self.options.subcategory_structure
-
             additional_data: dict[str, str | int] = {}
             names: dict[str, str] = {}
 
-            if struct is not None:
-                for key, data in offer_div.attributes.items():
-                    if not key.startswith('data-') or key in skip_data:
-                        continue
-                    if data is None:
-                        continue
-                    # Strip data-f- prefix for subcategory field keys, data- for others.
-                    normalized_key = (
-                        key[len('data-f-'):] if key.startswith('data-f-') else key[len('data-'):]
-                    )
-                    additional_data[normalized_key] = int(data) if data.isnumeric() else data
+            for key, data in offer_div.attributes.items():
+                if not key.startswith('data-') or key in skip_data:
+                    continue
+                if data is None:
+                    continue
+                # Strip data-f- prefix for subcategory field keys, data- for others.
+                normalized_key = (
+                    key[len('data-f-'):] if key.startswith('data-f-') else key[len('data-'):]
+                )
+                additional_data[normalized_key] = int(data) if data.isnumeric() else data
 
-                for data_key in additional_data:
-                    if data_key in skip_match_data:
-                        continue
-                    divs = offer_div.css(f'div.tc-{data_key}')
-                    if not divs:
-                        continue
-                    names[data_key] = divs[0].text(strip=True)
-
-            if struct is not None:
-                # Case A: catalog page — data-f-* keys map to known field IDs.
-                for k in additional_data:
-                    if k in struct.fields:
-                        names[k] = struct.fields[k].label
+            for data_key in additional_data:
+                if data_key in skip_match_data:
+                    continue
+                divs = offer_div.css(f'div.tc-{data_key}')
+                if not divs:
+                    continue
+                names[data_key] = divs[0].text(strip=True)
 
             result.append(
                 OfferPreview(
@@ -175,8 +144,7 @@ class OfferPreviewsParser(
                     other_data=additional_data,
                     other_data_names=names,
                     disabled='warning' in (offer_div.attributes.get('class') or ''),
-                    subcategory_id=self.options.subcategory_id,
-                    subcategory_type=self.options.subcategory_type,
+                    subcategory_type=SubcategoryType.from_url(url),
                 )
             )
 

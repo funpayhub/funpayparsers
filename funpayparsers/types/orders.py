@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass
 
 from funpayparsers.types.base import FunPayObject
-from funpayparsers.types.enums import OrderStatus, SubcategoryType
+from funpayparsers.types.enums import OrderStatus
 from funpayparsers.types.common import MoneyValue
 
 
@@ -58,12 +58,6 @@ class OrderPreview(FunPayObject):
     Always the last comma-separated part of the title, stored as-is without
     any normalisation.  ``None`` when the title has fewer than two parts.
     """
-
-    subcategory_id: int | None = None
-    """ID of the subcategory this order belongs to, if known."""
-
-    subcategory_type: SubcategoryType | None = None
-    """Type of the subcategory (OFFERS/CHIPS), if known."""
 
     def parse_title_fields(self, structure: SubcategoryStructure) -> dict[str, str | int]:
         """
