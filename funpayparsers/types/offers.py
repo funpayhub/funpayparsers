@@ -102,20 +102,8 @@ class OfferPreview(FunPayObject):
     disabled: bool = False
     """Whether the offer is disabled (alias, defaults to ``False``)."""
 
-    subcategory_type: SubcategoryType | None = None
+    subcategory_type: SubcategoryType = SubcategoryType.UNKNOWN
     """Type of the subcategory (OFFERS/CHIPS), derived from the offer URL."""
-
-    def parse_title_fields(self, structure: SubcategoryStructure) -> dict[str, str | int]:
-        """
-        Parse field values from the offer title using the given subcategory structure.
-
-        Returns a mapping of field ID → value.  ``NUMERIC_RANGE`` fields are
-        returned as ``int``.  Returns an empty dict if ``title`` is ``None``.
-        """
-        if self.title is None:
-            return {}
-        from funpayparsers.parsers.utils import _parse_title_fields
-        return _parse_title_fields(self.title, structure)
 
 
 T = TypeVar('T')
