@@ -17,6 +17,7 @@ from funpayparsers.types.pages.base import FunPayPage
 
 if TYPE_CHECKING:
     from funpayparsers.parsers.page_parsers.order_page_parser import OrderPageParsingOptions
+    from funpayparsers.types.subcategory_structure import SubcategoryStructure
 
 
 @dataclass
@@ -49,6 +50,14 @@ class OrderPage(FunPayPage):
 
     chat: Chat
     """Chat with counterparty."""
+
+    def get_structured_fields(self, structure: SubcategoryStructure) -> dict[str, str]:
+        """Return ``data`` remapped to FunPay field IDs using *structure*'s label map."""
+        return {
+            structure.lower_label_map[label]: val
+            for label, val in self.data.items()
+            if label in structure.lower_label_map
+        }
 
     def _first_found(self, names: list[str]) -> str | None:
         for i in names:

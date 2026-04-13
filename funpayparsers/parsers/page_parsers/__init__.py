@@ -8,6 +8,6 @@ from .profile_page_parser import *
 from .my_chips_page_parser import *
 from .settings_page_parser import *
 from .my_offers_page_parser import *
+from .sras_info_page_parser import *
 from .subcategory_page_parser import *
 from .transactions_page_parser import *
-from .sras_info_page_parser import *

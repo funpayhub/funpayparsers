@@ -3,13 +3,18 @@ from __future__ import annotations
 
 __all__ = ('OfferPreview', 'OfferSeller', 'OfferFields')
 
-from typing import Any, TypeVar, ParamSpec
+from typing import TYPE_CHECKING, Any, TypeVar, ParamSpec
+
+
+if TYPE_CHECKING:
+    from funpayparsers.types.subcategory_structure import SubcategoryFieldDef, SubcategoryStructure
 from dataclasses import field, dataclass
 from collections.abc import Callable
 
 from typing_extensions import Self
 
 from funpayparsers.types.base import FunPayObject
+from funpayparsers.types.enums import SubcategoryType
 from funpayparsers.types.common import MoneyValue
 
 
@@ -97,6 +102,9 @@ class OfferPreview(FunPayObject):
     disabled: bool = False
     """Whether the offer is disabled (alias, defaults to ``False``)."""
 
+    subcategory_type: SubcategoryType = SubcategoryType.UNKNOWN
+    """Type of the subcategory (OFFERS/CHIPS), derived from the offer URL."""
+
 
 T = TypeVar('T')
 P = ParamSpec('P')
@@ -166,6 +174,18 @@ class OfferFields(FunPayObject):
 
     fields_names: dict[str, str] = field(default_factory=dict)
     """Field names."""
+
+    field_schema: list[SubcategoryFieldDef] = field(default_factory=list)
+    """
+    Subcategory field schema parsed from the ``data-fields`` JSON attribute.
+
+    Each entry describes one configurable field of the subcategory, including its
+    type, human-readable label, visibility conditions, and available options
+    (for select fields).
+
+    Empty list when the page does not include a ``div.lot-fields[data-fields]``
+    element (e.g. currency/chips offers, or manually constructed instances).
+    """
 
     def __post_init__(self) -> None:
         if 'csrf_token' in self.fields_dict:
@@ -554,9 +574,9 @@ class OfferFields(FunPayObject):
 
         Applicable for common offers only.
 
-        Field name: ``fields[secrets]``
+        Field name: ``secrets``
         """
-        goods = self.fields_dict.get('fields[secrets]')
+        goods = self.fields_dict.get('secrets')
         if goods is None:
             return None
         return goods.split('\n')
@@ -564,7 +584,7 @@ class OfferFields(FunPayObject):
     @secrets.setter
     @common_only
     def secrets(self, value: list[str] | None) -> None:
-        self.set_field('fields[secrets]', '\n'.join(value) if value is not None else None)
+        self.set_field('secrets', '\n'.join(value) if value is not None else None)
 
     @property
     def active(self) -> bool:
@@ -652,3 +672,13 @@ class OfferFields(FunPayObject):
     @common_only
     def amount(self, value: int | None) -> None:
         self.set_field('amount', value)
+
+    @property
+    def subcategory_structure(self) -> SubcategoryStructure:
+        """
+        Build and return a ``SubcategoryStructure`` from ``field_schema``.
+
+        Shorthand for ``SubcategoryStructure.from_offer_fields(self)``.
+        """
+        from funpayparsers.types.subcategory_structure import SubcategoryStructure
+        return SubcategoryStructure.from_offer_fields(self)

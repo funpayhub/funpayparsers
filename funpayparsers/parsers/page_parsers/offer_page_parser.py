@@ -60,12 +60,23 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
         param_list: LexborNode = page_content.css_first('div.param-list')
         auto_delivery: list[LexborNode] = page_content.css('i.auto-dlv-icon')
 
-        fields = {}
+        fields: dict[str, str] = {}
+        images: list[str] = []
         field_divs: list[LexborNode] = param_list.css('div.param-item')
-        for field in field_divs:
-            name: LexborNode = field.css_first('h5')
-            value: LexborNode = field.css('div')[-1]
-            fields[name.text(strip=True)] = value.text(strip=True)
+        for field_div in field_divs:
+            name_node = field_div.css_first('h5', strict=False)
+            if name_node is None:
+                continue
+            attachments = field_div.css('a.attachments-thumb')
+            if attachments:
+                for a in attachments:
+                    href = a.attributes.get('href')
+                    if href:
+                        images.append(href)
+                continue
+            value_divs = field_div.css('div')
+            value = value_divs[-1].text(strip=True) if value_divs else ''
+            fields[name_node.text(strip=True)] = value
 
         payment_options: dict[str, PaymentOption] = {}
         payment_select: LexborNode = page_content.css_first('select.form-control[name="method"]')
@@ -99,6 +110,7 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
             subcategory_full_name=page_content.css_first('h1').text(strip=True),
             auto_delivery=bool(auto_delivery),
             fields=fields,
+            images=images,
             chat=ChatParser(
                 self.tree.css_first('div.chat').html or '',
                 options=self.options.chat_parsing_options,

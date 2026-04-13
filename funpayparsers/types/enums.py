@@ -11,6 +11,7 @@ __all__ = (
     'RunnerDataType',
     'Language',
     'MessageType',
+    'SubcategoryFieldType',
 )
 
 
@@ -18,7 +19,7 @@ import re
 import warnings
 from typing import Any
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, auto
 
 from funpayparsers import message_type_re as msg_re
 
@@ -718,4 +719,44 @@ _LANGUAGE_ALIASES = {
     Language.RU: _LanguageAliases('ru', '', 'menu-icon-lang-ru'),
     Language.EN: _LanguageAliases('en', 'en', 'menu-icon-lang-en'),
     Language.UK: _LanguageAliases('uk', 'uk', 'menu-icon-lang-uk'),
+}
+
+
+class SubcategoryFieldType(Enum):
+    """Subcategory field type (from ``data-fields`` JSON ``type`` key)."""
+
+    UNKNOWN = auto()
+    """Unknown field type. Returned for unrecognized type integers."""
+
+    NUMERIC_RANGE = auto()
+    """Numeric text input, used as a range filter on catalog pages."""
+
+    TEXT = auto()
+    """Single-line text input."""
+
+    TEXTAREA = auto()
+    """Multi-line textarea."""
+
+    SELECT = auto()
+    """Dropdown select with conditional visibility support."""
+
+    DROPDOWN = auto()
+    """Plain dropdown select."""
+
+    IMAGES = auto()
+    """Image upload field."""
+
+    @classmethod
+    def from_type_code(cls, type_code: int, /) -> SubcategoryFieldType:
+        """Return the field type corresponding to ``type_code``, or ``UNKNOWN``."""
+        return _SUBCATEGORY_FIELD_TYPE_MAP.get(type_code, cls.UNKNOWN)
+
+
+_SUBCATEGORY_FIELD_TYPE_MAP: dict[int, SubcategoryFieldType] = {
+    1: SubcategoryFieldType.NUMERIC_RANGE,
+    2: SubcategoryFieldType.TEXT,
+    3: SubcategoryFieldType.TEXTAREA,
+    4: SubcategoryFieldType.SELECT,
+    5: SubcategoryFieldType.DROPDOWN,
+    6: SubcategoryFieldType.IMAGES,
 }

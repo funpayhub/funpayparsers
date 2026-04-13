@@ -9,6 +9,7 @@ from copy import deepcopy
 
 from selectolax.lexbor import LexborNode
 
+from funpayparsers.types.enums import SubcategoryType
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.offers import OfferSeller, OfferPreview
 from funpayparsers.parsers.utils import extract_css_url
@@ -26,12 +27,14 @@ class OfferPreviewsParsingOptions(ParsingOptions):
     money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions()
     """
     Options instance for ``MoneyValueParser``, which is used by ``OfferPreviewsParser``.
-    
-    ``parsing_mode`` and ``parse_value_from_attribute`` options are hardcoded in 
+
+    ``parsing_mode`` and ``parse_value_from_attribute`` options are hardcoded in
     ``OfferPreviewsParser`` and is therefore ignored if provided externally.
 
-    Defaults to ``UserPreviewParsingOptions()``.
+    Defaults to ``MoneyValueParsingOptions()``.
     """
+
+
 
 
 class OfferPreviewsParser(
@@ -106,16 +109,19 @@ class OfferPreviewsParser(
             seller = self._parse_user_tag(offer_div, processed_users)
 
             additional_data: dict[str, str | int] = {}
+            names: dict[str, str] = {}
+
             for key, data in offer_div.attributes.items():
                 if not key.startswith('data-') or key in skip_data:
                     continue
                 if data is None:
                     continue
-                additional_data[key.replace('data-', '')] = (
-                    (int(data)) if data.isnumeric() else data
+                # Strip data-f- prefix for subcategory field keys, data- for others.
+                normalized_key = (
+                    key[len('data-f-'):] if key.startswith('data-f-') else key[len('data-'):]
                 )
+                additional_data[normalized_key] = int(data) if data.isnumeric() else data
 
-            names = {}
             for data_key in additional_data:
                 if data_key in skip_match_data:
                     continue
@@ -138,6 +144,7 @@ class OfferPreviewsParser(
                     other_data=additional_data,
                     other_data_names=names,
                     disabled='warning' in (offer_div.attributes.get('class') or ''),
+                    subcategory_type=SubcategoryType.from_url(url),
                 )
             )
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from funpayparsers.types.common import MoneyValue
+from funpayparsers.types.enums import SubcategoryType
 from funpayparsers.types.offers import OfferSeller, OfferPreview
 from funpayparsers.parsers.offer_previews_parser import (
     OfferPreviewsParser,
@@ -73,15 +74,10 @@ common_lot_obj = OfferPreview(
         rating=5,
         reviews_amount=105
     ),
-    other_data={
-        'user': 54321,
-        'without_name': 'some_data_without_name',
-        'with_name': 'some_data_with_name',
-    },
-    other_data_names={
-        'with_name': 'Data name'
-    },
-    unit=None
+    other_data={'user': 54321, 'without_name': 'some_data_without_name', 'with_name': 'some_data_with_name'},
+    other_data_names={'with_name': 'Data name'},
+    unit=None,
+    subcategory_type=SubcategoryType.OFFERS,
 )
 
 
@@ -136,13 +132,10 @@ currency_lot_obj = OfferPreview(
         rating=0,
         reviews_amount=2
     ),
-    other_data={
-        'server': 97,
-    },
-    other_data_names={
-        'server': 'Эллиан (F2P)'
-    },
-    unit='кк'
+    other_data={'server': 97},
+    other_data_names={'server': 'Эллиан (F2P)'},
+    unit='кк',
+    subcategory_type=SubcategoryType.CHIPS,
 )
 
 
@@ -154,3 +147,83 @@ def test_common_lot_parsing():
 def test_currency_lot_parsing():
     parser = OfferPreviewsParser(currency_lot_html, options=OPTIONS)
     assert parser.parse() == [currency_lot_obj]
+
+
+# ---------------------------------------------------------------------------
+# data-f-* key normalisation (breaking change: f-arena → arena)
+# ---------------------------------------------------------------------------
+
+_field_lot_html = """
+<a href="https://funpay.com/lots/offer?id=99999" class="tc-item"
+   data-online="1" data-f-arena="15" data-f-level="29" data-f-namechange="Есть">
+  <div class="tc-desc">
+    <div class="tc-desc-text">Крутой аккаунт, 15 арена, 29 уровень, Есть</div>
+  </div>
+  <div class="tc-user">
+    <div class="media media-user online style-circle">
+      <div class="media-left">
+        <div class="avatar-photo pseudo-a" data-href="https://funpay.com/users/1/" style="background-image: url(a);"></div>
+      </div>
+      <div class="media-body">
+        <div class="media-user-name"><span>Seller</span></div>
+        <div class="media-user-reviews">0 отзывов</div>
+        <div class="media-user-info">на сайте 1 день</div>
+      </div>
+    </div>
+  </div>
+  <div class="tc-price" data-s="1000.0">
+    <div>1000 <span class="unit">₽</span></div>
+  </div>
+</a>
+"""
+
+
+def test_data_f_key_normalization():
+    """data-f-arena should be stored as key 'arena', not 'f-arena'."""
+    result = OfferPreviewsParser(_field_lot_html, options=OPTIONS).parse()
+    assert len(result) == 1
+    preview = result[0]
+    assert 'arena' in preview.other_data
+    assert 'f-arena' not in preview.other_data
+    assert preview.other_data['arena'] == 15
+    assert preview.other_data['level'] == 29
+    assert preview.other_data['namechange'] == 'Есть'
+
+
+# ---------------------------------------------------------------------------
+# Case A: catalog page — data-f-* attrs collected into other_data
+# ---------------------------------------------------------------------------
+
+def test_case_a_other_data_populated():
+    """On catalog pages (data-f-* present), other_data is populated without structure."""
+    result = OfferPreviewsParser(_field_lot_html, options=OPTIONS).parse()
+    assert len(result) == 1
+    preview = result[0]
+    assert preview.other_data == {'arena': 15, 'level': 29, 'namechange': 'Есть'}
+    # No div.tc-arena/level/namechange in HTML — names stay empty for these keys.
+    assert 'arena' not in preview.other_data_names
+
+
+# ---------------------------------------------------------------------------
+# Case B: profile page — extract field values from title suffix
+# ---------------------------------------------------------------------------
+
+_profile_lot_html = """
+<a href="https://funpay.com/lots/offer?id=77777" class="tc-item">
+  <div class="tc-desc">
+    <div class="tc-desc-text">Крутой аккаунт, 15 арена, 29 уровень, Есть</div>
+  </div>
+  <div class="tc-price" data-s="1000.0">
+    <div>1000 <span class="unit">₽</span></div>
+  </div>
+</a>
+"""
+
+
+def test_no_data_f_attrs_yields_empty_other_data():
+    """Without data-f-* attrs (profile pages), other_data and other_data_names stay empty."""
+    result = OfferPreviewsParser(_profile_lot_html, options=OPTIONS).parse()
+    assert len(result) == 1
+    preview = result[0]
+    assert preview.other_data == {}
+    assert preview.other_data_names == {}
