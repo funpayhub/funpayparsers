@@ -10,6 +10,7 @@ from funpayparsers.types.enums import SubcategoryType
 from funpayparsers.types.offers import OfferPreview
 from funpayparsers.types.categories import Subcategory
 from funpayparsers.types.pages.base import FunPayPage
+from funpayparsers.types.subcategory_structure import SubcategoryStructure
 
 
 if TYPE_CHECKING:
@@ -39,6 +40,18 @@ class SubcategoryPage(FunPayPage):
 
     offers: list[OfferPreview] | None
     """Subcategory offers list."""
+
+    structure: SubcategoryStructure | None = None
+    """
+    Partial subcategory field structure, derived from the listing page's
+    ``data-fields`` JSON and per-field form groups.
+
+    This is a strict subset of the authenticated ``offerEdit`` schema:
+    listing pages omit non-filterable fields (e.g. ``TEXTAREA``, ``IMAGES``)
+    and may render option lists as button groups rather than ``<select>``.
+
+    ``None`` when the page has no ``div.lot-fields`` block (e.g. chips).
+    """
 
     @classmethod
     def from_raw_source(

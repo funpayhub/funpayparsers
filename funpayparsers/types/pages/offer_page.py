@@ -48,7 +48,7 @@ class OfferPage(FunPayPage):
     def get_structured_fields(self, structure: SubcategoryStructure) -> dict[str, str]:
         """Return ``fields`` remapped to FunPay field IDs using *structure*'s label map."""
         return {
-            structure.lower_label_map[label.lower()]: val
+            structure.lower_label_map[label.lower()][0]: val
             for label, val in self.fields.items()
             if label.lower() in structure.lower_label_map
         }
