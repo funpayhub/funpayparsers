@@ -42,17 +42,6 @@ class RunnerDataType(Enum):
     CPU = 'CPU'
     """Currently viewing offer info."""
 
-    @staticmethod
-    def get_by_type_str(type_str: str, /) -> RunnerDataType | None:
-        """Determine an update type by its type string."""
-        warnings.warn(
-            '`RunnerDataType.get_by_type_str` is deprecated. '
-            'Use `RunnerDataType.from_type_str` instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return RunnerDataType.from_type_str(type_str)
-
     @classmethod
     def from_type_str(cls, type_str: str, /) -> RunnerDataType | None:
         """Determine an update type by its type string."""
@@ -78,31 +67,6 @@ class SubcategoryType(Enum):
     UNKNOWN = 'UNKNOWN'
     """Unknown type. Just in case, for future FunPay updates."""
 
-    @staticmethod
-    def get_by_url(url: str, /) -> SubcategoryType:
-        """
-        Determine a subcategory type by URL.
-        """
-        warnings.warn(
-            '`SubcategoryType.get_by_url` is deprecated. Use `SubcategoryType.from_url` instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return SubcategoryType.from_url(url)
-
-    @staticmethod
-    def get_by_showcase_data_section(showcase_data_section: str, /) -> SubcategoryType:
-        """
-        Determine a subcategory type by showcase data section value.
-        """
-        warnings.warn(
-            '`SubcategoryType.get_by_showcase_data_section` is deprecated. '
-            'Use `SubcategoryType.from_showcase_data_section` instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return SubcategoryType.from_showcase_data_section(showcase_data_section)
-
     @classmethod
     def from_url(cls, url: str, /) -> SubcategoryType:
         """
@@ -122,22 +86,6 @@ class SubcategoryType(Enum):
             if alias.showcase_alias in showcase_data_section.lower():
                 return enm
         return SubcategoryType.UNKNOWN
-
-    @property
-    def COMMON(self) -> SubcategoryType:
-        warnings.warn(
-            '`SubcategoryType.COMMON` is deprecated. Use `SubcategoryType.OFFERS` instead.',
-            DeprecationWarning,
-        )
-        return self.OFFERS
-
-    @property
-    def CURRENCY(self) -> SubcategoryType:
-        warnings.warn(
-            '`SubcategoryType.CURRENCY` is deprecated. Use `SubcategoryType.CHIPS` instead.',
-            DeprecationWarning,
-        )
-        return self.CHIPS
 
     @property
     def url_alias(self) -> str:
@@ -180,19 +128,6 @@ class OrderStatus(Enum):
     UNKNOWN = 'UNKNOWN'
     """Unknown status. Just in case, for future FunPay updates."""
 
-    @staticmethod
-    def get_by_css_class(css_class: str, /) -> OrderStatus:
-        """
-        Determine the order status based on a given CSS class string.
-        """
-        warnings.warn(
-            '`OrderStatus.get_by_css_class` is deprecated. '
-            'Use `OrderStatus.from_css_class` instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return OrderStatus.from_css_class(css_class)
-
     @classmethod
     def from_css_class(cls, css_class: str, /) -> OrderStatus:
         """
@@ -220,16 +155,6 @@ class Currency(Enum):
     RUB = 'RUB'
     USD = 'USD'
     EUR = 'EUR'
-
-    @staticmethod
-    def get_by_character(character: str, /) -> Currency:
-        """Determine the currency based on a given currency string."""
-        warnings.warn(
-            '`Currency.get_by_character` is deprecated. Use `Currency.from_character` instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return Currency.from_character(character)
 
     @classmethod
     def from_character(cls, character: str, /) -> Currency:
@@ -259,19 +184,6 @@ class TransactionStatus(Enum):
 
     UNKNOWN = 'UNKNOWN'
     """Unknown transaction status. Just in case, for future FunPay updates."""
-
-    @staticmethod
-    def get_by_css_class(css_class: str, /) -> TransactionStatus:
-        """
-        Determine the transaction type based on a given CSS class string.
-        """
-        warnings.warn(
-            '`TransactionStatus.get_by_css_class` is deprecated. '
-            'Use `TransactionStatus.from_css_class` instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return TransactionStatus.from_css_class(css_class)
 
     @classmethod
     def from_css_class(cls, css_class: str, /) -> TransactionStatus:
@@ -307,16 +219,6 @@ class MessageType(Enum):
     FEEDBACK_REPLY_CHANGED = 'FEEDBACK_REPLY_CHANGED'
     FEEDBACK_REPLY_DELETED = 'FEEDBACK_REPLY_DELETED'
 
-    @staticmethod
-    def get_by_message_text(message_text: str, /) -> MessageType:
-        warnings.warn(
-            '`MessageType.get_by_message_text` is deprecated. '
-            'Use `MessageType.from_message_text` instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return MessageType.from_message_text(message_text)
-
     @classmethod
     def from_message_text(cls, message_text: str, /) -> MessageType:
         for t, regexp in _MESSAGE_RE.items():
@@ -350,18 +252,6 @@ class BadgeType(Enum):
     AUTO_DELIVERY = 'AUTO_DELIVERY'
     NOT_ACTIVATED = 'NOT_ACTIVATED'
     UNKNOWN = 'UNKNOWN'
-
-    @staticmethod
-    def get_by_css_class(css_class: str, /) -> BadgeType:
-        """
-        Determine the badge type based on a given CSS class string.
-        """
-        warnings.warn(
-            '`BadgeType.get_by_css_class` is deprecated. Use `BadgeType.from_css_class` instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return BadgeType.from_css_class(css_class)
 
     @classmethod
     def from_css_class(cls, css_class: str, /) -> BadgeType:
@@ -577,17 +467,6 @@ class PaymentMethod(Enum):
 
     # MIR = 26, ('UNKNOWN', ), (345, Y)  =(
 
-    @staticmethod
-    def get_by_css_class(css_class: str, /) -> PaymentMethod:
-        """Determine the payment method based on a given CSS class string."""
-        warnings.warn(
-            '`PaymentMethod.get_by_css_class` is deprecated. '
-            'Use `PaymentMethod.from_css_class` instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return PaymentMethod.from_css_class(css_class)
-
     @classmethod
     def from_css_class(cls, css_class: str, /) -> PaymentMethod:
         """Determine the payment method based on a given CSS class string."""
@@ -654,25 +533,6 @@ class Language(Enum):
     RU = 'RU'
     EN = 'EN'
     UK = 'UK'
-
-    @staticmethod
-    def get_by_lang_code(lang_code: Any, /) -> Language:
-        warnings.warn(
-            '`Language.get_by_lang_code` is deprecated. Use `Language.from_lang_code` instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return Language.from_lang_code(lang_code)
-
-    @staticmethod
-    def get_by_header_menu_css_class(css_class: str, /) -> Language:
-        warnings.warn(
-            '`Language.get_by_header_menu_css_class` is deprecated. '
-            'Use `Language.from_header_menu_css_class` instead.',
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return Language.from_header_menu_css_class(css_class)
 
     @classmethod
     def from_lang_code(cls, lang_code: str, /) -> Language:
