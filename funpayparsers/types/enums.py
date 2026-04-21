@@ -16,8 +16,6 @@ __all__ = (
 
 
 import re
-import warnings
-from typing import Any
 from dataclasses import dataclass
 from enum import Enum, auto
 
@@ -27,19 +25,19 @@ from funpayparsers import message_type_re as msg_re
 class RunnerDataType(Enum):
     """Runner data types enumeration."""
 
-    ORDERS_COUNTERS = 'ORDERS_COUNTERS'
+    ORDERS_COUNTERS = auto()
     """Orders counters data."""
 
-    CHAT_COUNTER = 'CHAT_COUNTER'
+    CHAT_COUNTER = auto()
     """Chat counter data."""
 
-    CHAT_BOOKMARKS = 'CHAT_BOOKMARKS'
+    CHAT_BOOKMARKS = auto()
     """Chat bookmarks data."""
 
-    CHAT_NODE = 'CHAT_NODE'
+    CHAT_NODE = auto()
     """Chat node data."""
 
-    CPU = 'CPU'
+    CPU = auto()
     """Currently viewing offer info."""
 
     @classmethod
@@ -58,13 +56,13 @@ class RunnerDataType(Enum):
 class SubcategoryType(Enum):
     """Subcategory types enumerations."""
 
-    OFFERS = 'OFFERS'
+    OFFERS = auto()
     """Common lots."""
 
-    CHIPS = 'CHIPS'
+    CHIPS = auto()
     """Currency lots (/chips/)."""
 
-    UNKNOWN = 'UNKNOWN'
+    UNKNOWN = auto()
     """Unknown type. Just in case, for future FunPay updates."""
 
     @classmethod
@@ -116,16 +114,16 @@ class OrderStatus(Enum):
     Each value is a css class, that identifies order status.
     """
 
-    PAID = 'PAID'
+    PAID = auto()
     """Paid, but not COMPLETED order."""
 
-    COMPLETED = 'COMPLETED'
+    COMPLETED = auto()
     """Completed order."""
 
-    REFUNDED = 'REFUNDED'
+    REFUNDED = auto()
     """Refunded order."""
 
-    UNKNOWN = 'UNKNOWN'
+    UNKNOWN = auto()
     """Unknown status. Just in case, for future FunPay updates."""
 
     @classmethod
@@ -149,12 +147,12 @@ _ORDER_STATUSES = {
 class Currency(Enum):
     """Currencies enumeration."""
 
-    UNKNOWN = 'UNKNOWN'
+    UNKNOWN = auto()
     """Unknown currency. Just in case, for future FunPay updates."""
 
-    RUB = 'RUB'
-    USD = 'USD'
-    EUR = 'EUR'
+    RUB = auto()
+    USD = auto()
+    EUR = auto()
 
     @classmethod
     def from_character(cls, character: str, /) -> Currency:
@@ -173,16 +171,16 @@ _CURRENCIES = {
 class TransactionStatus(Enum):
     """Transaction statuses enumeration."""
 
-    PENDING = 'PENDING'
+    PENDING = auto()
     """Pending transaction."""
 
-    COMPLETED = 'COMPLETED'
+    COMPLETED = auto()
     """Completed transaction."""
 
-    CANCELLED = 'CANCELLED'
+    CANCELLED = auto()
     """Cancelled transaction."""
 
-    UNKNOWN = 'UNKNOWN'
+    UNKNOWN = auto()
     """Unknown transaction status. Just in case, for future FunPay updates."""
 
     @classmethod
@@ -204,20 +202,20 @@ _TRANSACTION_STATUSES = {
 
 
 class MessageType(Enum):
-    NON_SYSTEM = 'NON_SYSTEM'
-    UNKNOWN_SYSTEM = 'UNKNOWN_SYSTEM'
-    NEW_ORDER = 'NEW_ORDER'
-    ORDER_CLOSED = 'ORDER_CLOSED'
-    ORDER_CLOSED_BY_ADMIN = 'ORDER_CLOSED_BY_ADMIN'
-    ORDER_REOPENED = 'ORDER_REOPENED'
-    ORDER_REFUNDED = 'ORDER_REFUNDED'
-    ORDER_PARTIALLY_REFUNDED = 'ORDER_PARTIALLY_REFUND'
-    NEW_FEEDBACK = 'NEW_FEEDBACK'
-    FEEDBACK_CHANGED = 'FEEDBACK_CHANGED'
-    FEEDBACK_DELETED = 'FEEDBACK_DELETED'
-    NEW_FEEDBACK_REPLY = 'NEW_FEEDBACK_REPLY'
-    FEEDBACK_REPLY_CHANGED = 'FEEDBACK_REPLY_CHANGED'
-    FEEDBACK_REPLY_DELETED = 'FEEDBACK_REPLY_DELETED'
+    NON_SYSTEM = auto()
+    UNKNOWN_SYSTEM = auto()
+    NEW_ORDER = auto()
+    ORDER_CLOSED = auto()
+    ORDER_CLOSED_BY_ADMIN = auto()
+    ORDER_REOPENED = auto()
+    ORDER_REFUNDED = auto()
+    ORDER_PARTIALLY_REFUNDED = auto()
+    NEW_FEEDBACK = auto()
+    FEEDBACK_CHANGED = auto()
+    FEEDBACK_DELETED = auto()
+    NEW_FEEDBACK_REPLY = auto()
+    FEEDBACK_REPLY_CHANGED = auto()
+    FEEDBACK_REPLY_DELETED = auto()
 
     @classmethod
     def from_message_text(cls, message_text: str, /) -> MessageType:
@@ -246,12 +244,12 @@ _MESSAGE_RE = {
 class BadgeType(Enum):
     """Badge types enumeration."""
 
-    BANNED = 'BANNED'
-    NOTIFICATIONS = 'NOTIFICATIONS'
-    SUPPORT = 'SUPPORT'
-    AUTO_DELIVERY = 'AUTO_DELIVERY'
-    NOT_ACTIVATED = 'NOT_ACTIVATED'
-    UNKNOWN = 'UNKNOWN'
+    BANNED = auto()
+    NOTIFICATIONS = auto()
+    SUPPORT = auto()
+    AUTO_DELIVERY = auto()
+    NOT_ACTIVATED = auto()
+    UNKNOWN = auto()
 
     @classmethod
     def from_css_class(cls, css_class: str, /) -> BadgeType:
@@ -284,133 +282,133 @@ class PaymentMethod(Enum):
         - CSS: https://funpay.com/687/css/main.css
     """
 
-    QIWI = 'QIWI'
+    QIWI = auto()
     """
     Qiwi wallett payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=94``.
     """
 
-    YANDEX = 'YANDEX'
+    YANDEX = auto()
     """
     Yandex payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=34``.
     """
 
-    FPS = 'FPS'
+    FPS = auto()
     """
     FPS (what) payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=364``.
     """
 
-    WEBMONEY_WME = 'WEBMONEY_WME'
+    WEBMONEY_WME = auto()
     """
     WebMoney WME payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=64``.
     """
 
-    WEBMONEY_WMP = 'WEBMONEY_WMP'
+    WEBMONEY_WMP = auto()
     """
     WebMoney WMP payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=64``.
     """
 
-    WEBMONEY_WMR = 'WEBMONEY_WMR'
+    WEBMONEY_WMR = auto()
     """
     WebMoney WMR payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=64``.
     """
 
-    WEBMONEY_WMZ = 'WEBMONEY_WMZ'
+    WEBMONEY_WMZ = auto()
     """
     WebMoney WMZ payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=64``.
     """
 
-    WEBMONEY_UNKNOWN = 'WEBMONEY_UNKNOWN'
+    WEBMONEY_UNKNOWN = auto()
     """
     WebMoney unknown type. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=64``.
     """
 
-    CARD_RUB = 'CARD_RUB'
+    CARD_RUB = auto()
     """
     Card RUB payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=4``.
     """
 
-    CARD_USD = 'CARD_USD'
+    CARD_USD = auto()
     """
     Card USD payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=4``.
     """
 
-    CARD_EUR = 'CARD_EUR'
+    CARD_EUR = auto()
     """
     Card EUR payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=4``.
     """
 
-    CARD_UAH = 'CARD_UAH'
+    CARD_UAH = auto()
     """
     Card UAH payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=4``.
     """
 
-    CARD_UNKNOWN = 'CARD_UNKNOWN'
+    CARD_UNKNOWN = auto()
     """
     Unknown card, maybe it will added soon. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=4``.
     """
 
-    MOBILE = 'MOBILE'
+    MOBILE = auto()
     """
     Mobile payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=124``.
     """
 
-    APPLE = 'APPLE'
+    APPLE = auto()
     """
     Apple Pay payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=154``.
     """
 
-    MASTERCARD = 'MASTERCARD'
+    MASTERCARD = auto()
     """
     MasterCard payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=274``.
     """
 
-    VISA = 'VISA'
+    VISA = auto()
     """
     Visa payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=304``.
     """
 
-    GOOGLE = 'GOOGLE'
+    GOOGLE = auto()
     """
     Google Pay payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=244``.
     """
 
-    FUNPAY = 'FUNPAY'
+    FUNPAY = auto()
     """
     FunPay balance payment method.
     
@@ -420,49 +418,49 @@ class PaymentMethod(Enum):
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=214``.
     """
 
-    LITECOIN = 'LITECOIN'
+    LITECOIN = auto()
     """
     Litecoin (LTC) payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=4``.
     """
 
-    BINANCE = 'BINANCE'
+    BINANCE = auto()
     """
     Binance generic payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=34``.
     """
 
-    BINANCE_USDT = 'BINANCE_USDT'
+    BINANCE_USDT = auto()
     """
     Binance USDT payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=34``.
     """
 
-    BINANCE_USDC = 'BINANCE_USDC'
+    BINANCE_USDC = auto()
     """
     Binance USDC payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=34``.
     """
 
-    PAYPAL = 'PAYPAL'
+    PAYPAL = auto()
     """
     PayPal payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=345, y=184``.
     """
 
-    USDT_TRC = 'USDT_TRC'
+    USDT_TRC = auto()
     """
     USDT TRC-20 payment method. 
     
     Sprite coords (see ``PaymentMethod`` doc-string): ``x=375, y=64``.
     """
 
-    UNKNOWN = 'UNKNOWN'
+    UNKNOWN = auto()
     """Unknown payment method."""
 
     # MIR = 26, ('UNKNOWN', ), (345, Y)  =(
@@ -529,10 +527,10 @@ _CSS_CLASS_TO_PAYMENT_METHOD = {
 class Language(Enum):
     """Page languages enumeration."""
 
-    UNKNOWN = 'UNKNOWN'
-    RU = 'RU'
-    EN = 'EN'
-    UK = 'UK'
+    UNKNOWN = auto()
+    RU = auto()
+    EN = auto()
+    UK = auto()
 
     @classmethod
     def from_lang_code(cls, lang_code: str, /) -> Language:
