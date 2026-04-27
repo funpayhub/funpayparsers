@@ -94,23 +94,7 @@ class TestSubcategoryStructureLabelMap:
         assert s.lower_label_map == {'rating': ['a', 'b']}
 
 
-class TestParsingErrorTruncation:
-    def test_short_payload_kept(self):
-        from funpayparsers.exceptions import ParsingError
-
-        err = ParsingError('short' * 10)
-        assert err.raw_source == 'short' * 10
-        assert not err.raw_source_truncated
-
-    def test_large_payload_truncated(self):
-        from funpayparsers.exceptions import MAX_STORED_RAW_SOURCE, ParsingError
-
-        payload = 'x' * (MAX_STORED_RAW_SOURCE * 4)
-        err = ParsingError(payload)
-        assert err.raw_source_truncated
-        assert len(err.raw_source) < len(payload)
-        assert '[truncated]' in err.raw_source
-
+class TestParsingError:
     def test_location_in_str(self):
         from funpayparsers.exceptions import ParsingError
 

@@ -10,7 +10,6 @@ from dataclasses import dataclass
 from funpayparsers.types.chat import Chat
 from funpayparsers.types.enums import OrderStatus, SubcategoryType
 from funpayparsers.types.common import MoneyValue
-from funpayparsers.types.utils import parse_money_value_string
 from funpayparsers.types.reviews import Review
 from funpayparsers.types.pages.base import FunPayPage
 
@@ -118,6 +117,7 @@ class OrderPage(FunPayPage):
     @property
     def order_total(self) -> MoneyValue | None:
         """Order total."""
+        from funpayparsers.parsers.utils import parse_money_value_string
 
         value = self._first_found(['total', 'сумма', 'сума'])
         if not value:
