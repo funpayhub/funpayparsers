@@ -10,7 +10,6 @@ from dataclasses import dataclass
 from funpayparsers.types.chat import Chat
 from funpayparsers.types.enums import OrderStatus, SubcategoryType
 from funpayparsers.types.common import MoneyValue
-from funpayparsers.parsers.utils import parse_money_value_string
 from funpayparsers.types.reviews import Review
 from funpayparsers.types.pages.base import FunPayPage
 
@@ -54,7 +53,7 @@ class OrderPage(FunPayPage):
     def get_structured_fields(self, structure: SubcategoryStructure) -> dict[str, str]:
         """Return ``data`` remapped to FunPay field IDs using *structure*'s label map."""
         return {
-            structure.lower_label_map[label]: val
+            structure.lower_label_map[label][0]: val
             for label, val in self.data.items()
             if label in structure.lower_label_map
         }
@@ -118,6 +117,7 @@ class OrderPage(FunPayPage):
     @property
     def order_total(self) -> MoneyValue | None:
         """Order total."""
+        from funpayparsers.parsers.utils import parse_money_value_string
 
         value = self._first_found(['total', 'сумма', 'сума'])
         if not value:
