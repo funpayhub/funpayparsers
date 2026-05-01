@@ -5,9 +5,8 @@ __all__ = ('ParsingError',)
 
 
 class ParsingError(Exception):
-    def __init__(self, raw_source: str, *, location: str | None = None):
+    def __init__(self, raw_source: str):
         self.raw_source = raw_source
-        self.location = location
 
     def formatted_source(self) -> str:
         if len(self.raw_source) <= 500:
@@ -16,5 +15,4 @@ class ParsingError(Exception):
         return self.raw_source[:250] + '\n...\n' + self.raw_source[-250:]
 
     def __str__(self) -> str:
-        loc = f' at {self.location}' if self.location else ''
-        return f'An error occurred while parsing{loc}\n{self.formatted_source()}'
+        return f'An error occurred while parsing\n{self.formatted_source()}'

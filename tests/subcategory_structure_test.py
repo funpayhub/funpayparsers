@@ -92,11 +92,3 @@ class TestSubcategoryStructureLabelMap:
             },
         )
         assert s.lower_label_map == {'rating': ['a', 'b']}
-
-
-class TestParsingError:
-    def test_location_in_str(self):
-        from funpayparsers.exceptions import ParsingError
-
-        err = ParsingError('abc', location='arena field')
-        assert 'arena field' in str(err)
