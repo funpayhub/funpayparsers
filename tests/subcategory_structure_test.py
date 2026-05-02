@@ -197,12 +197,29 @@ class TestParseTitleFields:
             },
         )
 
-    def test_select_match_kept(self):
+    def test_select_quantity_collapsed_to_int(self):
         from funpayparsers.types.subcategory_structure import _parse_title_fields
 
         s = self._structure_with_select(['50 звёзд', '100 звёзд'])
         result = _parse_title_fields('Telegram, 50 звёзд', s)
-        assert result == {'quantity': '50 звёзд'}
+        assert result == {'quantity': 50}
+
+    def test_select_non_numeric_option_kept_as_string(self):
+        from funpayparsers.types.subcategory_structure import _parse_title_fields
+
+        s = SubcategoryStructure(
+            subcategory_id=1,
+            fields={
+                'currency': _mk_field(
+                    'currency',
+                    label='currency',
+                    type_=SubcategoryFieldType.SELECT,
+                    options=['USD', 'EUR', 'RUB'],
+                ),
+            },
+        )
+        result = _parse_title_fields('Card, USD', s)
+        assert result == {'currency': 'USD'}
 
     def test_unknown_segment_dropped(self):
         from funpayparsers.types.subcategory_structure import _parse_title_fields

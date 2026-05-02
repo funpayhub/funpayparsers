@@ -267,6 +267,16 @@ def _parse_title_fields(
             val_cf = raw_val.casefold()
             for opt in field_def.options:
                 if opt.casefold() == val_cf:
-                    result[field_def.id] = opt
+                    # Quantity-style options (e.g. ``'20 USD'``, ``'5000 RUB'``,
+                    # ``'13 звёзд'``) carry a numeric magnitude with a trailing
+                    # unit; the unit is already encoded in ``field_def.id``
+                    # (``usd`` / ``rub`` / ``quantity``), so collapse the value
+                    # to a bare ``int`` and let consumers reconstruct the
+                    # display form from the field id when needed.
+                    num_match = re.match(r'^(\d+(?:\.\d+)?)\s+\S', opt)
+                    if num_match:
+                        result[field_def.id] = int(float(num_match.group(1)))
+                    else:
+                        result[field_def.id] = opt
                     break
     return result
