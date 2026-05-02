@@ -55,3 +55,47 @@ class TestSplitOrderData:
             'closed': '02.01.2026',
         }
         assert lot_fields == {}
+
+
+class TestSplitOrderDataCompositeExpansion:
+    def test_composite_label_expanded(self):
+        data = {'количество usd': '20 USD', 'игра': 'App Store'}
+        metadata, lot_fields = _split_order_data(data)
+        assert metadata == {'game': 'App Store'}
+        assert lot_fields == {'количество usd': '20 USD', 'usd': '20'}
+
+    def test_composite_rub_expanded(self):
+        data = {'количество rub': '5000 RUB'}
+        _, lot_fields = _split_order_data(data)
+        assert lot_fields == {'количество rub': '5000 RUB', 'rub': '5000'}
+
+    def test_unknown_unit_token_still_split(self):
+        # The regex accepts any 2-4 letter currency-id-style suffix so we stay
+        # robust to FunPay adding new currencies. The split happens whenever the
+        # value also matches '<number> <token>'.
+        data = {'количество gbp': '100 GBP'}
+        _, lot_fields = _split_order_data(data)
+        assert lot_fields == {'количество gbp': '100 GBP', 'gbp': '100'}
+
+    def test_non_numeric_value_not_split(self):
+        data = {'количество usd': 'free'}
+        _, lot_fields = _split_order_data(data)
+        # No numeric magnitude → no synthetic entry, original preserved.
+        assert lot_fields == {'количество usd': 'free'}
+
+    def test_existing_synthetic_key_not_overwritten(self):
+        data = {'usd': 'preexisting', 'количество usd': '20 USD'}
+        _, lot_fields = _split_order_data(data)
+        # setdefault: original wins on collision.
+        assert lot_fields['usd'] == 'preexisting'
+        assert lot_fields['количество usd'] == '20 USD'
+
+    def test_expand_composite_off_disables_split(self):
+        data = {'количество usd': '20 USD'}
+        _, lot_fields = _split_order_data(data, expand_composite=False)
+        assert lot_fields == {'количество usd': '20 USD'}
+
+    def test_label_not_composite_unchanged(self):
+        data = {'тип валюты': 'USD'}
+        _, lot_fields = _split_order_data(data)
+        assert lot_fields == {'тип валюты': 'USD'}

@@ -4,7 +4,7 @@ from __future__ import annotations
 __all__ = ('FieldCondition', 'SubcategoryFieldDef', 'SubcategoryStructure')
 
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 from dataclasses import field, dataclass
 from functools import cached_property
 
@@ -159,6 +159,23 @@ class SubcategoryStructure(FunPayObject):
     Use ``fields[field_id]`` for O(1) lookup by ID,
     or iterate over ``fields.values()`` to process fields in declaration order.
     """
+
+    derived_from: Literal['lot_fields', 'chips_offers'] = 'lot_fields'
+    """
+    Provenance of this structure.
+
+    * ``'lot_fields'`` — authoritative: parsed from a ``div.lot-fields``
+      block (either listing page or authenticated ``offerEdit`` form).
+    * ``'chips_offers'`` — synthetic: inferred from the union of
+      ``OfferPreview.other_data`` keys/values across a sample of CHIPS
+      offers, when the listing page has no ``div.lot-fields``. Field
+      types default to ``SELECT``, options accumulate first-seen values.
+    """
+
+    @property
+    def is_synthetic(self) -> bool:
+        """``True`` iff ``derived_from`` is anything other than ``'lot_fields'``."""
+        return self.derived_from != 'lot_fields'
 
     @cached_property
     def label_map(self) -> dict[str, list[str]]:

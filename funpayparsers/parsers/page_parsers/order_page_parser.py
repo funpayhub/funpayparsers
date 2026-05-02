@@ -52,6 +52,17 @@ class OrderPageParsingOptions(ParsingOptions):
     Defaults to ``ReviewsParsingOptions()``.
     """
 
+    expand_composite_lot_labels: bool = True
+    """
+    Whether to additionally index composite ``param-list`` labels of the form
+    ``'<quantity-locale> <currency-id>'`` (e.g. ``'количество usd' = '20 USD'``)
+    under the trailing currency id with the bare numeric magnitude as value.
+
+    Enabled by default so ``OrderPage.get_structured_fields`` can resolve such
+    labels against the structure's ``usd``/``rub``/… fields. The original
+    composite label is always kept verbatim either way.
+    """
+
 
 class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]):
     """
@@ -91,7 +102,9 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
 
             data[name[0].text().strip().lower()] = value[-1].text().strip()
 
-        metadata, lot_fields = _split_order_data(data)
+        metadata, lot_fields = _split_order_data(
+            data, expand_composite=self.options.expand_composite_lot_labels
+        )
 
         subcategory_url: str = self.tree.css_first(  # type: ignore[assignment,union-attr]
             'div.param-item:has(h5):not(:has(ul, ol)) a',

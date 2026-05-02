@@ -46,8 +46,21 @@ _LABEL_TO_METADATA_KEY: dict[str, str] = {
 }
 
 
+# Composite ``param-list`` labels of the form ``'<quantity-locale> <currency-id>'``
+# that FunPay renders for currency-amount lot fields, e.g.
+# ``'количество usd' = '20 USD'``, ``'количество rub' = '5000 RUB'``. The suffix
+# is the canonical structure ``field_id`` (lowercase ASCII letters), so we can
+# emit a synthetic ``lot_fields[currency_id] = '<numeric magnitude>'`` entry
+# alongside the original label and unblock ``get_structured_fields`` lookups.
+_COMPOSITE_LABEL_RE = re.compile(
+    r'^(?:количество|quantity|кількість)\s+([a-z]{2,4})$'
+)
+_COMPOSITE_VALUE_RE = re.compile(r'^(\d+(?:\.\d+)?)\s+\S')
+
+
 def _split_order_data(
     data: dict[str, str],
+    expand_composite: bool = True,
 ) -> tuple[dict[str, str], dict[str, str]]:
     """
     Split ``param-list`` data into ``(metadata, lot_fields)``.
@@ -55,7 +68,16 @@ def _split_order_data(
     *data* keys are casefolded labels as parsed by ``OrderPageParser``.
     Metadata labels (see :data:`ORDER_METADATA_LABELS`) are extracted under
     their canonical key; everything else is preserved verbatim in
-    ``lot_fields``. The two resulting dicts are disjoint.
+    ``lot_fields``.
+
+    When *expand_composite* is true (default), composite labels matching
+    :data:`_COMPOSITE_LABEL_RE` (e.g. ``'количество usd'``) are *additionally*
+    indexed in ``lot_fields`` under the trailing currency id with the bare
+    numeric magnitude as value, so ``get_structured_fields`` can resolve them
+    against the structure's ``usd``/``rub``/``eur``/… fields. The original
+    composite label is always kept verbatim for back-compat. If the synthetic
+    key already exists in ``lot_fields`` (rare collision), the original entry
+    wins (``setdefault`` semantics).
     """
     metadata: dict[str, str] = {}
     lot_fields: dict[str, str] = {}
@@ -63,8 +85,14 @@ def _split_order_data(
         canonical = _LABEL_TO_METADATA_KEY.get(label)
         if canonical is not None and canonical not in metadata:
             metadata[canonical] = value
-        else:
-            lot_fields[label] = value
+            continue
+        lot_fields[label] = value
+        if expand_composite:
+            cm = _COMPOSITE_LABEL_RE.match(label)
+            if cm is not None:
+                vm = _COMPOSITE_VALUE_RE.match(value)
+                if vm is not None:
+                    lot_fields.setdefault(cm.group(1), vm.group(1))
     return metadata, lot_fields
 
 
