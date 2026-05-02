@@ -268,6 +268,72 @@ class TestParseTitleFields:
         )
         assert _parse_title_fields('anything, here', s) == {}
 
+    def test_select_preferred_over_numeric_range_with_unsatisfied_conditions(self):
+        """Regression: ``2000 RUB`` must hit ``rub`` (SELECT, option-exact),
+        not ``inr2`` (NUMERIC_RANGE conditioned on ``inr='другое количество'``).
+
+        Reproduces the gift-card subcat #1316 case observed live: structure has
+        a dozen NUMERIC_RANGE fields (``usd2``/``rub2``/.../``inr2``), each
+        gated by an unrelated parent value. Without condition-gating, every
+        leading-numeric segment was greedily attributed to ``inr2`` (the last
+        declared NUMERIC_RANGE), producing bogus extractions like
+        ``{inr2: 2000, currency: 'RUB'}`` from ``'…, RUB, 2000 RUB'``.
+        """
+        from funpayparsers.types.subcategory_structure import _parse_title_fields
+
+        currency_fd = _mk_field(
+            'currency',
+            label='currency',
+            type_=SubcategoryFieldType.SELECT,
+            options=['USD', 'RUB', 'EUR'],
+        )
+        rub_fd = _mk_field(
+            'rub',
+            label='rub',
+            type_=SubcategoryFieldType.SELECT,
+            options=['500 RUB', '1000 RUB', '2000 RUB', '5000 RUB'],
+        )
+        rub_fd.conditions = [FieldCondition(field_id='currency', values={'rub'})]
+        # NUMERIC_RANGE fields conditioned on values we do NOT see in the title
+        inr2_fd = _mk_field(
+            'inr2', label='Количество INR', type_=SubcategoryFieldType.NUMERIC_RANGE
+        )
+        inr2_fd.conditions = [FieldCondition(field_id='inr', values={'другое количество'})]
+        rub2_fd = _mk_field(
+            'rub2', label='Количество RUB', type_=SubcategoryFieldType.NUMERIC_RANGE
+        )
+        rub2_fd.conditions = [FieldCondition(field_id='rub', values={'другое количество'})]
+
+        s = SubcategoryStructure(
+            subcategory_id=1316,
+            fields={'currency': currency_fd, 'rub': rub_fd, 'inr2': inr2_fd, 'rub2': rub2_fd},
+        )
+
+        result = _parse_title_fields(
+            '🔑20 USD = 2000 РУБЛЕЙ💳ПОДАРОЧНАЯ КАРТА💳 iTunes(Россия), RUB, 2000 RUB',
+            s,
+        )
+        assert result == {'currency': 'RUB', 'rub': 2000}
+
+    def test_unconditional_numeric_range_still_matches(self):
+        """NUMERIC_RANGE without conditions matches a leading-numeric segment.
+
+        Counterpart to the regression test above — ensures we did not over-
+        gate NUMERIC_RANGE matching.
+        """
+        from funpayparsers.types.subcategory_structure import _parse_title_fields
+
+        s = SubcategoryStructure(
+            subcategory_id=1,
+            fields={
+                'arena': _mk_field(
+                    'arena', label='Arena', type_=SubcategoryFieldType.NUMERIC_RANGE
+                ),
+            },
+        )
+        # No conditions → still matches.
+        assert _parse_title_fields('Some lot, 15 арена', s) == {'arena': 15}
+
 
 class TestNormalizeOption:
     def test_strips_emoji(self):
@@ -467,11 +533,14 @@ class TestParseTitleFieldsRightToLeft:
         )
         assert _parse_title_fields('Some lot, RUB🔥', s) == {'currency': 'RUB'}
 
-    def test_missed_segment_does_not_decrement(self):
-        """If the rightmost segment matches no field at all, it's discarded
-        entirely (none of the fields claim it). Earlier segments are not
-        examined — by design, since title order is supposed to mirror field
-        declaration order."""
+    def test_unmatchable_segment_is_skipped_not_anchoring(self):
+        """A rightmost segment that matches no field (e.g. order-amount
+        ``'2 шт.'`` or seller-appended free text) is silently skipped, and
+        the matcher continues scanning earlier segments. Without this
+        behavior, valid suffix fields immediately to the left of garbage
+        would be lost — which is what happened live on subcat #1316 with
+        title ``'…, USD, 20 USD, 2 шт.'`` (the ``'2 шт.'`` is order
+        metadata, not a structure field)."""
         from funpayparsers.types.subcategory_structure import _parse_title_fields
 
         s = SubcategoryStructure(
@@ -483,8 +552,4 @@ class TestParseTitleFieldsRightToLeft:
                 ),
             },
         )
-        # 'garbage' matches nothing; 'x' is to its left but the algorithm
-        # works right-to-left from the last segment.
-        # The rightmost segment 'garbage' is tried against 'a' — miss.
-        # No more fields, no more progression — we end with {}.
-        assert _parse_title_fields('x, garbage', s) == {}
+        assert _parse_title_fields('x, garbage', s) == {'a': 'x'}
