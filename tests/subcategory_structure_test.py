@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from funpayparsers.types import (
+    AliasSource,
     FieldCondition,
     SubcategoryFieldDef,
     SubcategoryFieldType,
@@ -446,6 +447,161 @@ class TestEnrichFromOfferFields:
         s = SubcategoryStructure(subcategory_id=1, fields={})
         of = OfferFields(raw_source='', field_schema=[])
         assert s.enrich_from_offer_fields(of) is s
+
+
+class TestEnrichFromOrderPage:
+    def _structure(self) -> SubcategoryStructure:
+        return SubcategoryStructure(
+            subcategory_id=1,
+            fields={
+                'currency': _mk_field(
+                    'currency',
+                    label='currency',
+                    type_=SubcategoryFieldType.SELECT,
+                    options=['RUB', 'USD'],
+                ),
+            },
+        )
+
+    def test_unique_value_match_registers_alias(self):
+        s = self._structure()
+
+        class _Order:
+            lot_fields = {'тип валюты': 'RUB'}
+
+        s.enrich_from_order_page(_Order())  # type: ignore[arg-type]
+        assert s.lookup_field_id('тип валюты') == 'currency'
+        assert s.alias_source('currency', 'тип валюты') is AliasSource.ORDER_PAGE
+
+    def test_ambiguous_match_skipped(self):
+        s = SubcategoryStructure(
+            subcategory_id=1,
+            fields={
+                'a': _mk_field(
+                    'a', label='A', type_=SubcategoryFieldType.SELECT, options=['x']
+                ),
+                'b': _mk_field(
+                    'b', label='B', type_=SubcategoryFieldType.SELECT, options=['x']
+                ),
+            },
+        )
+
+        class _Order:
+            lot_fields = {'неизвестно': 'x'}
+
+        s.enrich_from_order_page(_Order())  # type: ignore[arg-type]
+        assert s.lookup_field_id('неизвестно') is None
+
+    def test_already_mapped_label_skipped(self):
+        s = self._structure()
+        # 'currency' already resolves; should not be touched.
+
+        class _Order:
+            lot_fields = {'currency': 'RUB'}
+
+        s.enrich_from_order_page(_Order())  # type: ignore[arg-type]
+        # No new ORDER_PAGE-source aliases were registered.
+        assert all(
+            src is not AliasSource.ORDER_PAGE
+            for src in s._alias_sources.values()
+        )
+
+
+class TestEnrichFromOfferPreviews:
+    def _structure(self) -> SubcategoryStructure:
+        return SubcategoryStructure(
+            subcategory_id=1,
+            fields={
+                'server': _mk_field('server', label='server'),
+                'side': _mk_field('side', label='side'),
+            },
+        )
+
+    def _preview(self, other_data, other_data_names, title=None):
+        # Duck-typed stub — enrich_from_offer_previews only reads
+        # ``other_data``, ``other_data_names`` and ``title``.
+        class _P:
+            pass
+
+        p = _P()
+        p.other_data = other_data
+        p.other_data_names = other_data_names
+        p.title = title
+        return p
+
+    def test_other_data_names_registered_as_aliases(self):
+        s = self._structure()
+        previews = [
+            self._preview({'server': 12448}, {'server': 'Сервер'}),
+            self._preview({'server': 12449}, {'server': 'Сервер'}),
+            self._preview({'server': 12450, 'side': 1}, {'server': 'Сервер', 'side': 'Сторона'}),
+        ]
+        s.enrich_from_offer_previews(previews)
+        assert s.lookup_field_id('Сервер') == 'server'
+        assert s.lookup_field_id('Сторона') == 'side'
+        assert s.alias_source('server', 'Сервер') is AliasSource.OFFER_PREVIEW
+
+    def test_no_op_on_empty_inputs(self):
+        s = self._structure()
+        s.enrich_from_offer_previews([])
+        s.enrich_from_offer_previews([self._preview({}, {})])
+        # No previews and empty data should not crash and should not add
+        # any OFFER_PREVIEW-sourced aliases.
+        assert all(
+            src is not AliasSource.OFFER_PREVIEW
+            for src in s._alias_sources.values()
+        )
+
+    def test_unknown_field_id_ignored(self):
+        s = self._structure()
+        previews = [self._preview({'unknown': 1}, {'unknown': 'Что-то'})]
+        s.enrich_from_offer_previews(previews)
+        assert 'что-то' not in {a for fd in s.fields.values() for a in fd.aliases}
+
+
+class TestAliasSource:
+    def test_default_source_is_user(self):
+        s = SubcategoryStructure(
+            subcategory_id=1, fields={'a': _mk_field('a', label='A')}
+        )
+        s.add_alias('a', 'Foo')
+        assert s.alias_source('a', 'Foo') is AliasSource.USER
+
+    def test_explicit_source_recorded(self):
+        s = SubcategoryStructure(
+            subcategory_id=1, fields={'a': _mk_field('a', label='A')}
+        )
+        s.add_alias('a', 'Foo', source=AliasSource.OFFER_EDIT)
+        assert s.alias_source('a', 'foo') is AliasSource.OFFER_EDIT
+
+    def test_label_auto_aliases_seeded_with_label_source(self):
+        s = SubcategoryStructure(
+            subcategory_id=1, fields={'a': _mk_field('a', label='Alpha')}
+        )
+        assert s.alias_source('a', 'Alpha') is AliasSource.LABEL
+
+    def test_forget_aliases_from_removes_only_matching_source(self):
+        s = SubcategoryStructure(
+            subcategory_id=1, fields={'a': _mk_field('a', label='Alpha')}
+        )
+        s.add_alias('a', 'FromOffer', source=AliasSource.OFFER_PAGE)
+        s.add_alias('a', 'FromUser')  # USER
+        # Trigger cache.
+        _ = s.lower_label_map
+        removed = s.forget_aliases_from(AliasSource.OFFER_PAGE)
+        assert removed == 1
+        assert s.lookup_field_id('FromOffer') is None
+        assert s.lookup_field_id('FromUser') == 'a'
+        # LABEL-seeded label is preserved.
+        assert s.lookup_field_id('Alpha') == 'a'
+
+    def test_add_alias_backward_compat_no_source_kwarg(self):
+        s = SubcategoryStructure(
+            subcategory_id=1, fields={'a': _mk_field('a', label='A')}
+        )
+        # Calling without source still works (positional 2-arg form).
+        s.add_alias('a', 'X')
+        assert s.lookup_field_id('X') == 'a'
 
 
 class TestParseTitleFieldsRightToLeft:

@@ -1,20 +1,53 @@
 from __future__ import annotations
 
 
-__all__ = ('FieldCondition', 'SubcategoryFieldDef', 'SubcategoryStructure')
+__all__ = (
+    'AliasSource',
+    'FieldCondition',
+    'SubcategoryFieldDef',
+    'SubcategoryStructure',
+)
 
 import re
+from enum import Enum
 from typing import TYPE_CHECKING, Any, Literal
 from dataclasses import field, dataclass
 from functools import cached_property
+from collections.abc import Iterable
 
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.enums import SubcategoryFieldType
 
 
 if TYPE_CHECKING:
-    from funpayparsers.types.offers import OfferFields
+    from funpayparsers.types.offers import OfferFields, OfferPreview
     from funpayparsers.types.pages.offer_page import OfferPage
+    from funpayparsers.types.pages.order_page import OrderPage
+
+
+class AliasSource(str, Enum):
+    """Provenance of a registered alias on a ``SubcategoryFieldDef``."""
+
+    LABEL = 'label'
+    """Auto-seeded from ``SubcategoryFieldDef.label`` at construction time."""
+
+    LISTING = 'listing'
+    """Listing page filter-form ``<label>`` text."""
+
+    OFFER_EDIT = 'offer_edit'
+    """OfferEdit form ``<label class="control-label">`` text."""
+
+    OFFER_PAGE = 'offer_page'
+    """Value-derived from ``OfferPage.fields``."""
+
+    ORDER_PAGE = 'order_page'
+    """Value-derived from ``OrderPage.lot_fields``."""
+
+    OFFER_PREVIEW = 'offer_preview'
+    """Derived from ``OfferPreview.other_data`` / ``other_data_names`` / title."""
+
+    USER = 'user'
+    """Explicitly registered by user code (default for ``add_alias``)."""
 
 
 _TITLE_SUFFIX_TYPES = frozenset({
@@ -160,6 +193,15 @@ class SubcategoryStructure(FunPayObject):
     or iterate over ``fields.values()`` to process fields in declaration order.
     """
 
+    _alias_sources: dict[tuple[str, str], AliasSource] = field(default_factory=dict)
+    """
+    Provenance map: ``(field_id, alias_casefold) → source``.
+
+    Tracks which enrich-source registered each alias. Defaults to
+    :attr:`AliasSource.USER` for unspecified ``add_alias`` calls. Cleared
+    selectively via :meth:`forget_aliases_from`.
+    """
+
     derived_from: Literal['lot_fields', 'chips_offers'] = 'lot_fields'
     """
     Provenance of this structure.
@@ -171,6 +213,14 @@ class SubcategoryStructure(FunPayObject):
       offers, when the listing page has no ``div.lot-fields``. Field
       types default to ``SELECT``, options accumulate first-seen values.
     """
+
+    def __post_init__(self) -> None:
+        # Seed provenance for label-derived aliases that ``SubcategoryFieldDef``
+        # auto-added in its own ``__post_init__``. Anything not yet tagged is
+        # attributed to ``LABEL``; explicit enrich-from-* calls overwrite this.
+        for fid, fd in self.fields.items():
+            for alias in fd.aliases:
+                self._alias_sources.setdefault((fid, alias), AliasSource.LABEL)
 
     @property
     def is_synthetic(self) -> bool:
@@ -219,16 +269,55 @@ class SubcategoryStructure(FunPayObject):
             return None
         return ids[0]
 
-    def add_alias(self, field_id: str, alias: str) -> None:
-        """Register *alias* for *field_id* and invalidate the cached label maps."""
+    def add_alias(
+        self,
+        field_id: str,
+        alias: str,
+        source: AliasSource = AliasSource.USER,
+    ) -> None:
+        """
+        Register *alias* for *field_id* and invalidate the cached label maps.
+
+        *source* records the provenance of this alias for later inspection
+        via :meth:`alias_source` or selective invalidation via
+        :meth:`forget_aliases_from`. Re-registering an existing alias updates
+        the recorded source.
+        """
         if field_id not in self.fields or not alias:
             return
         casefolded = alias.casefold()
-        if casefolded in self.fields[field_id].aliases:
-            return
-        self.fields[field_id].aliases.add(casefolded)
-        self.__dict__.pop('label_map', None)
-        self.__dict__.pop('lower_label_map', None)
+        if casefolded not in self.fields[field_id].aliases:
+            self.fields[field_id].aliases.add(casefolded)
+            self.__dict__.pop('label_map', None)
+            self.__dict__.pop('lower_label_map', None)
+        self._alias_sources[(field_id, casefolded)] = source
+
+    def alias_source(self, field_id: str, alias: str) -> AliasSource | None:
+        """Return the recorded source of *alias* for *field_id*, if any."""
+        return self._alias_sources.get((field_id, alias.casefold()))
+
+    def forget_aliases_from(self, source: AliasSource) -> int:
+        """
+        Drop every alias previously registered with *source*.
+
+        Useful when re-enriching from a fresh sample — e.g.
+        ``forget_aliases_from(AliasSource.OFFER_PAGE)`` before another
+        ``enrich_from_offer`` pass to avoid stale value-derived aliases.
+
+        Returns the number of aliases removed.
+        """
+        removed = 0
+        for (fid, alias), src in list(self._alias_sources.items()):
+            if src is source:
+                fd = self.fields.get(fid)
+                if fd is not None:
+                    fd.aliases.discard(alias)
+                del self._alias_sources[(fid, alias)]
+                removed += 1
+        if removed:
+            self.__dict__.pop('label_map', None)
+            self.__dict__.pop('lower_label_map', None)
+        return removed
 
     def enrich_from_offer_fields(
         self, offer_fields: OfferFields
@@ -251,7 +340,7 @@ class SubcategoryStructure(FunPayObject):
         """
         for f in offer_fields.field_schema:
             if f.id in self.fields and f.label:
-                self.add_alias(f.id, f.label)
+                self.add_alias(f.id, f.label, source=AliasSource.OFFER_EDIT)
         return self
 
     def enrich_from_offer(self, offer: OfferPage) -> SubcategoryStructure:
@@ -280,7 +369,70 @@ class SubcategoryStructure(FunPayObject):
                 and any(_normalize_option(opt) == value_norm for opt in fd.options)
             ]
             if len(matches) == 1:
-                self.add_alias(matches[0], label)
+                self.add_alias(matches[0], label, source=AliasSource.OFFER_PAGE)
+        return self
+
+    def enrich_from_order_page(self, order: OrderPage) -> SubcategoryStructure:
+        """
+        Add aliases from an ``OrderPage.lot_fields`` mapping.
+
+        Mirror of :meth:`enrich_from_offer` but operates on completed-order
+        data. For each ``(label, value)`` in ``order.lot_fields``:
+
+        * If *label* already resolves via ``lower_label_map`` — leave it alone.
+        * Otherwise, try to match *value* against ``options`` of any
+          ``SELECT``/``DROPDOWN`` field. If exactly one field matches,
+          register *label* as an alias for that field.
+
+        Useful when callers have an ``OrderPage`` in hand (e.g. processing a
+        ``NEW_ORDER`` message) and want to seed the structure without an extra
+        ``OfferPage`` fetch.
+
+        Returns ``self`` for chaining. Mutates the underlying field defs.
+        """
+        for label, value in order.lot_fields.items():
+            if not label or label.casefold() in self.lower_label_map:
+                continue
+            value_norm = _normalize_option(str(value))
+            matches = [
+                fid
+                for fid, fd in self.fields.items()
+                if fd.options
+                and any(_normalize_option(opt) == value_norm for opt in fd.options)
+            ]
+            if len(matches) == 1:
+                self.add_alias(matches[0], label, source=AliasSource.ORDER_PAGE)
+        return self
+
+    def enrich_from_offer_previews(
+        self, offers: Iterable[OfferPreview]
+    ) -> SubcategoryStructure:
+        """
+        Add aliases from a batch of ``OfferPreview`` objects.
+
+        For each offer, examines ``offer.other_data`` — the structured
+        ``{field_id: value}`` pairs from the listing page's data-fields. When
+        ``field_id`` already exists in *self.fields*, the corresponding
+        ``other_data_names[field_id]`` (if any) is registered as an alias to
+        ensure cross-locale lookups.
+
+        Use this when processing a ``SubcategoryPage`` / ``MyOffersPage`` /
+        ``ProfilePage`` where the offers are already in memory — no extra
+        HTTP needed.
+
+        Returns ``self`` for chaining. Mutates the underlying field defs.
+        """
+        for offer in offers:
+            if not offer.other_data or not offer.other_data_names:
+                continue
+            for field_id in offer.other_data:
+                if field_id not in self.fields:
+                    continue
+                name = offer.other_data_names.get(field_id)
+                if name:
+                    self.add_alias(
+                        field_id, name, source=AliasSource.OFFER_PREVIEW
+                    )
         return self
 
     @classmethod
