@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-__all__ = ('OrderPage', 'ORDER_METADATA_LABELS')
+__all__ = ('OrderPage', 'ORDER_METADATA_LABELS', 'ORDER_DELIVERY_LABELS')
 
 import re
 from typing import TYPE_CHECKING
@@ -46,6 +46,27 @@ _LABEL_TO_METADATA_KEY: dict[str, str] = {
 }
 
 
+# Casefolded labels FunPay renders for buyer-supplied delivery-contract data
+# in ``OrderPage.data`` (per-order, not lot-config). These should land in
+# ``OrderPage.delivery_fields`` rather than ``lot_fields``. This static set
+# covers common cases (Telegram username, Steam login, email, …) and acts as
+# a fallback when no ``SubcategoryStructure.delivery_fields`` is available;
+# see :meth:`OrderPage.reclassify_with_structure` for high-precision
+# classification once a per-subcategory spec is on hand.
+ORDER_DELIVERY_LABELS: frozenset[str] = frozenset({
+    'telegram username',
+    'логин steam',
+    'steam login',
+    'логин',
+    'login',
+    'почта',
+    'email',
+    'имя персонажа',
+    'character name',
+    'discord',
+})
+
+
 # Composite ``param-list`` labels of the form ``'<quantity-locale> <currency-id>'``
 # that FunPay renders for currency-amount lot fields, e.g.
 # ``'количество usd' = '20 USD'``, ``'количество rub' = '5000 RUB'``. The suffix
@@ -61,14 +82,24 @@ _COMPOSITE_VALUE_RE = re.compile(r'^(\d+(?:\.\d+)?)\s+\S')
 def _split_order_data(
     data: dict[str, str],
     expand_composite: bool = True,
-) -> tuple[dict[str, str], dict[str, str]]:
+    extra_delivery_labels: frozenset[str] = frozenset(),
+) -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
     """
-    Split ``param-list`` data into ``(metadata, lot_fields)``.
+    Split ``param-list`` data into ``(metadata, lot_fields, delivery_fields)``.
 
     *data* keys are casefolded labels as parsed by ``OrderPageParser``.
-    Metadata labels (see :data:`ORDER_METADATA_LABELS`) are extracted under
-    their canonical key; everything else is preserved verbatim in
-    ``lot_fields``.
+    Routing rules, in order of precedence:
+
+    1. Metadata labels (see :data:`ORDER_METADATA_LABELS`) → ``metadata`` under
+       their canonical key.
+    2. Delivery labels (:data:`ORDER_DELIVERY_LABELS` ∪ *extra_delivery_labels*,
+       casefolded) → ``delivery_fields`` verbatim.
+    3. Everything else → ``lot_fields`` verbatim.
+
+    *extra_delivery_labels* lets callers pass a casefolded harvest of
+    :attr:`SubcategoryStructure.delivery_fields` values for high-precision
+    per-subcategory classification. Pass via
+    :meth:`OrderPage.reclassify_with_structure` once a structure is on hand.
 
     When *expand_composite* is true (default), composite labels matching
     :data:`_COMPOSITE_LABEL_RE` (e.g. ``'количество usd'``) are *additionally*
@@ -78,13 +109,20 @@ def _split_order_data(
     composite label is always kept verbatim for back-compat. If the synthetic
     key already exists in ``lot_fields`` (rare collision), the original entry
     wins (``setdefault`` semantics).
+
+    All three resulting dicts are pairwise disjoint by key.
     """
     metadata: dict[str, str] = {}
     lot_fields: dict[str, str] = {}
+    delivery_fields: dict[str, str] = {}
+    delivery_set = ORDER_DELIVERY_LABELS | extra_delivery_labels
     for label, value in data.items():
         canonical = _LABEL_TO_METADATA_KEY.get(label)
         if canonical is not None and canonical not in metadata:
             metadata[canonical] = value
+            continue
+        if label in delivery_set:
+            delivery_fields[label] = value
             continue
         lot_fields[label] = value
         if expand_composite:
@@ -93,7 +131,7 @@ def _split_order_data(
                 vm = _COMPOSITE_VALUE_RE.match(value)
                 if vm is not None:
                     lot_fields.setdefault(cm.group(1), vm.group(1))
-    return metadata, lot_fields
+    return metadata, lot_fields, delivery_fields
 
 
 @dataclass
@@ -143,17 +181,67 @@ class OrderPage(FunPayPage):
     lot_fields: dict[str, str] = field(default_factory=dict)
     """
     Lot-specific fields from ``param-list`` — everything in ``data`` that is
-    not part of ``metadata``. Keys are casefolded labels, values are display
-    strings. This is the input for :meth:`get_structured_fields`.
+    neither :attr:`metadata` nor :attr:`delivery_fields`. Keys are casefolded
+    labels, values are display strings. This is the input for
+    :meth:`get_structured_fields`.
+    """
+
+    delivery_fields: dict[str, str] = field(default_factory=dict)
+    """
+    Per-order delivery-contract data supplied by the buyer at checkout
+    (Telegram username, Steam login, character name, email, …). Classified
+    via the static :data:`ORDER_DELIVERY_LABELS` blacklist at parse time;
+    callers can re-classify with higher precision via
+    :meth:`reclassify_with_structure` once a ``SubcategoryStructure`` with
+    populated :attr:`SubcategoryStructure.delivery_fields` is available.
     """
 
     def get_structured_fields(self, structure: SubcategoryStructure) -> dict[str, str]:
-        """Return ``lot_fields`` remapped to FunPay field IDs using *structure*'s label map."""
-        return {
-            structure.lower_label_map[label][0]: val
-            for label, val in self.lot_fields.items()
-            if label in structure.lower_label_map
-        }
+        """
+        Return ``lot_fields`` remapped to FunPay field IDs.
+
+        Resolves each label via :meth:`SubcategoryStructure.lookup_field_id`,
+        passing the already-resolved entries as *context* so condition-gated
+        fields (e.g. ``quantity2`` NUMERIC_RANGE shadowing ``quantity`` SELECT)
+        disambiguate against shared labels. Falls back to first-by-declaration
+        when context is insufficient, preserving legacy behaviour.
+        """
+        result: dict[str, str] = {}
+        for label, val in self.lot_fields.items():
+            fid = structure.lookup_field_id(label, context=result)
+            if fid is None:
+                ids = structure.lower_label_map.get(label.casefold())
+                if ids:
+                    fid = ids[0]
+            if fid is not None:
+                result[fid] = val
+        return result
+
+    def reclassify_with_structure(
+        self, structure: SubcategoryStructure
+    ) -> OrderPage:
+        """
+        Re-split :attr:`data` using ``structure.delivery_fields`` for
+        high-precision delivery classification.
+
+        Useful when the page was originally parsed without structure context
+        (only :data:`ORDER_DELIVERY_LABELS` static blacklist applied), and the
+        caller has since obtained a ``SubcategoryStructure`` enriched via
+        :meth:`SubcategoryStructure.enrich_delivery_fields_from_offer`.
+
+        Mutates :attr:`metadata`, :attr:`lot_fields`, :attr:`delivery_fields`
+        in place and returns ``self`` for chaining.
+        """
+        extra = frozenset(
+            label.casefold() for label in structure.delivery_fields.values()
+        )
+        metadata, lot_fields, delivery_fields = _split_order_data(
+            self.data, extra_delivery_labels=extra
+        )
+        self.metadata = metadata
+        self.lot_fields = lot_fields
+        self.delivery_fields = delivery_fields
+        return self
 
     @property
     def short_description(self) -> str | None:

@@ -202,6 +202,20 @@ class SubcategoryStructure(FunPayObject):
     selectively via :meth:`forget_aliases_from`.
     """
 
+    delivery_fields: dict[str, str] = field(default_factory=dict)
+    """
+    Per-subcategory mapping of ``input.name → label`` for per-order
+    delivery-contract fields, accumulated from observed offers via
+    :meth:`enrich_delivery_fields_from_offer`.
+
+    Distinct from :attr:`fields` (lot-config schema). These are buyer
+    inputs (Telegram username, Steam login, …) that surface in
+    :attr:`OrderPage.lot_fields` but should be classified as
+    :attr:`OrderPage.delivery_fields` instead. Values are casefold-compared
+    against ``OrderPage.data`` labels in
+    :meth:`OrderPage.reclassify_with_structure`.
+    """
+
     derived_from: Literal['lot_fields', 'chips_offers'] = 'lot_fields'
     """
     Provenance of this structure.
@@ -258,16 +272,54 @@ class SubcategoryStructure(FunPayObject):
                     existing.append(fid)
         return result
 
-    def lookup_field_id(self, label: str) -> str | None:
+    def lookup_field_id(
+        self,
+        label: str,
+        *,
+        context: dict[str, Any] | None = None,
+    ) -> str | None:
         """
         Resolve *label* (case-insensitively) to a single field ID.
 
-        Returns ``None`` if there is no match or the match is ambiguous.
+        When *context* (mapping of already-resolved ``{field_id: value}`` pairs)
+        is provided and *label* matches multiple fields, prefer the field whose
+        visibility :attr:`SubcategoryFieldDef.conditions` are satisfied by
+        *context*. Disambiguates fields that share a label in form-locale
+        (``quantity`` SELECT vs ``quantity2`` NUMERIC_RANGE both labelled
+        ``'Количество робуксов'``, where the latter is gated on
+        ``quantity='другое количество'``).
+
+        Returns ``None`` on miss, ``None`` on still-ambiguous match (no context,
+        all-unsatisfied, or top-tier tie).
         """
         ids = self.lower_label_map.get(label.casefold())
-        if not ids or len(ids) > 1:
+        if not ids:
             return None
-        return ids[0]
+        if len(ids) == 1:
+            return ids[0]
+        if context is None:
+            return None
+        # Score per candidate:
+        #   2 — has conditions, all satisfied by *context*;
+        #   1 — has no conditions (always-visible);
+        #   0 — has conditions but at least one unsatisfied.
+        scored: list[tuple[int, str]] = []
+        for fid in ids:
+            conds = self.fields[fid].conditions
+            if not conds:
+                scored.append((1, fid))
+                continue
+            ok = all(
+                c.field_id in context and c.is_satisfied_by(context[c.field_id])
+                for c in conds
+            )
+            scored.append((2 if ok else 0, fid))
+        scored.sort(key=lambda t: t[0], reverse=True)
+        if scored[0][0] == 0:
+            return None  # all unsatisfied
+        if len(scored) > 1 and scored[0][0] == scored[1][0]:
+            return None  # tie at top
+        return scored[0][1]
 
     def add_alias(
         self,
@@ -433,6 +485,68 @@ class SubcategoryStructure(FunPayObject):
                     self.add_alias(
                         field_id, name, source=AliasSource.OFFER_PREVIEW
                     )
+        return self
+
+    def enrich_delivery_fields_from_offer(
+        self, offer: OfferPage
+    ) -> SubcategoryStructure:
+        """
+        Add delivery-contract field specs from :attr:`OfferPage.delivery_fields_spec`.
+
+        Multiple offers in the same subcategory may share or extend each
+        other's delivery contracts; this method unions them. Existing entries
+        are preserved (first-seen label wins, via ``setdefault``) so the label
+        seen on the first observed offer stays stable across the subcategory.
+
+        Returns ``self`` for chaining. Mutates :attr:`delivery_fields`.
+        """
+        for name, label in offer.delivery_fields_spec.items():
+            self.delivery_fields.setdefault(name, label)
+        return self
+
+    def merge_from(self, other: SubcategoryStructure) -> SubcategoryStructure:
+        """
+        Merge fields, aliases, and delivery specs from *other* into ``self``.
+
+        * For each ``field_id`` only in *other* — deep-copy the whole
+          ``SubcategoryFieldDef`` into ``self.fields`` and carry over its
+          alias provenance.
+        * For each ``field_id`` in **both** — union the alias sets only.
+          ``self`` is treated as the authoritative source for ``label``,
+          ``options``, ``type``, and ``conditions`` (other's values for
+          these are ignored).
+        * Provenance of newly-added aliases is taken from *other*'s
+          ``_alias_sources``, falling back to :attr:`AliasSource.USER`.
+        * :attr:`delivery_fields` (Task 1) — same first-seen-wins union.
+
+        Use cases: combining a synthetic listing-derived structure with a
+        ``from_offer_fields`` structure (complete but requires HTTP), or
+        hydrating persistent-cached aliases on top of a freshly parsed one.
+
+        Returns ``self`` for chaining. Does not mutate *other*.
+        """
+        from copy import deepcopy
+
+        for fid, other_fd in other.fields.items():
+            if fid not in self.fields:
+                self.fields[fid] = deepcopy(other_fd)
+                for alias in other_fd.aliases:
+                    src = other._alias_sources.get((fid, alias), AliasSource.USER)
+                    self._alias_sources[(fid, alias)] = src
+                continue
+            for alias in other_fd.aliases:
+                if alias in self.fields[fid].aliases:
+                    continue
+                self.fields[fid].aliases.add(alias)
+                src = other._alias_sources.get((fid, alias), AliasSource.USER)
+                self._alias_sources[(fid, alias)] = src
+
+        for name, label in other.delivery_fields.items():
+            self.delivery_fields.setdefault(name, label)
+
+        if self.fields:
+            self.__dict__.pop('label_map', None)
+            self.__dict__.pop('lower_label_map', None)
         return self
 
     @classmethod

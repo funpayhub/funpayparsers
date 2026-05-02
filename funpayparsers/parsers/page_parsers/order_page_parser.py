@@ -102,7 +102,7 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
 
             data[name[0].text().strip().lower()] = value[-1].text().strip()
 
-        metadata, lot_fields = _split_order_data(
+        metadata, lot_fields, delivery_fields = _split_order_data(
             data, expand_composite=self.options.expand_composite_lot_labels
         )
 
@@ -145,4 +145,5 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
             data=data,
             metadata=metadata,
             lot_fields=lot_fields,
+            delivery_fields=delivery_fields,
         )

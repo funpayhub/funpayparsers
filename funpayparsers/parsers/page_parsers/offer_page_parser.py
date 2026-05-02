@@ -50,6 +50,60 @@ class OfferPageParsingOptions(ParsingOptions):
     """
 
 
+_DELIVERY_FORM_RESERVED_NAMES = frozenset({
+    'csrf_token',
+    'type',
+    'preview',
+    'offer_id',
+    'price_guard',
+    'username',  # chrome autofill bug-fix dummy input
+    'method',    # payment-method dropdown
+    'amount',
+    'sum',
+})
+
+_DELIVERY_FORM_SKIP_CLASSES = frozenset({
+    'multiple-purchase-switcher',
+    'offer-calc-box',
+    'js-price-row',
+    'js-order-prices',
+})
+
+
+def _parse_delivery_fields_spec(form_node: LexborNode) -> dict[str, str]:
+    """
+    Extract ``{input_name: label}`` for delivery-contract fields from the
+    buyer's order form.
+
+    Walks every ``div.form-group`` under *form_node*, picks the first named
+    ``<input>``/``<select>`` that isn't a payment/calc/CSRF reserved input,
+    and pairs it with the form-group's ``label.control-label`` text. Skips
+    form-groups whose top-level class is in :data:`_DELIVERY_FORM_SKIP_CLASSES`,
+    inputs of ``type="hidden"`` (chrome-autofill dummies), and unlabeled groups.
+    """
+    result: dict[str, str] = {}
+    for fg in form_node.css('div.form-group'):
+        cls = (fg.attributes.get('class') or '').split()
+        if any(c in _DELIVERY_FORM_SKIP_CLASSES for c in cls):
+            continue
+        label_node = fg.css_first('label.control-label', strict=False)
+        if label_node is None:
+            continue
+        input_node = fg.css_first('input, select', strict=False)
+        if input_node is None:
+            continue
+        name = input_node.attributes.get('name')
+        if not name or name in _DELIVERY_FORM_RESERVED_NAMES:
+            continue
+        if input_node.attributes.get('type') == 'hidden':
+            continue
+        label = label_node.text(strip=True)
+        if not label:
+            continue
+        result.setdefault(name, label)
+    return result
+
+
 class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]):
     """
     Parser for offer page (`/<lots/chips>/offer?id=<id>`).
@@ -77,6 +131,13 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
             value_divs = field_div.css('div')
             value = value_divs[-1].text(strip=True) if value_divs else ''
             fields[name_node.text(strip=True)] = value
+
+        order_form: LexborNode | None = page_content.css_first(
+            'form[action$="orders/new"]', strict=False
+        )
+        delivery_fields_spec: dict[str, str] = (
+            _parse_delivery_fields_spec(order_form) if order_form is not None else {}
+        )
 
         payment_options: dict[str, PaymentOption] = {}
         payment_select: LexborNode = page_content.css_first('select.form-control[name="method"]')
@@ -111,6 +172,7 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
             auto_delivery=bool(auto_delivery),
             fields=fields,
             images=images,
+            delivery_fields_spec=delivery_fields_spec,
             chat=ChatParser(
                 self.tree.css_first('div.chat').html or '',
                 options=self.options.chat_parsing_options,

@@ -709,3 +709,241 @@ class TestParseTitleFieldsRightToLeft:
             },
         )
         assert _parse_title_fields('x, garbage', s) == {'a': 'x'}
+
+
+class TestLookupFieldIdWithContext:
+    def _shared_label_struct(self) -> SubcategoryStructure:
+        # ``q`` (SELECT) and ``q2`` (NUMERIC_RANGE) share a label;
+        # ``q2`` is gated on ``q='другое количество'``.
+        q = _mk_field(
+            'q',
+            label='Количество',
+            type_=SubcategoryFieldType.SELECT,
+            options=['50', '100', 'другое количество'],
+        )
+        q2 = SubcategoryFieldDef(
+            raw_source='',
+            id='q2',
+            type=SubcategoryFieldType.NUMERIC_RANGE,
+            label='Количество',
+            conditions=[
+                FieldCondition(field_id='q', values={'другое количество'}),
+            ],
+        )
+        return SubcategoryStructure(subcategory_id=1, fields={'q': q, 'q2': q2})
+
+    def test_unique_label_returns_id_without_context(self):
+        s = SubcategoryStructure(
+            subcategory_id=1, fields={'a': _mk_field('a', label='Alpha')}
+        )
+        assert s.lookup_field_id('Alpha') == 'a'
+
+    def test_ambiguous_without_context_returns_none(self):
+        s = self._shared_label_struct()
+        assert s.lookup_field_id('Количество') is None
+
+    def test_context_resolves_unconditional_when_condition_unsatisfied(self):
+        s = self._shared_label_struct()
+        # q has no conditions (score 1); q2's condition unsatisfied (score 0).
+        assert s.lookup_field_id('Количество', context={'q': '50'}) == 'q'
+
+    def test_context_resolves_conditional_when_satisfied(self):
+        s = self._shared_label_struct()
+        # q2's condition now satisfied (score 2) > q (score 1).
+        assert (
+            s.lookup_field_id('Количество', context={'q': 'другое количество'})
+            == 'q2'
+        )
+
+    def test_empty_context_with_ambiguous_returns_none(self):
+        s = self._shared_label_struct()
+        # No context entries match either field's conditions.
+        # q (1) > q2 (0) — q wins because q has no conditions.
+        assert s.lookup_field_id('Количество', context={}) == 'q'
+
+    def test_miss_returns_none(self):
+        s = SubcategoryStructure(
+            subcategory_id=1, fields={'a': _mk_field('a', label='Alpha')}
+        )
+        assert s.lookup_field_id('NoSuchLabel') is None
+        assert s.lookup_field_id('NoSuchLabel', context={'a': 'x'}) is None
+
+
+class TestEnrichDeliveryFieldsFromOffer:
+    def _mk_offer(self, spec: dict[str, str]):
+        # ``enrich_delivery_fields_from_offer`` only reads ``delivery_fields_spec``,
+        # so a SimpleNamespace duck-types fine without constructing the full
+        # OfferPage tree (which would need PageHeader, AppData, Chat, …).
+        from types import SimpleNamespace
+        return SimpleNamespace(delivery_fields_spec=spec)
+
+    def test_enrich_unions_specs(self):
+        s = SubcategoryStructure(subcategory_id=1)
+        s.enrich_delivery_fields_from_offer(
+            self._mk_offer({'player': 'Telegram Username'})
+        )
+        s.enrich_delivery_fields_from_offer(
+            self._mk_offer({'login': 'Логин Steam'})
+        )
+        assert s.delivery_fields == {
+            'player': 'Telegram Username',
+            'login': 'Логин Steam',
+        }
+
+    def test_first_seen_label_wins(self):
+        s = SubcategoryStructure(subcategory_id=1)
+        s.enrich_delivery_fields_from_offer(
+            self._mk_offer({'player': 'Telegram Username'})
+        )
+        s.enrich_delivery_fields_from_offer(
+            self._mk_offer({'player': 'Some Other Label'})
+        )
+        assert s.delivery_fields == {'player': 'Telegram Username'}
+
+    def test_returns_self(self):
+        s = SubcategoryStructure(subcategory_id=1)
+        assert s.enrich_delivery_fields_from_offer(self._mk_offer({})) is s
+
+
+class TestSubcategoryStructureMerge:
+    def test_field_only_in_other_deepcopied(self):
+        s1 = SubcategoryStructure(
+            subcategory_id=1, fields={'a': _mk_field('a', label='Alpha')}
+        )
+        s2 = SubcategoryStructure(
+            subcategory_id=1, fields={'b': _mk_field('b', label='Beta')}
+        )
+        s1.merge_from(s2)
+        assert set(s1.fields) == {'a', 'b'}
+        # Mutating s2's deep-copied field must not affect s1.
+        s2.fields['b'].aliases.add('xxx')
+        assert 'xxx' not in s1.fields['b'].aliases
+
+    def test_overlapping_field_unions_aliases(self):
+        f1 = _mk_field('a', label='Alpha', aliases={'left'})
+        f2 = _mk_field('a', label='Alpha', aliases={'right'})
+        s1 = SubcategoryStructure(subcategory_id=1, fields={'a': f1})
+        s2 = SubcategoryStructure(subcategory_id=1, fields={'a': f2})
+        s1.merge_from(s2)
+        # Union: own + other's aliases. Self is authoritative for label,
+        # so 'alpha' (auto from label) is in there too.
+        assert 'left' in s1.fields['a'].aliases
+        assert 'right' in s1.fields['a'].aliases
+
+    def test_alias_provenance_carried_over(self):
+        s2 = SubcategoryStructure(
+            subcategory_id=1, fields={'a': _mk_field('a', label='Alpha')}
+        )
+        s2.add_alias('a', 'extra', source=AliasSource.OFFER_PAGE)
+        s1 = SubcategoryStructure(subcategory_id=1)
+        s1.merge_from(s2)
+        assert s1.alias_source('a', 'extra') is AliasSource.OFFER_PAGE
+
+    def test_does_not_mutate_other(self):
+        s2 = SubcategoryStructure(
+            subcategory_id=1, fields={'a': _mk_field('a', label='Alpha')}
+        )
+        snapshot_aliases = set(s2.fields['a'].aliases)
+        s1 = SubcategoryStructure(subcategory_id=1)
+        s1.merge_from(s2)
+        assert s2.fields['a'].aliases == snapshot_aliases
+
+    def test_delivery_fields_merged(self):
+        s1 = SubcategoryStructure(
+            subcategory_id=1, delivery_fields={'player': 'Telegram Username'}
+        )
+        s2 = SubcategoryStructure(
+            subcategory_id=1, delivery_fields={'login': 'Логин Steam'}
+        )
+        s1.merge_from(s2)
+        assert s1.delivery_fields == {
+            'player': 'Telegram Username',
+            'login': 'Логин Steam',
+        }
+
+    def test_label_map_invalidated(self):
+        s1 = SubcategoryStructure(
+            subcategory_id=1, fields={'a': _mk_field('a', label='Alpha')}
+        )
+        _ = s1.label_map  # populate cache
+        assert 'label_map' in s1.__dict__
+        s2 = SubcategoryStructure(
+            subcategory_id=1, fields={'b': _mk_field('b', label='Beta')}
+        )
+        s1.merge_from(s2)
+        assert 'label_map' not in s1.__dict__
+        assert 'beta' in s1.lower_label_map
+
+    def test_returns_self(self):
+        s1 = SubcategoryStructure(subcategory_id=1)
+        s2 = SubcategoryStructure(subcategory_id=1)
+        assert s1.merge_from(s2) is s1
+
+
+class TestOrderPageReclassifyAndStructured:
+    def _mk_order(self, data: dict[str, str]):
+        # OrderPage's reclassify_with_structure / get_structured_fields read
+        # only ``data`` and ``lot_fields``; bypass the full constructor.
+        from types import SimpleNamespace
+        from funpayparsers.types.pages.order_page import (
+            OrderPage,
+            _split_order_data,
+        )
+        metadata, lot_fields, delivery = _split_order_data(data)
+        order = SimpleNamespace(
+            data=data,
+            metadata=metadata,
+            lot_fields=lot_fields,
+            delivery_fields=delivery,
+        )
+        # Bind real methods so they operate on the namespace.
+        order.reclassify_with_structure = (
+            OrderPage.reclassify_with_structure.__get__(order, type(order))
+        )
+        order.get_structured_fields = (
+            OrderPage.get_structured_fields.__get__(order, type(order))
+        )
+        return order
+
+    def test_reclassify_promotes_label_to_delivery(self):
+        # A label that is *not* in the static blacklist but is in the
+        # structure's delivery_fields should move from lot_fields to
+        # delivery_fields after reclassification.
+        s = SubcategoryStructure(subcategory_id=1)
+        s.delivery_fields['player'] = 'Никнейм'
+        order = self._mk_order({'игра': 'X', 'никнейм': 'qvvonk'})
+        assert order.lot_fields == {'никнейм': 'qvvonk'}
+        order.reclassify_with_structure(s)
+        assert order.delivery_fields == {'никнейм': 'qvvonk'}
+        assert order.lot_fields == {}
+
+    def test_get_structured_fields_picks_unconditional_on_ambiguous(self):
+        # Shared label, no helpful context — fallback prefers the
+        # unconditional field (legacy first-by-declaration behaviour
+        # via the in-method fallback when ``lookup_field_id`` returns
+        # ``None``).
+        q = _mk_field(
+            'q',
+            label='Количество',
+            type_=SubcategoryFieldType.SELECT,
+            options=['50'],
+        )
+        q2 = SubcategoryFieldDef(
+            raw_source='',
+            id='q2',
+            type=SubcategoryFieldType.NUMERIC_RANGE,
+            label='Количество',
+            conditions=[
+                FieldCondition(field_id='q', values={'другое количество'}),
+            ],
+        )
+        s = SubcategoryStructure(subcategory_id=1, fields={'q': q, 'q2': q2})
+        from types import SimpleNamespace
+        from funpayparsers.types.pages.order_page import OrderPage
+        order = SimpleNamespace(lot_fields={'количество': '50'})
+        order.get_structured_fields = (
+            OrderPage.get_structured_fields.__get__(order, type(order))
+        )
+        result = order.get_structured_fields(s)
+        # Empty context, q wins via score (no conditions vs unsatisfied).
+        assert result == {'q': '50'}
