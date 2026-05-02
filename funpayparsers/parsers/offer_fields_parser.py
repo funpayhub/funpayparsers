@@ -119,11 +119,10 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
 
         options = cls._parse_options(form_group, field_type)
 
-        # Index the field's own ID and the form ``<label>`` text as aliases
-        # so cross-locale label lookups (data-fields JSON key vs. localized
-        # ``<label>``) resolve to the same field via ``label_map``.
-        aliases = {field_id, label}
-
+        # Index the field's own ID as an alias so cross-locale lookups
+        # (data-fields JSON key vs. localized ``<label>``) resolve to the same
+        # field via ``label_map``. The label itself is auto-added by
+        # ``SubcategoryFieldDef.__post_init__``.
         return SubcategoryFieldDef(
             raw_source=raw_source,
             id=field_id,
@@ -131,7 +130,7 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
             label=label,
             conditions=conditions,
             options=options,
-            aliases=aliases,
+            aliases={field_id},
         )
 
     @staticmethod

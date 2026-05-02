@@ -24,6 +24,37 @@ _TITLE_SUFFIX_TYPES = frozenset({
 })
 
 
+# Decorations sellers commonly inject into rendered values that are absent from
+# the canonical filter-form options. The ranges deliberately cover only
+# pictographic / symbol blocks — Latin, Cyrillic, digits, punctuation must pass
+# through untouched.
+_DECORATION_RE = re.compile(
+    '['
+    '\U0001F300-\U0001FAFF'   # extended pictographs (emoji proper)
+    '\U00002600-\U000027BF'   # misc symbols + dingbats (★ ♠ ☂ ✋ …)
+    '\U0001F1E6-\U0001F1FF'   # regional indicator symbols (flags)
+    '⌀-⏿'           # misc technical (⌚ ⌛ ⏰ …)
+    '⬀-⯿'           # misc symbols and arrows (⭐ ⬆ …)
+    '✀-➿'           # dingbats (overlap with above, kept for clarity)
+    '︀-️'           # variation selectors (incl. VS16 emoji style)
+    '‍'                  # zero-width joiner (emoji combiner)
+    ']+'
+)
+
+
+def _normalize_option(s: str) -> str:
+    """
+    Casefold + strip decorations + collapse whitespace + strip outer punctuation.
+
+    Used for fuzzy comparison between canonical FunPay-form options (clean) and
+    the user-rendered values that appear in offers/orders, where sellers
+    commonly add emoji, stars, etc. (``'RUB🔥'`` vs option ``'RUB'``).
+    """
+    s = _DECORATION_RE.sub('', s)
+    s = re.sub(r'\s+', ' ', s).strip(' .,!?·-—')
+    return s.casefold()
+
+
 @dataclass
 class FieldCondition(FunPayObject):
     """
@@ -95,12 +126,15 @@ class SubcategoryFieldDef(FunPayObject):
     (English IDs), the filter form ``<label>`` (locale-dependent), the
     per-offer ``param-list`` rendering, and ``OrderPage`` data labels.
 
-    Always casefolded — populated via ``__post_init__`` and via
-    :meth:`SubcategoryStructure.add_alias`.
+    Always casefolded. The ``label`` itself is auto-added by ``__post_init__``,
+    so callers never need to pass it explicitly. Additional aliases can be
+    appended via :meth:`SubcategoryStructure.add_alias`.
     """
 
     def __post_init__(self) -> None:
         self.aliases = {str(a).casefold() for a in self.aliases if a}
+        if self.label:
+            self.aliases.add(self.label.casefold())
 
 
 @dataclass
@@ -179,6 +213,30 @@ class SubcategoryStructure(FunPayObject):
         self.__dict__.pop('label_map', None)
         self.__dict__.pop('lower_label_map', None)
 
+    def enrich_from_offer_fields(
+        self, offer_fields: OfferFields
+    ) -> SubcategoryStructure:
+        """
+        Add aliases from an authenticated ``OfferFields`` schema.
+
+        Each ``SubcategoryFieldDef`` in *offer_fields.field_schema* carries a
+        canonical localized ``label`` (text from ``<label class="control-label">``
+        on the offerEdit form). Register that label as an alias for the matching
+        field id in *self*.
+
+        Use this once per subcategory to seed a structure built from the public
+        listing page (which often renders English form labels) with the
+        canonical localized labels FunPay uses elsewhere
+        (``OrderPage.lot_fields`` keys, ``OfferPage.fields`` keys), bridging
+        the listing-form / offer-page locale gap.
+
+        Returns ``self`` for chaining. Mutates the underlying field defs.
+        """
+        for f in offer_fields.field_schema:
+            if f.id in self.fields and f.label:
+                self.add_alias(f.id, f.label)
+        return self
+
     def enrich_from_offer(self, offer: OfferPage) -> SubcategoryStructure:
         """
         Add aliases from an ``OfferPage.fields`` mapping.
@@ -197,12 +255,12 @@ class SubcategoryStructure(FunPayObject):
                 continue
             if label.casefold() in self.lower_label_map:
                 continue
-            value_cf = str(value).casefold()
+            value_norm = _normalize_option(str(value))
             matches = [
                 fid
                 for fid, fd in self.fields.items()
                 if fd.options
-                and any(opt.casefold() == value_cf for opt in fd.options)
+                and any(_normalize_option(opt) == value_norm for opt in fd.options)
             ]
             if len(matches) == 1:
                 self.add_alias(matches[0], label)
@@ -232,14 +290,28 @@ def _parse_title_fields(
     FunPay appends ``NUMERIC_RANGE``, ``SELECT``, and ``DROPDOWN`` field values
     to the title in declaration order, separated by ``', '``. The leading
     portion (everything before the suffix) is the free-form summary and may
-    itself contain commas.
+    itself contain commas — and on short titles it may be missing entirely.
+
+    Algorithm: walk fields right-to-left, trying the rightmost not-yet-consumed
+    segment against the current field. On a match — record it and step left to
+    the previous segment. On a miss — keep the segment and try the next (more
+    leftward) field against the same segment. This way:
+
+    * a free-form prefix segment never gets misassigned to a structural field
+      whose option list it doesn't satisfy;
+    * a short title with fewer segments than suffix fields still resolves
+      whatever it can from the right edge inward, instead of mis-zipping by
+      position.
 
     Each returned entry is verified:
 
     * ``NUMERIC_RANGE``: stored as ``int`` if a leading numeric portion exists;
-      the entry is dropped otherwise.
+      the segment is dropped otherwise.
     * ``SELECT`` / ``DROPDOWN``: the raw segment must match one of the field's
-      ``options`` (case-insensitively), otherwise the entry is dropped.
+      ``options`` (after :func:`_normalize_option`), so seller-injected
+      decorations (``'RUB🔥'`` vs option ``'RUB'``) still resolve. Quantity-
+      style options (``'20 USD'``, ``'5000 RUB'``, ``'13 звёзд'``) collapse to
+      bare ``int`` since the unit is already encoded in ``field_def.id``.
 
     Returns an empty dict if *title* is empty or no matching suffix fields exist.
     """
@@ -250,33 +322,41 @@ def _parse_title_fields(
     ]
     if not suffix_fields:
         return {}
-    parts = title.rsplit(', ', maxsplit=len(suffix_fields))
-    candidates = parts[1:]
+
+    parts = [p.strip() for p in title.split(', ') if p.strip()]
+    if not parts:
+        return {}
+
     result: dict[str, str | int] = {}
-    for field_def, raw_val in zip(suffix_fields, candidates):
-        raw_val = raw_val.strip()
-        if not raw_val:
-            continue
+    seg_idx = len(parts) - 1
+    for field_def in reversed(suffix_fields):
+        if seg_idx < 0:
+            break
+        raw_val = parts[seg_idx]
+        matched = False
         if field_def.type is SubcategoryFieldType.NUMERIC_RANGE:
             m = re.match(r'^(\d+(?:\.\d+)?)', raw_val)
             if m:
                 result[field_def.id] = int(float(m.group(1)))
-        else:
-            if not field_def.options:
-                continue
-            val_cf = raw_val.casefold()
+                matched = True
+        elif field_def.options:
+            val_norm = _normalize_option(raw_val)
             for opt in field_def.options:
-                if opt.casefold() == val_cf:
-                    # Quantity-style options (e.g. ``'20 USD'``, ``'5000 RUB'``,
-                    # ``'13 звёзд'``) carry a numeric magnitude with a trailing
-                    # unit; the unit is already encoded in ``field_def.id``
-                    # (``usd`` / ``rub`` / ``quantity``), so collapse the value
-                    # to a bare ``int`` and let consumers reconstruct the
-                    # display form from the field id when needed.
-                    num_match = re.match(r'^(\d+(?:\.\d+)?)\s+\S', opt)
-                    if num_match:
-                        result[field_def.id] = int(float(num_match.group(1)))
-                    else:
-                        result[field_def.id] = opt
-                    break
+                if _normalize_option(opt) != val_norm:
+                    continue
+                # Quantity-style options (e.g. ``'20 USD'``, ``'5000 RUB'``,
+                # ``'13 звёзд'``) carry a numeric magnitude with a trailing
+                # unit; the unit is already encoded in ``field_def.id``
+                # (``usd`` / ``rub`` / ``quantity``), so collapse the value
+                # to a bare ``int`` and let consumers reconstruct the
+                # display form from the field id when needed.
+                num_match = re.match(r'^(\d+(?:\.\d+)?)\s+\S', opt)
+                if num_match:
+                    result[field_def.id] = int(float(num_match.group(1)))
+                else:
+                    result[field_def.id] = opt
+                matched = True
+                break
+        if matched:
+            seg_idx -= 1
     return result
