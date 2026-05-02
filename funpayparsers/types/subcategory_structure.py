@@ -3,8 +3,9 @@ from __future__ import annotations
 
 __all__ = ('FieldCondition', 'SubcategoryFieldDef', 'SubcategoryStructure')
 
+import re
 from typing import TYPE_CHECKING, Any
-from dataclasses import dataclass
+from dataclasses import field, dataclass
 from functools import cached_property
 
 from funpayparsers.types.base import FunPayObject
@@ -13,10 +14,18 @@ from funpayparsers.types.enums import SubcategoryFieldType
 
 if TYPE_CHECKING:
     from funpayparsers.types.offers import OfferFields
+    from funpayparsers.types.pages.offer_page import OfferPage
+
+
+_TITLE_SUFFIX_TYPES = frozenset({
+    SubcategoryFieldType.NUMERIC_RANGE,
+    SubcategoryFieldType.SELECT,
+    SubcategoryFieldType.DROPDOWN,
+})
 
 
 @dataclass
-class FieldCondition:
+class FieldCondition(FunPayObject):
     """
     Represents a visibility condition for a ``SubcategoryFieldDef``.
 
@@ -24,10 +33,13 @@ class FieldCondition:
     has one of the values listed in ``values``.
     """
 
-    field_id: str
+    raw_source: str = field(default='', compare=False)
+    """Raw JSON of the condition object, if available."""
+
+    field_id: str = ''
     """ID of the field whose value controls visibility of the owning field."""
 
-    values: set[str]
+    values: set[str] = field(default_factory=set)
     """
     Values of ``field_id`` that make the owning field visible.
 
@@ -51,16 +63,16 @@ class FieldCondition:
 class SubcategoryFieldDef(FunPayObject):
     """Represents a single field definition within a subcategory."""
 
-    id: str
+    id: str = ''
     """Field identifier as used by FunPay (e.g. ``'arena'``, ``'quantity'``)."""
 
-    type: SubcategoryFieldType
+    type: SubcategoryFieldType = SubcategoryFieldType.TEXT
     """Field type."""
 
-    label: str
+    label: str = ''
     """Human-readable label from ``label.control-label`` in the form HTML."""
 
-    conditions: list[FieldCondition]
+    conditions: list[FieldCondition] = field(default_factory=list)
     """
     Visibility conditions.
 
@@ -68,30 +80,45 @@ class SubcategoryFieldDef(FunPayObject):
     The field is shown only when all conditions are satisfied simultaneously.
     """
 
-    options: list[str] | None
+    options: list[str] | None = None
     """
     Available option values for ``SELECT`` and ``DROPDOWN`` type fields.
 
     ``None`` for non-select fields (``NUMERIC_RANGE``, ``TEXT``, ``TEXTAREA``, ``IMAGES``).
     """
 
+    aliases: set[str] = field(default_factory=set)
+    """
+    Additional, casefolded label aliases for this field.
+
+    Used to bridge cross-locale label mismatches between the data-fields JSON
+    (English IDs), the filter form ``<label>`` (locale-dependent), the
+    per-offer ``param-list`` rendering, and ``OrderPage`` data labels.
+
+    Always casefolded — populated via ``__post_init__`` and via
+    :meth:`SubcategoryStructure.add_alias`.
+    """
+
+    def __post_init__(self) -> None:
+        self.aliases = {str(a).casefold() for a in self.aliases if a}
+
 
 @dataclass
-class SubcategoryStructure:
+class SubcategoryStructure(FunPayObject):
     """
     Derived subcategory field structure for quick lookups.
 
-    Not a ``FunPayObject`` — constructed from ``OfferFields.field_schema``
-    rather than parsed directly from HTML.
-
-    Use ``SubcategoryStructure.from_offer_fields()`` to build an instance
-    from ``OfferFields``.
+    Built either from ``OfferFields`` (authenticated ``offerEdit`` page) or
+    directly from the public subcategory listing page's ``div.lot-fields``.
     """
 
-    subcategory_id: int | None
+    raw_source: str = field(default='', compare=False)
+    """Raw HTML of the ``div.lot-fields`` block, if available."""
+
+    subcategory_id: int | None = None
     """Subcategory ID. ``None`` for currency (chips) offer fields."""
 
-    fields: dict[str, SubcategoryFieldDef]
+    fields: dict[str, SubcategoryFieldDef] = field(default_factory=dict)
     """
     Field definitions keyed by field ID, in declaration order.
 
@@ -102,24 +129,84 @@ class SubcategoryStructure:
     @cached_property
     def label_map(self) -> dict[str, list[str]]:
         """
-        Mapping from FunPay label to list of field IDs for reverse lookup.
+        Mapping from FunPay label (or alias) to list of field IDs for reverse lookup.
 
-        Values are lists because different fields may share the same label
-        (notably empty labels on fields that have no ``<label>`` in the form).
-        Field IDs appear in declaration order.
+        Indexes both ``f.label`` (as-is, possibly localized) and every entry in
+        ``f.aliases`` (casefolded). Values are lists because different fields
+        may share the same label/alias.
         """
         result: dict[str, list[str]] = {}
         for f in self.fields.values():
-            result.setdefault(f.label, []).append(f.id)
+            seen: set[str] = set()
+            for key in (f.label, *f.aliases):
+                if key in seen:
+                    continue
+                seen.add(key)
+                result.setdefault(key, []).append(f.id)
         return result
 
     @cached_property
     def lower_label_map(self) -> dict[str, list[str]]:
-        """Case-insensitive variant of ``label_map`` — keys are lowercased."""
+        """Case-insensitive variant of ``label_map`` — keys are casefolded."""
         result: dict[str, list[str]] = {}
         for label, ids in self.label_map.items():
-            result.setdefault(label.lower(), []).extend(ids)
+            key = label.casefold()
+            existing = result.setdefault(key, [])
+            for fid in ids:
+                if fid not in existing:
+                    existing.append(fid)
         return result
+
+    def lookup_field_id(self, label: str) -> str | None:
+        """
+        Resolve *label* (case-insensitively) to a single field ID.
+
+        Returns ``None`` if there is no match or the match is ambiguous.
+        """
+        ids = self.lower_label_map.get(label.casefold())
+        if not ids or len(ids) > 1:
+            return None
+        return ids[0]
+
+    def add_alias(self, field_id: str, alias: str) -> None:
+        """Register *alias* for *field_id* and invalidate the cached label maps."""
+        if field_id not in self.fields or not alias:
+            return
+        casefolded = alias.casefold()
+        if casefolded in self.fields[field_id].aliases:
+            return
+        self.fields[field_id].aliases.add(casefolded)
+        self.__dict__.pop('label_map', None)
+        self.__dict__.pop('lower_label_map', None)
+
+    def enrich_from_offer(self, offer: OfferPage) -> SubcategoryStructure:
+        """
+        Add aliases from an ``OfferPage.fields`` mapping.
+
+        For each ``(label, value)`` in ``offer.fields``:
+
+        * If *label* already resolves via ``label_map`` — leave it alone.
+        * Otherwise, try to match *value* against ``options`` of any
+          ``SELECT``/``DROPDOWN`` field. If exactly one field matches,
+          register *label* as an alias for that field.
+
+        Returns ``self`` for chaining. Mutates the underlying field defs.
+        """
+        for label, value in offer.fields.items():
+            if not label:
+                continue
+            if label.casefold() in self.lower_label_map:
+                continue
+            value_cf = str(value).casefold()
+            matches = [
+                fid
+                for fid, fd in self.fields.items()
+                if fd.options
+                and any(opt.casefold() == value_cf for opt in fd.options)
+            ]
+            if len(matches) == 1:
+                self.add_alias(matches[0], label)
+        return self
 
     @classmethod
     def from_offer_fields(cls, offer_fields: OfferFields) -> SubcategoryStructure:
@@ -130,6 +217,56 @@ class SubcategoryStructure:
         :return: A ``SubcategoryStructure`` with field map and label maps populated.
         """
         return cls(
+            raw_source=offer_fields.raw_source,
             subcategory_id=offer_fields.subcategory_id,
             fields={f.id: f for f in offer_fields.field_schema},
         )
+
+
+def _parse_title_fields(
+    title: str | None, structure: SubcategoryStructure
+) -> dict[str, str | int]:
+    """
+    Extract field values from a comma-separated offer/order title suffix.
+
+    FunPay appends ``NUMERIC_RANGE``, ``SELECT``, and ``DROPDOWN`` field values
+    to the title in declaration order, separated by ``', '``. The leading
+    portion (everything before the suffix) is the free-form summary and may
+    itself contain commas.
+
+    Each returned entry is verified:
+
+    * ``NUMERIC_RANGE``: stored as ``int`` if a leading numeric portion exists;
+      the entry is dropped otherwise.
+    * ``SELECT`` / ``DROPDOWN``: the raw segment must match one of the field's
+      ``options`` (case-insensitively), otherwise the entry is dropped.
+
+    Returns an empty dict if *title* is empty or no matching suffix fields exist.
+    """
+    if not title:
+        return {}
+    suffix_fields = [
+        f for f in structure.fields.values() if f.type in _TITLE_SUFFIX_TYPES
+    ]
+    if not suffix_fields:
+        return {}
+    parts = title.rsplit(', ', maxsplit=len(suffix_fields))
+    candidates = parts[1:]
+    result: dict[str, str | int] = {}
+    for field_def, raw_val in zip(suffix_fields, candidates):
+        raw_val = raw_val.strip()
+        if not raw_val:
+            continue
+        if field_def.type is SubcategoryFieldType.NUMERIC_RANGE:
+            m = re.match(r'^(\d+(?:\.\d+)?)', raw_val)
+            if m:
+                result[field_def.id] = int(float(m.group(1)))
+        else:
+            if not field_def.options:
+                continue
+            val_cf = raw_val.casefold()
+            for opt in field_def.options:
+                if opt.casefold() == val_cf:
+                    result[field_def.id] = opt
+                    break
+    return result

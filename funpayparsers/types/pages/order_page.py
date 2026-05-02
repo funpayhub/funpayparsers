@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 
-__all__ = ('OrderPage',)
+__all__ = ('OrderPage', 'ORDER_METADATA_LABELS')
 
 import re
 from typing import TYPE_CHECKING
-from dataclasses import dataclass
+from dataclasses import field, dataclass
 
 from funpayparsers.types.chat import Chat
 from funpayparsers.types.enums import OrderStatus, SubcategoryType
@@ -17,6 +17,55 @@ from funpayparsers.types.pages.base import FunPayPage
 if TYPE_CHECKING:
     from funpayparsers.parsers.page_parsers.order_page_parser import OrderPageParsingOptions
     from funpayparsers.types.subcategory_structure import SubcategoryStructure
+
+
+# Stable order-metadata labels rendered by FunPay regardless of the lot's
+# subcategory. Keys are the canonical metadata names, values are the set of
+# casefolded label variants that may appear in ``param-list`` (RU/EN/UA).
+# Anything not in this map is treated as a lot-specific field and routed to
+# ``OrderPage.lot_fields`` instead of ``OrderPage.metadata``.
+ORDER_METADATA_LABELS: dict[str, frozenset[str]] = {
+    'game': frozenset({'game', 'игра', 'гра'}),
+    'category': frozenset({'category', 'категория', 'категорія'}),
+    'short_description': frozenset(
+        {'short description', 'краткое описание', 'короткий опис'}
+    ),
+    'detailed_description': frozenset(
+        {'detailed description', 'подробное описание', 'докладний опис'}
+    ),
+    'amount': frozenset({'amount', 'количество', 'кількість'}),
+    'open': frozenset({'open', 'открыт', 'відкрито'}),
+    'closed': frozenset({'closed', 'закрыт', 'закрито'}),
+    'total': frozenset({'total', 'сумма', 'сума'}),
+}
+
+_LABEL_TO_METADATA_KEY: dict[str, str] = {
+    label: canonical
+    for canonical, variants in ORDER_METADATA_LABELS.items()
+    for label in variants
+}
+
+
+def _split_order_data(
+    data: dict[str, str],
+) -> tuple[dict[str, str], dict[str, str]]:
+    """
+    Split ``param-list`` data into ``(metadata, lot_fields)``.
+
+    *data* keys are casefolded labels as parsed by ``OrderPageParser``.
+    Metadata labels (see :data:`ORDER_METADATA_LABELS`) are extracted under
+    their canonical key; everything else is preserved verbatim in
+    ``lot_fields``. The two resulting dicts are disjoint.
+    """
+    metadata: dict[str, str] = {}
+    lot_fields: dict[str, str] = {}
+    for label, value in data.items():
+        canonical = _LABEL_TO_METADATA_KEY.get(label)
+        if canonical is not None and canonical not in metadata:
+            metadata[canonical] = value
+        else:
+            lot_fields[label] = value
+    return metadata, lot_fields
 
 
 @dataclass
@@ -42,7 +91,12 @@ class OrderPage(FunPayPage):
     """Order subcategory type."""
 
     data: dict[str, str]
-    """Order data (short description, full description, etc.)"""
+    """
+    Raw, flat ``param-list`` data — keys are casefolded labels.
+
+    Kept for backwards compatibility. Prefer ``metadata`` for stable
+    order-level fields and ``lot_fields`` for lot-specific fields.
+    """
 
     review: Review | None
     """Order review."""
@@ -50,35 +104,42 @@ class OrderPage(FunPayPage):
     chat: Chat
     """Chat with counterparty."""
 
+    metadata: dict[str, str] = field(default_factory=dict)
+    """
+    Stable order metadata, keyed by canonical name (see
+    :data:`ORDER_METADATA_LABELS`). Possible keys: ``game``, ``category``,
+    ``short_description``, ``detailed_description``, ``amount``, ``open``,
+    ``closed``, ``total``. Only keys actually present on the page are stored.
+    """
+
+    lot_fields: dict[str, str] = field(default_factory=dict)
+    """
+    Lot-specific fields from ``param-list`` — everything in ``data`` that is
+    not part of ``metadata``. Keys are casefolded labels, values are display
+    strings. This is the input for :meth:`get_structured_fields`.
+    """
+
     def get_structured_fields(self, structure: SubcategoryStructure) -> dict[str, str]:
-        """Return ``data`` remapped to FunPay field IDs using *structure*'s label map."""
+        """Return ``lot_fields`` remapped to FunPay field IDs using *structure*'s label map."""
         return {
             structure.lower_label_map[label][0]: val
-            for label, val in self.data.items()
+            for label, val in self.lot_fields.items()
             if label in structure.lower_label_map
         }
-
-    def _first_found(self, names: list[str]) -> str | None:
-        for i in names:
-            if self.data.get(i) is not None:
-                return self.data[i]
-        return None
 
     @property
     def short_description(self) -> str | None:
         """Order short description (title)."""
-
-        return self._first_found(['short description', 'краткое описание', 'короткий опис'])
+        return self.metadata.get('short_description')
 
     @property
     def full_description(self) -> str | None:
         """Order full description (detailed description)."""
-
-        return self._first_found(['detailed description', 'подробное описание', 'докладний опис'])
+        return self.metadata.get('detailed_description')
 
     @property
     def amount(self) -> int | None:
-        amount_str = self._first_found(['amount', 'количество', 'кількість'])
+        amount_str = self.metadata.get('amount')
         if not amount_str:
             return None
         return int(re.search(r'\d+', amount_str).group())  # type: ignore[union-attr]
@@ -87,8 +148,7 @@ class OrderPage(FunPayPage):
     @property
     def open_date_text(self) -> str | None:
         """Order open date."""
-
-        date_str = self._first_found(['open', 'открыт', 'відкрито'])
+        date_str = self.metadata.get('open')
         if not date_str:
             return None
         return date_str.split('\n')[0].strip()
@@ -96,8 +156,7 @@ class OrderPage(FunPayPage):
     @property
     def close_date_text(self) -> str | None:
         """Order close date."""
-
-        date_str = self._first_found(['closed', 'закрыт', 'закрито'])
+        date_str = self.metadata.get('closed')
         if not date_str:
             return None
         return date_str.split('\n')[0].strip()
@@ -105,21 +164,19 @@ class OrderPage(FunPayPage):
     @property
     def order_category_name(self) -> str | None:
         """Order category name."""
-
-        return self._first_found(['game', 'игра', 'гра'])
+        return self.metadata.get('game')
 
     @property
     def order_subcategory_name(self) -> str | None:
         """Order subcategory name."""
-
-        return self._first_found(['category', 'категория', 'категорія'])
+        return self.metadata.get('category')
 
     @property
     def order_total(self) -> MoneyValue | None:
         """Order total."""
         from funpayparsers.parsers.utils import parse_money_value_string
 
-        value = self._first_found(['total', 'сумма', 'сума'])
+        value = self.metadata.get('total')
         if not value:
             return None
         return parse_money_value_string(value)

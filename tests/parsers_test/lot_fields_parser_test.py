@@ -125,6 +125,7 @@ _expected_field_schema = [
         label='Краткое описание',
         conditions=[],
         options=None,
+        aliases={'summary', 'краткое описание'},
     ),
     SubcategoryFieldDef(
         raw_source='',
@@ -133,6 +134,7 @@ _expected_field_schema = [
         label='Подробное описание',
         conditions=[],
         options=None,
+        aliases={'desc', 'подробное описание'},
     ),
     SubcategoryFieldDef(
         raw_source='',
@@ -141,6 +143,7 @@ _expected_field_schema = [
         label='Сообщение покупателю после оплаты',
         conditions=[],
         options=None,
+        aliases={'payment_msg', 'сообщение покупателю после оплаты'},
     ),
 ]
 

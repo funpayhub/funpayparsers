@@ -88,6 +88,7 @@ class SubcategoryPageParser(
         if lot_fields_div is not None:
             field_schema = OfferFieldsParser.parse_field_schema(lot_fields_div)
             structure = SubcategoryStructure(
+                raw_source=lot_fields_div.html or '',
                 subcategory_id=int(subcategory_id_str.split('-')[-1]),
                 fields={f.id: f for f in field_schema},
             )

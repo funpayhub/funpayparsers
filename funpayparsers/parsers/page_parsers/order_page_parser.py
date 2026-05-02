@@ -13,6 +13,7 @@ from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.parsers.chat_parser import ChatParser, ChatParsingOptions
 from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
 from funpayparsers.parsers.reviews_parser import ReviewsParser, ReviewsParsingOptions
+from funpayparsers.types.pages.order_page import _split_order_data
 from funpayparsers.parsers.page_header_parser import (
     PageHeaderParser,
     PageHeaderParsingOptions,
@@ -90,6 +91,8 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
 
             data[name[0].text().strip().lower()] = value[-1].text().strip()
 
+        metadata, lot_fields = _split_order_data(data)
+
         subcategory_url: str = self.tree.css_first(  # type: ignore[assignment,union-attr]
             'div.param-item:has(h5):not(:has(ul, ol)) a',
             strict=False,
@@ -127,4 +130,6 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
                 options=self.options.chat_parsing_options,
             ).parse(),
             data=data,
+            metadata=metadata,
+            lot_fields=lot_fields,
         )

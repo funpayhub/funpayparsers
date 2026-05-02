@@ -119,6 +119,11 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
 
         options = cls._parse_options(form_group, field_type)
 
+        # Index the field's own ID and the form ``<label>`` text as aliases
+        # so cross-locale label lookups (data-fields JSON key vs. localized
+        # ``<label>``) resolve to the same field via ``label_map``.
+        aliases = {field_id, label}
+
         return SubcategoryFieldDef(
             raw_source=raw_source,
             id=field_id,
@@ -126,6 +131,7 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
             label=label,
             conditions=conditions,
             options=options,
+            aliases=aliases,
         )
 
     @staticmethod
@@ -141,7 +147,13 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
                     f'Unrecognized condition format: {cond!r}. '
                     f"Expected one of 'list' or 'value' keys."
                 )
-            result.append(FieldCondition(field_id=cond['id'], values=set(values)))
+            result.append(
+                FieldCondition(
+                    raw_source=json.dumps(cond, ensure_ascii=False),
+                    field_id=cond['id'],
+                    values=set(values),
+                )
+            )
         return result
 
     @staticmethod
