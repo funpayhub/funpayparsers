@@ -105,23 +105,6 @@ class OfferPreview(FunPayObject):
     subcategory_type: SubcategoryType = SubcategoryType.UNKNOWN
     """Type of the subcategory (OFFERS/CHIPS), derived from the offer URL."""
 
-    def parse_title_fields(
-        self, structure: SubcategoryStructure
-    ) -> dict[str, str | int]:
-        """
-        Extract structural field values from this preview's ``title``.
-
-        FunPay appends ``NUMERIC_RANGE``, ``SELECT``, and ``DROPDOWN`` field
-        values to the offer title in declaration order. This method matches
-        the trailing comma-separated segments of ``title`` against
-        *structure*'s field definitions and returns a mapping of
-        ``field_id`` → value.
-
-        Returns an empty dict if ``title`` is ``None`` or no segment matches.
-        """
-        from funpayparsers.types.subcategory_structure import _parse_title_fields
-        return _parse_title_fields(self.title, structure)
-
 
 T = TypeVar('T')
 P = ParamSpec('P')

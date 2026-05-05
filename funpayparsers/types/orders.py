@@ -14,7 +14,6 @@ from funpayparsers.types.common import MoneyValue
 
 if TYPE_CHECKING:
     from funpayparsers.types.common import UserPreview
-    from funpayparsers.types.subcategory_structure import SubcategoryStructure
 
 
 @dataclass
@@ -41,18 +40,6 @@ class OrderPreview(FunPayObject):
 
     counterparty: UserPreview
     """Associated counterparty info."""
-
-    def parse_title_fields(
-        self, structure: SubcategoryStructure
-    ) -> dict[str, str | int]:
-        """
-        Extract structural field values from this preview's ``title``.
-
-        See :meth:`OfferPreview.parse_title_fields` for details — order titles
-        share the same comma-separated suffix layout as offer titles.
-        """
-        from funpayparsers.types.subcategory_structure import _parse_title_fields
-        return _parse_title_fields(self.title, structure)
 
     @property
     def timestamp(self) -> int:
