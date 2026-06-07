@@ -45,19 +45,25 @@ class MyChipsPageParser(FunPayHTMLObjectParser[MyChipsPage, MyChipsPageParsingOp
     """
 
     def _parse(self) -> MyChipsPage:
+        header_node = self.tree.css_first('header')
         header = PageHeaderParser(
-            self.tree.css_first('header').html or '',
+            header_node.html or '' if header_node else '',
             options=self.options.page_header_parsing_options,
         ).parse()
 
+        body_node = self.tree.css_first('body')
+        app_data_str = body_node.attributes.get('data-app-data') if body_node else None
         app_data = AppDataParser(
-            self.tree.css_first('body').attributes.get('data-app-data') or '',
+            app_data_str or '',
             options=self.options.app_data_parsing_options,
         ).parse()
 
+        # The form is absent when the subcategory has no chips offers (or on
+        # non-trade pages). ``OfferFieldsParser`` returns empty fields for an
+        # empty source, so no offers parse into an empty ``OfferFields``.
         form = self.tree.css_first('form.form-ajax-simple')
         fields_obj = OfferFieldsParser(
-            raw_source=form.html or '',
+            raw_source=form.html or '' if form else '',
             options=self.options.offer_fields_parsing_options,
         ).parse()
 

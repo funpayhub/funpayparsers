@@ -28,6 +28,19 @@ class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParsingOptions]):
     """
 
     def _parse(self) -> AppData:
+        # Pages can be served without an ``data-app-data`` attribute
+        # (e.g. error/redirect pages, or a ``<body>`` without it), in which
+        # case the parser receives an empty string. Treat it as empty AppData
+        # instead of failing on ``json.loads('')``.
+        if isinstance(self.raw_source, str) and not self.raw_source.strip():
+            return AppData(
+                raw_source='',
+                locale=Language.UNKNOWN,
+                csrf_token=cast(str, None),
+                user_id=None,
+                webpush=None,
+            )
+
         assert isinstance(self.data, dict)
 
         webpush = self.data.get('webpush')
