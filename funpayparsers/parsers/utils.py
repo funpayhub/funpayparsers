@@ -44,7 +44,7 @@ def _parse_title_fields(title: str, structure: SubcategoryStructure) -> dict[str
     Returns a mapping of field ID → parsed value.  ``NUMERIC_RANGE`` values are
     returned as ``int`` (the leading numeric portion is extracted).
     """
-    suffix_fields = [f for f in structure.fields.values() if f.type in _TITLE_SUFFIX_TYPES]
+    suffix_fields = [f for f in structure.fields if f.type in _TITLE_SUFFIX_TYPES]
     if not suffix_fields:
         return {}
     parts = title.rsplit(', ', maxsplit=len(suffix_fields))
