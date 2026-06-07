@@ -258,10 +258,13 @@ def parse_money_value_string(
     Whitespaces between sign, value and currency char are allowed.
     String will be stripped before parsing.
     """
-    to_process = money_value_str.strip().replace(' ', '').replace('−', '-')
+
+    # It is important to replace ' ' with '' to support space seperated values,
+    # e.g., 12 345.67
+    to_process = money_value_str.strip().replace(' ', '').replace('\u2212', '-')
     if not (match := MONEY_VALUE_RE.fullmatch(to_process)):
         if raise_on_error:
-            raise ValueError(f"Unable to parse money value string '{money_value_str}'")
+            raise Exception(f"Unable to parse money value string '{money_value_str}'")
         return None
 
     value, currency = match.groups()

@@ -18,8 +18,6 @@ from funpayparsers.parsers.offer_previews_parser import (
     OfferPreviewsParser,
     OfferPreviewsParsingOptions,
 )
-from funpayparsers.parsers.offer_fields_parser import OfferFieldsParser
-from funpayparsers.types.subcategory_structure import SubcategoryStructure
 
 
 @dataclass(frozen=True)
@@ -83,15 +81,6 @@ class SubcategoryPageParser(
                 )
             )
 
-        lot_fields_div = self.tree.css_first('div.lot-fields', strict=False)
-        structure: SubcategoryStructure | None = None
-        if lot_fields_div is not None:
-            field_schema = OfferFieldsParser.parse_field_schema(lot_fields_div)
-            structure = SubcategoryStructure(
-                subcategory_id=int(subcategory_id_str.split('-')[-1]),
-                fields={f.id: f for f in field_schema},
-            )
-
         return SubcategoryPage(
             raw_source=self.raw_source,
             header=PageHeaderParser(
@@ -113,5 +102,4 @@ class SubcategoryPageParser(
                 options=self.options.offer_previews_parsing_options,
             ).parse()
             or None,
-            structure=structure,
         )

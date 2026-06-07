@@ -32,13 +32,6 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
         - Offer creating page (`https://funpay.com/lots/offerEdit?node=<node_id>`)
         - Offer editing page
         (`https://funpay.com/lots/offerEdit?node=<node_id>&offer=<offer_id>`)
-
-    .. note::
-        Both pages are auth-only. The public subcategory listing page
-        (`https://funpay.com/lots/<id>/`) carries a compatible slimmed-down
-        ``data-fields`` JSON together with per-field form groups, and can be
-        parsed into a (partial) :class:`SubcategoryStructure` — see
-        :class:`SubcategoryPageParser`, which does this automatically.
     """
 
     def _parse(self) -> OfferFields:
@@ -59,8 +52,15 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
                 continue
             field_names[k] = label.text(strip=True)
 
+        field_schema: list[SubcategoryFieldDef] = []
         lot_fields_div = form.css_first('div.lot-fields', strict=False)
-        field_schema = self.parse_field_schema(lot_fields_div) if lot_fields_div else []
+        if lot_fields_div is not None:
+            raw_data_fields = lot_fields_div.attributes.get('data-fields', '[]') or '[]'
+            fields_json: list[dict[str, Any]] = json.loads(
+                html_module.unescape(raw_data_fields)
+            )
+            for fj in fields_json:
+                field_schema.append(self._parse_field_def(fj, lot_fields_div))
 
         return OfferFields(
             raw_source=form.html or '',
@@ -69,29 +69,12 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
             field_schema=field_schema,
         )
 
-    @classmethod
-    def parse_field_schema(
-        cls, lot_fields_div: LexborNode
-    ) -> list[SubcategoryFieldDef]:
-        """
-        Parse the ``data-fields`` JSON on a ``div.lot-fields`` node into a
-        list of :class:`SubcategoryFieldDef`.
-
-        This is shared by the authenticated ``offerEdit`` flow and the
-        anonymous subcategory listing flow, because both render the same
-        ``data-fields`` attribute and the same per-field markup.
-        """
-        raw_data_fields = lot_fields_div.attributes.get('data-fields', '[]') or '[]'
-        fields_json: list[dict[str, Any]] = json.loads(html_module.unescape(raw_data_fields))
-        return [cls._parse_field_def(fj, lot_fields_div) for fj in fields_json]
-
-    @classmethod
     def _parse_field_def(
-        cls, field_json: dict[str, Any], lot_fields_div: LexborNode
+        self, field_json: dict[str, Any], lot_fields_div: LexborNode
     ) -> SubcategoryFieldDef:
         field_id: str = field_json['id']
         field_type = SubcategoryFieldType.from_type_code(field_json['type'])
-        conditions = cls._parse_conditions(field_json.get('conditions', []))
+        conditions = self._parse_conditions(field_json.get('conditions', []))
 
         # Prefer non-locale div, then Russian locale, then any locale.
         form_group = (
@@ -117,7 +100,7 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
             label = field_id
             raw_source = ''
 
-        options = cls._parse_options(form_group, field_type)
+        options = self._parse_options(form_group, field_type)
 
         return SubcategoryFieldDef(
             raw_source=raw_source,
@@ -130,19 +113,13 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
 
     @staticmethod
     def _parse_conditions(raw_conditions: list[dict[str, Any]]) -> list[FieldCondition]:
-        result: list[FieldCondition] = []
-        for cond in raw_conditions:
-            if 'list' in cond:
-                values = cond['list']
-            elif 'value' in cond:
-                values = [cond['value']]
-            else:
-                raise ValueError(
-                    f'Unrecognized condition format: {cond!r}. '
-                    f"Expected one of 'list' or 'value' keys."
-                )
-            result.append(FieldCondition(field_id=cond['id'], values=set(values)))
-        return result
+        return [
+            FieldCondition(
+                field_id=cond['id'],
+                values=set(cond.get('list', [cond['value']] if 'value' in cond else [])),
+            )
+            for cond in raw_conditions
+        ]
 
     @staticmethod
     def _parse_options(
@@ -153,17 +130,10 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
         if form_group is None:
             return []
         select = form_group.css_first('select.lot-field-input', strict=False)
-        if select is not None:
-            return [
-                str(opt.attributes['value'])
-                for opt in select.css('option')
-                if opt.attributes.get('value', '')
-            ]
-        # Public listing pages render the same options as a button group
-        # (<div class="lot-field-radio-box"><button value="...">).
-        # Empty value is the "All" button and must be skipped.
+        if select is None:
+            return []
         return [
-            str(btn.attributes['value'])
-            for btn in form_group.css('.lot-field-radio-box button[value]')
-            if btn.attributes.get('value', '')
+            str(opt.attributes['value'])
+            for opt in select.css('option')
+            if opt.attributes.get('value', '')
         ]

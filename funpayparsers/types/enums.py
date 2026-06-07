@@ -723,41 +723,40 @@ _LANGUAGE_ALIASES = {
 
 
 class SubcategoryFieldType(Enum):
-    """
-    Subcategory field type (from ``data-fields`` JSON ``type`` key).
+    """Subcategory field type (from ``data-fields`` JSON ``type`` key)."""
 
-    Member values are the FunPay type codes, so ``SubcategoryFieldType(code)``
-    works for known codes. For arbitrary ints (possibly including unknown codes
-    from future FunPay versions) use :meth:`from_type_code`, which falls back to
-    ``UNKNOWN`` instead of raising.
-    """
-
-    UNKNOWN = 0
+    UNKNOWN = auto()
     """Unknown field type. Returned for unrecognized type integers."""
 
-    NUMERIC_RANGE = 1
+    NUMERIC_RANGE = auto()
     """Numeric text input, used as a range filter on catalog pages."""
 
-    TEXT = 2
+    TEXT = auto()
     """Single-line text input."""
 
-    TEXTAREA = 3
+    TEXTAREA = auto()
     """Multi-line textarea."""
 
-    SELECT = 4
+    SELECT = auto()
     """Dropdown select with conditional visibility support."""
 
-    DROPDOWN = 5
+    DROPDOWN = auto()
     """Plain dropdown select."""
 
-    IMAGES = 6
+    IMAGES = auto()
     """Image upload field."""
-
-    @classmethod
-    def _missing_(cls, value: object) -> SubcategoryFieldType:
-        return cls.UNKNOWN
 
     @classmethod
     def from_type_code(cls, type_code: int, /) -> SubcategoryFieldType:
         """Return the field type corresponding to ``type_code``, or ``UNKNOWN``."""
-        return cls(type_code)
+        return _SUBCATEGORY_FIELD_TYPE_MAP.get(type_code, cls.UNKNOWN)
+
+
+_SUBCATEGORY_FIELD_TYPE_MAP: dict[int, SubcategoryFieldType] = {
+    1: SubcategoryFieldType.NUMERIC_RANGE,
+    2: SubcategoryFieldType.TEXT,
+    3: SubcategoryFieldType.TEXTAREA,
+    4: SubcategoryFieldType.SELECT,
+    5: SubcategoryFieldType.DROPDOWN,
+    6: SubcategoryFieldType.IMAGES,
+}

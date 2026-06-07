@@ -33,18 +33,11 @@ class FieldCondition:
 
     Sourced from the ``list`` key in the ``data-fields`` JSON condition object.
     Stored as a ``set`` — duplicates are not possible by definition.
-
-    Values are compared case-insensitively in :meth:`is_satisfied_by`,
-    because FunPay's public listing page and the ``offerEdit`` form render
-    the same underlying value with inconsistent casing.
     """
 
-    def __post_init__(self) -> None:
-        self.values = {str(v).casefold() for v in self.values}
-
     def is_satisfied_by(self, value: Any) -> bool:
-        """Return ``True`` if *value* (case-insensitively) is present in ``values``."""
-        return str(value).casefold() in self.values
+        """Return ``True`` if ``str(value)`` is present in ``values``."""
+        return str(value) in self.values
 
 
 @dataclass
@@ -100,26 +93,14 @@ class SubcategoryStructure:
     """
 
     @cached_property
-    def label_map(self) -> dict[str, list[str]]:
-        """
-        Mapping from FunPay label to list of field IDs for reverse lookup.
-
-        Values are lists because different fields may share the same label
-        (notably empty labels on fields that have no ``<label>`` in the form).
-        Field IDs appear in declaration order.
-        """
-        result: dict[str, list[str]] = {}
-        for f in self.fields.values():
-            result.setdefault(f.label, []).append(f.id)
-        return result
+    def label_map(self) -> dict[str, str]:
+        """Mapping from FunPay label to field ID for reverse lookup."""
+        return {f.label: f.id for f in self.fields.values()}
 
     @cached_property
-    def lower_label_map(self) -> dict[str, list[str]]:
+    def lower_label_map(self) -> dict[str, str]:
         """Case-insensitive variant of ``label_map`` — keys are lowercased."""
-        result: dict[str, list[str]] = {}
-        for label, ids in self.label_map.items():
-            result.setdefault(label.lower(), []).extend(ids)
-        return result
+        return {k.lower(): v for k, v in self.label_map.items()}
 
     @classmethod
     def from_offer_fields(cls, offer_fields: OfferFields) -> SubcategoryStructure:
