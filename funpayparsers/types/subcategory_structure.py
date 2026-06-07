@@ -119,9 +119,6 @@ class SubcategoryStructure:
     label_map: dict[str, str] = field(compare=False)
     """Mapping from FunPay label to field ID for reverse lookup."""
 
-    lower_label_map: dict[str, str] = field(compare=False)
-    """Case-insensitive variant of ``label_map`` — keys are lowercased."""
-
     @classmethod
     def from_offer_fields(cls, offer_fields: OfferFields) -> SubcategoryStructure:
         """
@@ -131,11 +128,9 @@ class SubcategoryStructure:
         :return: A ``SubcategoryStructure`` with field map and label map populated.
         """
         fields = offer_fields.field_schema
-        label_map = {f.label: f.id for f in fields}
         return cls(
             subcategory_id=offer_fields.subcategory_id,
             fields=fields,
             field_map={f.id: f for f in fields},
-            label_map=label_map,
-            lower_label_map={k.lower(): v for k, v in label_map.items()},
+            label_map={f.label: f.id for f in fields},
         )

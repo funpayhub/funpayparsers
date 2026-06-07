@@ -92,9 +92,9 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
         struct = self.options.subcategory_structure
         if struct is not None:
             structured_fields = {
-                struct.lower_label_map[label.lower()]: val
+                struct.label_map[label]: val
                 for label, val in fields.items()
-                if label.lower() in struct.lower_label_map
+                if label in struct.label_map
             }
 
         payment_options: dict[str, PaymentOption] = {}
