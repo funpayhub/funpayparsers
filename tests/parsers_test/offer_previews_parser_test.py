@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from funpayparsers.types.common import MoneyValue
-from funpayparsers.types.enums import SubcategoryType
 from funpayparsers.types.offers import OfferSeller, OfferPreview
 from funpayparsers.parsers.offer_previews_parser import (
     OfferPreviewsParser,
@@ -74,10 +73,9 @@ common_lot_obj = OfferPreview(
         rating=5,
         reviews_amount=105
     ),
-    other_data={'user': 54321, 'without_name': 'some_data_without_name', 'with_name': 'some_data_with_name'},
-    other_data_names={'with_name': 'Data name'},
-    unit=None,
-    subcategory_type=SubcategoryType.OFFERS,
+    other_data={},
+    other_data_names={},
+    unit=None
 )
 
 
@@ -132,10 +130,9 @@ currency_lot_obj = OfferPreview(
         rating=0,
         reviews_amount=2
     ),
-    other_data={'server': 97},
-    other_data_names={'server': 'Эллиан (F2P)'},
-    unit='кк',
-    subcategory_type=SubcategoryType.CHIPS,
+    other_data={},
+    other_data_names={},
+    unit='кк'
 )
 
 
@@ -179,8 +176,10 @@ _field_lot_html = """
 
 
 def test_data_f_key_normalization():
-    """data-f-arena should be stored as key 'arena', not 'f-arena'."""
-    result = OfferPreviewsParser(_field_lot_html, options=OPTIONS).parse()
+    """data-f-arena should be stored as key 'arena', not 'f-arena' (requires structure)."""
+    struct = _make_structure()
+    opts = OfferPreviewsParsingOptions(empty_raw_source=True, subcategory_structure=struct)
+    result = OfferPreviewsParser(_field_lot_html, options=opts).parse()
     assert len(result) == 1
     preview = result[0]
     assert 'arena' in preview.other_data
@@ -191,17 +190,36 @@ def test_data_f_key_normalization():
 
 
 # ---------------------------------------------------------------------------
-# Case A: catalog page — data-f-* attrs collected into other_data
+# Case A: catalog page — enrich other_data_names from structure
 # ---------------------------------------------------------------------------
 
-def test_case_a_other_data_populated():
-    """On catalog pages (data-f-* present), other_data is populated without structure."""
-    result = OfferPreviewsParser(_field_lot_html, options=OPTIONS).parse()
+def _make_structure() -> 'SubcategoryStructure':
+    from funpayparsers.types.enums import SubcategoryFieldType
+    from funpayparsers.types.subcategory_structure import SubcategoryFieldDef, SubcategoryStructure
+
+    defs = [
+        SubcategoryFieldDef(raw_source='', id='arena', type=SubcategoryFieldType.NUMERIC_RANGE, label='Арена', conditions=[], options=None),
+        SubcategoryFieldDef(raw_source='', id='level', type=SubcategoryFieldType.NUMERIC_RANGE, label='Уровень', conditions=[], options=None),
+        SubcategoryFieldDef(raw_source='', id='namechange', type=SubcategoryFieldType.DROPDOWN, label='Изменение имени', conditions=[], options=['Есть', 'Нет']),
+    ]
+    return SubcategoryStructure(
+        subcategory_id=149,
+        fields={f.id: f for f in defs},
+    )
+
+
+def test_case_a_names_enriched_from_structure():
+    """With structure on catalog page (data-f-* present), other_data_names is populated."""
+    from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParsingOptions
+
+    struct = _make_structure()
+    opts = OfferPreviewsParsingOptions(empty_raw_source=True, subcategory_structure=struct)
+    result = OfferPreviewsParser(_field_lot_html, options=opts).parse()
     assert len(result) == 1
     preview = result[0]
-    assert preview.other_data == {'arena': 15, 'level': 29, 'namechange': 'Есть'}
-    # No div.tc-arena/level/namechange in HTML — names stay empty for these keys.
-    assert 'arena' not in preview.other_data_names
+    assert preview.other_data_names.get('arena') == 'Арена'
+    assert preview.other_data_names.get('level') == 'Уровень'
+    assert preview.other_data_names.get('namechange') == 'Изменение имени'
 
 
 # ---------------------------------------------------------------------------
@@ -220,10 +238,23 @@ _profile_lot_html = """
 """
 
 
-def test_no_data_f_attrs_yields_empty_other_data():
-    """Without data-f-* attrs (profile pages), other_data and other_data_names stay empty."""
-    result = OfferPreviewsParser(_profile_lot_html, options=OPTIONS).parse()
+def test_case_b_no_field_data_without_f_attrs():
+    """Without data-f-* attrs, other_data stays empty even when structure is provided."""
+    from funpayparsers.parsers.offer_previews_parser import OfferPreviewsParsingOptions
+
+    struct = _make_structure()
+    opts = OfferPreviewsParsingOptions(empty_raw_source=True, subcategory_structure=struct)
+    result = OfferPreviewsParser(_profile_lot_html, options=opts).parse()
     assert len(result) == 1
     preview = result[0]
     assert preview.other_data == {}
     assert preview.other_data_names == {}
+
+
+def test_no_structure_yields_empty_data():
+    """Without structure, other_data and other_data_names are always empty."""
+    for html in (_profile_lot_html, _field_lot_html):
+        result = OfferPreviewsParser(html, options=OPTIONS).parse()
+        assert len(result) == 1
+        assert result[0].other_data == {}
+        assert result[0].other_data_names == {}

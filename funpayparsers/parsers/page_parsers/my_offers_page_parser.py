@@ -6,6 +6,7 @@ __all__ = ('MyOffersPageParsingOptions', 'MyOffersPageParser')
 from typing import cast
 from dataclasses import dataclass
 
+from funpayparsers.types.enums import SubcategoryType
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
 from funpayparsers.parsers.page_header_parser import (
@@ -82,7 +83,10 @@ class MyOffersPageParser(FunPayHTMLObjectParser[MyOffersPage, MyOffersPageParsin
                 offer_preview.id: offer_preview
                 for offer_preview in OfferPreviewsParser(
                     raw_source=table.html or '',
-                    options=self.options.offer_previews_parsing_options,
+                    options=self.options.offer_previews_parsing_options & OfferPreviewsParsingOptions(
+                        subcategory_id=subcategory_id,
+                        subcategory_type=SubcategoryType.OFFERS,
+                    ),
                 ).parse()
             },
         )
