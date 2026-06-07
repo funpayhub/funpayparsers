@@ -50,17 +50,6 @@ class OrderPage(FunPayPage):
     chat: Chat
     """Chat with counterparty."""
 
-    structured_fields: dict[str, str] | None = None
-    """
-    Order fields keyed by FunPay field ID (e.g. ``{'arena': '15'}``).
-
-    Populated only when a ``SubcategoryStructure`` is provided via
-    ``OrderPageParsingOptions.subcategory_structure``.  ``None`` otherwise.
-
-    ``data`` keys are matched case-insensitively against the structure's
-    label map.
-    """
-
     def _first_found(self, names: list[str]) -> str | None:
         for i in names:
             if self.data.get(i) is not None:
