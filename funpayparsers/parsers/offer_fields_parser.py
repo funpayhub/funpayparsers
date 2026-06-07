@@ -73,7 +73,7 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
         self, field_json: dict[str, Any], lot_fields_div: LexborNode
     ) -> SubcategoryFieldDef:
         field_id: str = field_json['id']
-        field_type = SubcategoryFieldType.from_type_code(field_json['type'])
+        field_type = SubcategoryFieldType.from_type_int(field_json['type'])
         conditions = self._parse_conditions(field_json.get('conditions', []))
 
         # Prefer non-locale div, then Russian locale, then any locale.
@@ -118,9 +118,9 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
             result.append(
                 FieldCondition(
                     field_id=cond['id'],
-                    values=set(cond.get(
+                    values=cond.get(
                         'list', [cond['value']] if 'value' in cond else []
-                    )),
+                    ),
                 )
             )
         return result

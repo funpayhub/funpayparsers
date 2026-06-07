@@ -732,10 +732,10 @@ class SubcategoryFieldType(Enum):
     """Numeric text input, used as a range filter on catalog pages."""
 
     TEXT = auto()
-    """Single-line text input."""
+    """Multilingual single-line text input."""
 
     TEXTAREA = auto()
-    """Multi-line textarea."""
+    """Multilingual multi-line textarea."""
 
     SELECT = auto()
     """Dropdown select with conditional visibility support."""
@@ -747,9 +747,9 @@ class SubcategoryFieldType(Enum):
     """Image upload field."""
 
     @classmethod
-    def from_type_code(cls, type_code: int, /) -> SubcategoryFieldType:
-        """Return the field type corresponding to ``type_code``, or ``UNKNOWN``."""
-        return _SUBCATEGORY_FIELD_TYPE_MAP.get(type_code, cls.UNKNOWN)
+    def from_type_int(cls, type_int: int, /) -> SubcategoryFieldType:
+        """Return the field type corresponding to ``type_int``, or ``UNKNOWN``."""
+        return _SUBCATEGORY_FIELD_TYPE_MAP.get(type_int, cls.UNKNOWN)
 
 
 _SUBCATEGORY_FIELD_TYPE_MAP: dict[int, SubcategoryFieldType] = {
