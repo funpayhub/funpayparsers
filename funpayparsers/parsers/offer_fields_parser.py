@@ -113,13 +113,17 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
 
     @staticmethod
     def _parse_conditions(raw_conditions: list[dict[str, Any]]) -> list[FieldCondition]:
-        return [
-            FieldCondition(
-                field_id=cond['id'],
-                values=set(cond.get('list', [cond['value']] if 'value' in cond else [])),
+        result = []
+        for cond in raw_conditions:
+            result.append(
+                FieldCondition(
+                    field_id=cond['id'],
+                    values=set(cond.get(
+                        'list', [cond['value']] if 'value' in cond else []
+                    )),
+                )
             )
-            for cond in raw_conditions
-        ]
+        return result
 
     @staticmethod
     def _parse_options(
