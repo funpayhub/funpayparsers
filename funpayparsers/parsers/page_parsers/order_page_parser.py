@@ -17,6 +17,7 @@ from funpayparsers.parsers.page_header_parser import (
     PageHeaderParser,
     PageHeaderParsingOptions,
 )
+from funpayparsers.types.subcategory_structure import SubcategoryStructure
 
 
 @dataclass(frozen=True)
@@ -49,6 +50,17 @@ class OrderPageParsingOptions(ParsingOptions):
     Options instance for ``ReviewsParser``, which is used by ``OrderPageParser``.
 
     Defaults to ``ReviewsParsingOptions()``.
+    """
+
+    subcategory_structure: SubcategoryStructure | None = None
+    """
+    Optional subcategory field structure.
+
+    When provided, ``OrderPage.structured_fields`` is populated by mapping
+    ``OrderPage.data`` label keys (matched case-insensitively) to field IDs
+    via the structure's label map.
+
+    Defaults to ``None``.
     """
 
 
@@ -90,6 +102,15 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
 
             data[name[0].text().strip().lower()] = value[-1].text().strip()
 
+        struct = self.options.subcategory_structure
+        structured_fields: dict[str, str] | None = None
+        if struct is not None:
+            structured_fields = {
+                struct.lower_label_map[label]: val
+                for label, val in data.items()
+                if label in struct.lower_label_map
+            }
+
         subcategory_url: str = self.tree.css_first(  # type: ignore[assignment,union-attr]
             'div.param-item:has(h5):not(:has(ul, ol)) a',
             strict=False,
@@ -112,6 +133,7 @@ class OrderPageParser(FunPayHTMLObjectParser[OrderPage, OrderPageParsingOptions]
             or None,
             order_subcategory_id=int(subcategory_url.split('/')[-2]),
             order_subcategory_type=SubcategoryType.from_url(subcategory_url),
+            structured_fields=structured_fields,
             review=(
                 ReviewsParser(
                     self.tree.css_first('div.review-container').html or '',

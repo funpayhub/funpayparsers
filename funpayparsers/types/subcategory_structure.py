@@ -46,7 +46,7 @@ def _parse_title_fields(title: str, structure: SubcategoryStructure) -> dict[str
     return result
 
 
-@dataclass
+@dataclass(frozen=True)
 class FieldCondition:
     """
     Represents a visibility condition for a ``SubcategoryFieldDef``.

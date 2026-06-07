@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from funpayparsers.types.chat import Chat
     from funpayparsers.types.common import PaymentOption, DetailedUserBalance
     from funpayparsers.parsers.page_parsers.offer_page_parser import OfferPageParsingOptions
-    from funpayparsers.types.subcategory_structure import SubcategoryStructure
 
 
 @dataclass
@@ -45,13 +44,13 @@ class OfferPage(FunPayPage):
     param_images: list[str] = field(default_factory=list)
     """Full-size image URLs extracted from attachment items in ``div.param-list``."""
 
-    def to_structured(self, structure: SubcategoryStructure) -> dict[str, str]:
-        """Return ``fields`` remapped to FunPay field IDs using *structure*'s label map."""
-        return {
-            structure.lower_label_map[label.lower()]: val
-            for label, val in self.fields.items()
-            if label.lower() in structure.lower_label_map
-        }
+    structured_fields: dict[str, str] | None = None
+    """
+    Offer fields keyed by FunPay field ID (e.g. ``{'arena': '15'}``).
+
+    Populated only when a ``SubcategoryStructure`` is provided via
+    ``OfferPageParsingOptions.subcategory_structure``. ``None`` otherwise.
+    """
 
     @classmethod
     def from_raw_source(
