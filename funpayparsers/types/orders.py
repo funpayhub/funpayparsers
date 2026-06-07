@@ -14,6 +14,7 @@ from funpayparsers.types.common import MoneyValue
 
 if TYPE_CHECKING:
     from funpayparsers.types.common import UserPreview
+    from funpayparsers.types.subcategory_structure import SubcategoryStructure
 
 
 @dataclass
@@ -40,6 +41,44 @@ class OrderPreview(FunPayObject):
 
     counterparty: UserPreview
     """Associated counterparty info."""
+
+    quantity: int = 1
+    """
+    Number of units ordered.
+
+    Parsed from the ``N шт.`` token in the title (second-to-last comma-separated
+    part).  Defaults to ``1`` when the token is absent.
+    """
+
+    recipient: str | None = None
+    """
+    Free-text value entered by the buyer as the delivery target (e.g. a username,
+    phone number, email, or any other identifier).
+
+    Always the last comma-separated part of the title, stored as-is without
+    any normalisation.  ``None`` when the title has fewer than two parts.
+    """
+
+    def parse_title_fields(self, structure: SubcategoryStructure) -> dict[str, str | int]:
+        """
+        Parse field values from the offer-title portion using the given subcategory structure.
+
+        Strips the order-specific suffix before applying structure-based parsing:
+        always removes the last part (recipient), and also removes the
+        second-to-last part when it matches the ``N шт.`` pattern.
+
+        Returns a mapping of field ID → value.  ``NUMERIC_RANGE`` fields are
+        returned as ``int``.
+        """
+        parts = self.title.split(', ')
+        strip = 1
+        if len(parts) >= 3 and re.match(r'^\d+\s+шт\.$', parts[-2].strip()):
+            strip = 2
+        offer_title = ', '.join(parts[:-strip]) if strip < len(parts) else ''
+        if not offer_title:
+            return {}
+        from funpayparsers.parsers.utils import _parse_title_fields
+        return _parse_title_fields(offer_title, structure)
 
     @property
     def timestamp(self) -> int:

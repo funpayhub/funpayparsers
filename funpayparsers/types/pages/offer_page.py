@@ -42,10 +42,10 @@ class OfferPage(FunPayPage):
     user_balance: DetailedUserBalance  # user_balance available even on anonymous pages
     """User balance."""
 
-    images: list[str] = field(default_factory=list)
+    param_images: list[str] = field(default_factory=list)
     """Full-size image URLs extracted from attachment items in ``div.param-list``."""
 
-    def get_structured_fields(self, structure: SubcategoryStructure) -> dict[str, str]:
+    def to_structured(self, structure: SubcategoryStructure) -> dict[str, str]:
         """Return ``fields`` remapped to FunPay field IDs using *structure*'s label map."""
         return {
             structure.lower_label_map[label.lower()]: val

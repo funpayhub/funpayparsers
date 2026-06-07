@@ -51,7 +51,7 @@ class OrderPage(FunPayPage):
     chat: Chat
     """Chat with counterparty."""
 
-    def get_structured_fields(self, structure: SubcategoryStructure) -> dict[str, str]:
+    def to_structured(self, structure: SubcategoryStructure) -> dict[str, str]:
         """Return ``data`` remapped to FunPay field IDs using *structure*'s label map."""
         return {
             structure.lower_label_map[label]: val

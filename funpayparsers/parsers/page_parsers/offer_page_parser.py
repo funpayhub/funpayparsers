@@ -61,7 +61,7 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
         auto_delivery: list[LexborNode] = page_content.css('i.auto-dlv-icon')
 
         fields: dict[str, str] = {}
-        images: list[str] = []
+        param_images: list[str] = []
         field_divs: list[LexborNode] = param_list.css('div.param-item')
         for field_div in field_divs:
             name_node = field_div.css_first('h5', strict=False)
@@ -72,7 +72,7 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
                 for a in attachments:
                     href = a.attributes.get('href')
                     if href:
-                        images.append(href)
+                        param_images.append(href)
                 continue
             value_divs = field_div.css('div')
             value = value_divs[-1].text(strip=True) if value_divs else ''
@@ -110,7 +110,7 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
             subcategory_full_name=page_content.css_first('h1').text(strip=True),
             auto_delivery=bool(auto_delivery),
             fields=fields,
-            images=images,
+            param_images=param_images,
             chat=ChatParser(
                 self.tree.css_first('div.chat').html or '',
                 options=self.options.chat_parsing_options,
