@@ -21,7 +21,6 @@ from funpayparsers.parsers.page_header_parser import (
     PageHeaderParser,
     PageHeaderParsingOptions,
 )
-from funpayparsers.types.subcategory_structure import SubcategoryStructure
 
 
 @dataclass(frozen=True)
@@ -50,15 +49,6 @@ class OfferPageParsingOptions(ParsingOptions):
     Options for ``MoneyValueParser``.
     """
 
-    subcategory_structure: SubcategoryStructure | None = None
-    """
-    Optional subcategory field structure.
-
-    When provided, ``OfferPage.structured_fields`` is populated by mapping
-    ``OfferPage.fields`` label keys to their field IDs via the structure's
-    ``label_map``.
-    """
-
 
 class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]):
     """
@@ -70,32 +60,12 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
         param_list: LexborNode = page_content.css_first('div.param-list')
         auto_delivery: list[LexborNode] = page_content.css('i.auto-dlv-icon')
 
-        fields: dict[str, str] = {}
-        param_images: list[str] = []
+        fields = {}
         field_divs: list[LexborNode] = param_list.css('div.param-item')
-        for field_div in field_divs:
-            name_node = field_div.css_first('h5', strict=False)
-            if name_node is None:
-                continue
-            attachments = field_div.css('a.attachments-thumb')
-            if attachments:
-                for a in attachments:
-                    href = a.attributes.get('href')
-                    if href:
-                        param_images.append(href)
-                continue
-            value_divs = field_div.css('div')
-            value = value_divs[-1].text(strip=True) if value_divs else ''
-            fields[name_node.text(strip=True)] = value
-
-        structured_fields: dict[str, str] | None = None
-        struct = self.options.subcategory_structure
-        if struct is not None:
-            structured_fields = {
-                struct.label_map[label]: val
-                for label, val in fields.items()
-                if label in struct.label_map
-            }
+        for field in field_divs:
+            name: LexborNode = field.css_first('h5')
+            value: LexborNode = field.css('div')[-1]
+            fields[name.text(strip=True)] = value.text(strip=True)
 
         payment_options: dict[str, PaymentOption] = {}
         payment_select: LexborNode = page_content.css_first('select.form-control[name="method"]')
@@ -129,8 +99,6 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
             subcategory_full_name=page_content.css_first('h1').text(strip=True),
             auto_delivery=bool(auto_delivery),
             fields=fields,
-            param_images=param_images,
-            structured_fields=structured_fields,
             chat=ChatParser(
                 self.tree.css_first('div.chat').html or '',
                 options=self.options.chat_parsing_options,

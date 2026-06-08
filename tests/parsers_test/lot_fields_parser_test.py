@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 from funpayparsers.types.offers import OfferFields
-from funpayparsers.types.enums import SubcategoryFieldType
-from funpayparsers.types.subcategory_structure import SubcategoryFieldDef
 from funpayparsers.parsers.offer_fields_parser import (
     OfferFieldsParser,
     OfferFieldsParsingOptions,
@@ -117,34 +115,6 @@ lot_fields_html = """
 </div>
 """
 
-_expected_field_schema = [
-    SubcategoryFieldDef(
-        raw_source='',
-        id='summary',
-        type=SubcategoryFieldType.TEXT,
-        label='Краткое описание',
-        conditions=[],
-        options=None,
-    ),
-    SubcategoryFieldDef(
-        raw_source='',
-        id='desc',
-        type=SubcategoryFieldType.TEXTAREA,
-        label='Подробное описание',
-        conditions=[],
-        options=None,
-    ),
-    SubcategoryFieldDef(
-        raw_source='',
-        id='payment_msg',
-        type=SubcategoryFieldType.TEXTAREA,
-        label='Сообщение покупателю после оплаты',
-        conditions=[],
-        options=None,
-    ),
-]
-
-
 lot_fields_obj = OfferFields(
     raw_source='',
     fields_dict={
@@ -176,8 +146,7 @@ lot_fields_obj = OfferFields(
         'fields[summary][ru]': 'Краткое описание',
         'price': 'Цена за 1 шт.',
         'secrets': 'Товары',
-    },
-    field_schema=_expected_field_schema,
+    }
 )
 
 

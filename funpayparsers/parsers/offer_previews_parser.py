@@ -9,7 +9,6 @@ from copy import deepcopy
 
 from selectolax.lexbor import LexborNode
 
-from funpayparsers.types.enums import SubcategoryType, SubcategoryFieldType
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.types.offers import OfferSeller, OfferPreview
 from funpayparsers.parsers.utils import extract_css_url
@@ -18,7 +17,6 @@ from funpayparsers.parsers.money_value_parser import (
     MoneyValueParsingMode,
     MoneyValueParsingOptions,
 )
-from funpayparsers.types.subcategory_structure import SubcategoryStructure
 
 
 @dataclass(frozen=True)
@@ -28,38 +26,12 @@ class OfferPreviewsParsingOptions(ParsingOptions):
     money_value_parsing_options: MoneyValueParsingOptions = MoneyValueParsingOptions()
     """
     Options instance for ``MoneyValueParser``, which is used by ``OfferPreviewsParser``.
-
-    ``parsing_mode`` and ``parse_value_from_attribute`` options are hardcoded in
+    
+    ``parsing_mode`` and ``parse_value_from_attribute`` options are hardcoded in 
     ``OfferPreviewsParser`` and is therefore ignored if provided externally.
 
     Defaults to ``UserPreviewParsingOptions()``.
     """
-
-    subcategory_structure: SubcategoryStructure | None = None
-    """
-    Optional subcategory field structure.
-
-    When provided:
-
-    - **Catalog pages** (``data-f-*`` attributes present): ``other_data_names`` is
-      enriched with FunPay labels from the structure (e.g.
-      ``{'arena': 'Арена', 'level': 'Уровень'}``).
-    - **Profile / sells pages** (title-only, no ``data-f-*``): field values are
-      extracted from the comma-separated title suffix and stored in ``other_data``
-      and ``other_data_names`` (best-effort; conditional fields are treated as always
-      visible, which may cause misalignment for subcategories with competing
-      conditions).
-
-    Defaults to ``None``.
-    """
-
-    subcategory_id: int | None = None
-    """Subcategory ID to stamp on every parsed ``OfferPreview``. Defaults to ``None``."""
-
-    subcategory_type: SubcategoryType | None = None
-    """Subcategory type to stamp on every parsed ``OfferPreview``. Defaults to ``None``."""
-
-
 
 
 class OfferPreviewsParser(
@@ -133,53 +105,24 @@ class OfferPreviewsParser(
 
             seller = self._parse_user_tag(offer_div, processed_users)
 
-            struct = self.options.subcategory_structure
-
             additional_data: dict[str, str | int] = {}
-            names: dict[str, str] = {}
+            for key, data in offer_div.attributes.items():
+                if not key.startswith('data-') or key in skip_data:
+                    continue
+                if data is None:
+                    continue
+                additional_data[key.replace('data-', '')] = (
+                    (int(data)) if data.isnumeric() else data
+                )
 
-            if struct is not None:
-                for key, data in offer_div.attributes.items():
-                    if not key.startswith('data-') or key in skip_data:
-                        continue
-                    if data is None:
-                        continue
-                    # Strip data-f- prefix for subcategory field keys, data- for others.
-                    normalized_key = (
-                        key[len('data-f-'):] if key.startswith('data-f-') else key[len('data-'):]
-                    )
-                    additional_data[normalized_key] = int(data) if data.isnumeric() else data
-
-                for data_key in additional_data:
-                    if data_key in skip_match_data:
-                        continue
-                    divs = offer_div.css(f'div.tc-{data_key}')
-                    if not divs:
-                        continue
-                    names[data_key] = divs[0].text(strip=True)
-
-            if struct is not None:
-                has_field_data = any(k in struct.field_map for k in additional_data)
-                if has_field_data:
-                    # Case A: catalog page — data-f-* keys map to known field IDs.
-                    for k in additional_data:
-                        if k in struct.field_map:
-                            names[k] = struct.field_map[k].label
-                elif desc is not None:
-                    # Case B: profile/sells page — extract field values from title.
-                    from funpayparsers.types.subcategory_structure import _parse_title_fields
-                    title_data = _parse_title_fields(desc, struct)
-                    additional_data.update(title_data)
-                    suffix_types = {
-                        SubcategoryFieldType.NUMERIC_RANGE,
-                        SubcategoryFieldType.SELECT,
-                        SubcategoryFieldType.DROPDOWN,
-                    }
-                    names.update({
-                        fd.id: fd.label
-                        for fd in struct.fields
-                        if fd.type in suffix_types and fd.id in title_data
-                    })
+            names = {}
+            for data_key in additional_data:
+                if data_key in skip_match_data:
+                    continue
+                divs = offer_div.css(f'div.tc-{data_key}')
+                if not divs:
+                    continue
+                names[data_key] = divs[0].text(strip=True)
 
             result.append(
                 OfferPreview(
@@ -195,8 +138,6 @@ class OfferPreviewsParser(
                     other_data=additional_data,
                     other_data_names=names,
                     disabled='warning' in (offer_div.attributes.get('class') or ''),
-                    subcategory_id=self.options.subcategory_id,
-                    subcategory_type=self.options.subcategory_type,
                 )
             )
 

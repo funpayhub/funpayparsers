@@ -5,7 +5,7 @@ __all__ = ('OfferPage',)
 
 
 from typing import TYPE_CHECKING
-from dataclasses import field, dataclass
+from dataclasses import dataclass
 
 from funpayparsers.types.pages.base import FunPayPage
 
@@ -25,12 +25,7 @@ class OfferPage(FunPayPage):
     """Whether auto-delivery is on or off."""
 
     fields: dict[str, str]
-    """
-    Offer fields from ``div.param-list``.
-
-    Keys are human-readable FunPay labels (e.g. ``'Арена'``),
-    values are display strings (e.g. ``'15'``).
-    """
+    """Offer fields."""
 
     chat: Chat
     """Chat with seller."""
@@ -40,17 +35,6 @@ class OfferPage(FunPayPage):
 
     user_balance: DetailedUserBalance  # user_balance available even on anonymous pages
     """User balance."""
-
-    param_images: list[str] = field(default_factory=list)
-    """Full-size image URLs extracted from attachment items in ``div.param-list``."""
-
-    structured_fields: dict[str, str] | None = None
-    """
-    Offer fields keyed by FunPay field ID (e.g. ``{'arena': '15'}``).
-
-    Populated only when a ``SubcategoryStructure`` is provided via
-    ``OfferPageParsingOptions.subcategory_structure``. ``None`` otherwise.
-    """
 
     @classmethod
     def from_raw_source(
