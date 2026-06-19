@@ -9,6 +9,6 @@ from .profile_page import *
 from .my_chips_page import *
 from .settings_page import *
 from .my_offers_page import *
-from .sras_info_page import *
 from .subcategory_page import *
 from .transactions_page import *
+from .sras_info_page import *

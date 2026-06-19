@@ -3,18 +3,13 @@ from __future__ import annotations
 
 __all__ = ('OfferPreview', 'OfferSeller', 'OfferFields')
 
-from typing import TYPE_CHECKING, Any, TypeVar, ParamSpec
-
-
-if TYPE_CHECKING:
-    from funpayparsers.types.subcategory_structure import SubcategoryFieldDef, SubcategoryStructure
+from typing import Any, TypeVar, ParamSpec
 from dataclasses import field, dataclass
 from collections.abc import Callable
 
 from typing_extensions import Self
 
 from funpayparsers.types.base import FunPayObject
-from funpayparsers.types.enums import SubcategoryType
 from funpayparsers.types.common import MoneyValue
 
 
@@ -102,24 +97,6 @@ class OfferPreview(FunPayObject):
     disabled: bool = False
     """Whether the offer is disabled (alias, defaults to ``False``)."""
 
-    subcategory_id: int | None = None
-    """ID of the subcategory this offer belongs to, if known."""
-
-    subcategory_type: SubcategoryType | None = None
-    """Type of the subcategory (OFFERS/CHIPS), if known."""
-
-    def parse_title_fields(self, structure: SubcategoryStructure) -> dict[str, str | int]:
-        """
-        Parse field values from the offer title using the given subcategory structure.
-
-        Returns a mapping of field ID → value.  ``NUMERIC_RANGE`` fields are
-        returned as ``int``.  Returns an empty dict if ``title`` is ``None``.
-        """
-        if self.title is None:
-            return {}
-        from funpayparsers.types.subcategory_structure import _parse_title_fields
-        return _parse_title_fields(self.title, structure)
-
 
 T = TypeVar('T')
 P = ParamSpec('P')
@@ -189,18 +166,6 @@ class OfferFields(FunPayObject):
 
     fields_names: dict[str, str] = field(default_factory=dict)
     """Field names."""
-
-    field_schema: list[SubcategoryFieldDef] = field(default_factory=list)
-    """
-    Subcategory field schema parsed from the ``data-fields`` JSON attribute.
-
-    Each entry describes one configurable field of the subcategory, including its
-    type, human-readable label, visibility conditions, and available options
-    (for select fields).
-
-    Empty list when the page does not include a ``div.lot-fields[data-fields]``
-    element (e.g. currency/chips offers, or manually constructed instances).
-    """
 
     def __post_init__(self) -> None:
         if 'csrf_token' in self.fields_dict:
