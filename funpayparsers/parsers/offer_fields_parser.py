@@ -28,7 +28,15 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
     """
 
     def _parse(self) -> OfferFields:
-        form = self.tree.css('div.page-content > form')[0]
+        # The authenticated ``offerEdit`` page wraps the form in
+        # ``div.page-content``. Other callers (e.g. ``MyChipsPageParser``) pass
+        # the bare ``<form>`` HTML, where that wrapper is absent — fall back to
+        # a plain ``form`` lookup in that case. When there is no form at all
+        # (empty/unrelated source), return empty fields instead of failing.
+        form_nodes = self.tree.css('div.page-content > form') or self.tree.css('form')
+        if not form_nodes:
+            return OfferFields(raw_source='')
+        form = form_nodes[0]
         fields_dict = serialize_form(form)
 
         field_names = {}

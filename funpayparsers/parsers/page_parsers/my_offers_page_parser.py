@@ -45,13 +45,16 @@ class MyOffersPageParser(FunPayHTMLObjectParser[MyOffersPage, MyOffersPageParsin
     """
 
     def _parse(self) -> MyOffersPage:
+        header_node = self.tree.css_first('header')
         header = PageHeaderParser(
-            self.tree.css_first('header').html or '',
+            header_node.html or '' if header_node else '',
             options=self.options.page_header_parsing_options,
         ).parse()
 
+        body_node = self.tree.css_first('body')
+        app_data_str = body_node.attributes.get('data-app-data') if body_node else None
         app_data = AppDataParser(
-            self.tree.css_first('body').attributes.get('data-app-data') or '',
+            app_data_str or '',
             options=self.options.app_data_parsing_options,
         ).parse()
 
@@ -63,10 +66,13 @@ class MyOffersPageParser(FunPayHTMLObjectParser[MyOffersPage, MyOffersPageParsin
                 subcategory_id = int(href.split('/')[-2])
                 break
 
+        # ``div.content-lots`` is absent on non-trade pages, and
+        # ``div.showcase-table`` is absent when the subcategory has no offers
+        # (FunPay renders the page without the table in that case).
         content = self.tree.css_first('div.content-lots')
-        table = content.css_first('div.showcase-table')
+        table = content.css_first('div.showcase-table') if content else None
 
-        raise_btn = content.css_first('button.js-lot-raise', strict=False)
+        raise_btn = content.css_first('button.js-lot-raise', strict=False) if content else None
         category_id = None
         if raise_btn:
             game_str = raise_btn.attributes.get('data-game')
@@ -81,7 +87,7 @@ class MyOffersPageParser(FunPayHTMLObjectParser[MyOffersPage, MyOffersPageParsin
             offers={
                 offer_preview.id: offer_preview
                 for offer_preview in OfferPreviewsParser(
-                    raw_source=table.html or '',
+                    raw_source=table.html or '' if table else '',
                     options=self.options.offer_previews_parsing_options,
                 ).parse()
             },

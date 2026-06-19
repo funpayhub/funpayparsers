@@ -43,12 +43,34 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
     """
 
     def _parse(self) -> PageHeader:
-        header = self.tree.css('header')[0]
+        header_nodes = self.tree.css('header')
+        if not header_nodes:
+            # Pages without a ``<header>`` (e.g. error/redirect pages, or an
+            # empty source) yield an empty header instead of failing.
+            return self._empty_header()
+        header = header_nodes[0]
 
         user_dropdown = header.css('a.dropdown-toggle.user-link')
         if user_dropdown:
             return self._parse_authorized_header(header)
         return self._parse_anonymous_header(header)
+
+    @staticmethod
+    def _empty_header() -> PageHeader:
+        return PageHeader(
+            raw_source='',
+            user_id=None,
+            username=None,
+            avatar_url=None,
+            language=Language.UNKNOWN,
+            currency=Currency.UNKNOWN,
+            purchases=None,
+            sales=None,
+            chats=None,
+            balance=None,
+            sales_available=False,
+            logout_token=None,
+        )
 
     def _parse_authorized_header(self, header: LexborNode) -> PageHeader:
         purchases_div = header.css('a.menu-item-orders > span.badge')
