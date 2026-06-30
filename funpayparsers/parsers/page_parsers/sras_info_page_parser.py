@@ -45,6 +45,8 @@ class SrasInfoPageParser(FunPayHTMLObjectParser[SrasInfoPage, SrasInfoPageParsin
         header_tag = self.tree.css_first('header')
         body_tag = self.tree.css_first('body')
         content_tag = self.tree.css_first('div.page-content-full')
+        if header_tag is None or body_tag is None or content_tag is None:
+            raise ValueError('SRAS info page source is missing required layout nodes.')
 
         restrictions: dict[SubcategoryType, dict[int, SrasSectionRestriction]] = {}
 
@@ -69,7 +71,12 @@ class SrasInfoPageParser(FunPayHTMLObjectParser[SrasInfoPage, SrasInfoPageParsin
     def _parse_restriction(self, row: LexborNode) -> SrasSectionRestriction:
         cells = row.css('td')
         link = cells[0].css_first('a')
-        href = link.attributes['href']  # type: ignore[union-attr]
+        if link is None:
+            raise ValueError('SRAS restriction row is missing a subcategory link.')
+
+        href = link.attributes.get('href')
+        if href is None:
+            raise ValueError('SRAS restriction link is missing href.')
 
         subcategory_type = SubcategoryType.from_url(href)
         subcategory_id = self._parse_subcategory_id(href)

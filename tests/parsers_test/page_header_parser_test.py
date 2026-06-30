@@ -13,7 +13,7 @@ from funpayparsers.parsers.page_header_parser import PageHeaderParser
         '<html><body><div>no header here</div></body></html>',
     ],
 )
-def test_missing_header_yields_empty_header(source: str):
+def test_missing_header_yields_empty_header(source: str) -> None:
     # Regression: a source without a `<header>` (empty string, error/redirect
     # page) must yield an empty header instead of raising on `css('header')[0]`.
     header = PageHeaderParser(source).parse()

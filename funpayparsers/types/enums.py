@@ -123,7 +123,7 @@ class SubcategoryType(Enum):
         return SubcategoryType.UNKNOWN
 
     @property
-    def COMMON(self) -> SubcategoryType:
+    def COMMON(self) -> SubcategoryType:  # noqa: N802
         warnings.warn(
             '`SubcategoryType.COMMON` is deprecated. Use `SubcategoryType.OFFERS` instead.',
             DeprecationWarning,
@@ -131,7 +131,7 @@ class SubcategoryType(Enum):
         return self.OFFERS
 
     @property
-    def CURRENCY(self) -> SubcategoryType:
+    def CURRENCY(self) -> SubcategoryType:  # noqa: N802
         warnings.warn(
             '`SubcategoryType.CURRENCY` is deprecated. Use `SubcategoryType.CHIPS` instead.',
             DeprecationWarning,

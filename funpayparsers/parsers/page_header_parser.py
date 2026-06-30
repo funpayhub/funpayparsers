@@ -105,6 +105,7 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
         )[0].attributes['class']  # type: ignore[assignment] # always has a class
 
         logout_button = header.css('a.menu-item-logout')
+        logout_href = logout_button[0].attributes.get('href') if logout_button else None
 
         return PageHeader(
             raw_source=header.html or '',
@@ -120,9 +121,7 @@ class PageHeaderParser(FunPayHTMLObjectParser[PageHeader, PageHeaderParsingOptio
             chats=int(chats_div[0].text().strip()) if chats_div else None,
             balance=money_value,
             sales_available=bool(sales_div),
-            logout_token=None
-            if not logout_button
-            else logout_button[0].attributes['href'].split('=')[1],
+            logout_token=None if logout_href is None else logout_href.split('=')[1],
         )
 
     def _parse_anonymous_header(self, header: LexborNode) -> PageHeader:

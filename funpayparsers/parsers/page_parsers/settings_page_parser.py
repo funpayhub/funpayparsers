@@ -41,12 +41,18 @@ class SettingsPageParser(FunPayHTMLObjectParser[SettingsPage, SettingsPageParsin
     """
 
     def _parse(self) -> SettingsPage:
+        header_tag = self.tree.css_first('header')
+        if header_tag is None:
+            raise ValueError('Settings page source is missing a header.')
+
         header = PageHeaderParser(
-            self.tree.css_first('header').html or '',
+            header_tag.html or '',
             options=self.options.page_header_parsing_options,
         ).parse()
 
         settings_list = self.tree.css_first('div.setting-list')
+        if settings_list is None:
+            raise ValueError('Settings page source is missing settings list.')
 
         settings_groups = settings_list.css('div.setting-group')
 
@@ -57,7 +63,19 @@ class SettingsPageParser(FunPayHTMLObjectParser[SettingsPage, SettingsPageParsin
         notifications_block = settings_groups[-1]
         for button in notifications_block.css('button.btn-notice-channel'):
             if button.attributes['data-channel'] == '3' and 'disabled' not in button.attributes:
-                telegram_username = button.parent.parent.css_first('b').text(strip=True)[1:]
+                button_parent = button.parent
+                if button_parent is None:
+                    raise ValueError('Telegram settings button is missing parent node.')
+
+                channel_container = button_parent.parent
+                if channel_container is None:
+                    raise ValueError('Telegram settings button is missing channel container.')
+
+                username_node = channel_container.css_first('b')
+                if username_node is None:
+                    raise ValueError('Telegram settings block is missing username node.')
+
+                telegram_username = username_node.text(strip=True)[1:]
 
             notifications[button.attributes['data-channel']] = (
                 button.attributes['data-active'] == '1'
@@ -67,13 +85,19 @@ class SettingsPageParser(FunPayHTMLObjectParser[SettingsPage, SettingsPageParsin
 
         if offers_hiding_block:
             radio_item = offers_hiding_block.css_first('li.megaswitch-radio.active')
+            if radio_item is None:
+                raise ValueError('Offers hiding block is missing selected radio item.')
             offers_hidden = radio_item.attributes['data-value'] == '1'
+
+        body_tag = self.tree.css_first('body')
+        if body_tag is None:
+            raise ValueError('Settings page source is missing body.')
 
         return SettingsPage(
             raw_source=self.raw_source,
             header=header,
             app_data=AppDataParser(
-                self.tree.css_first('body').attributes['data-app-data'] or '',
+                body_tag.attributes.get('data-app-data') or '',
                 options=self.options.app_data_parsing_options,
             ).parse(),
             settings=Settings(
