@@ -4,6 +4,7 @@ from __future__ import annotations
 __all__ = ('SrasInfoPageParser', 'SrasInfoPageParsingOptions')
 
 import re
+from typing import cast
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
@@ -42,11 +43,11 @@ class SrasInfoPageParser(FunPayHTMLObjectParser[SrasInfoPage, SrasInfoPageParsin
     """Parser for SRAS info page (`https://funpay.com/sras/info`)."""
 
     def _parse(self) -> SrasInfoPage:
-        header_tag = self.tree.css_first('header')
-        body_tag = self.tree.css_first('body')
-        content_tag = self.tree.css_first('div.page-content-full')
-        if header_tag is None or body_tag is None or content_tag is None:
-            raise ValueError('SRAS info page source is missing required layout nodes.')
+        # SRAS info pages always include these layout nodes; malformed sources
+        # are converted to ParsingError by the base parser wrapper.
+        header_tag: LexborNode = self.tree.css_first('header')
+        body_tag: LexborNode = self.tree.css_first('body')
+        content_tag: LexborNode = self.tree.css_first('div.page-content-full')
 
         restrictions: dict[SubcategoryType, dict[int, SrasSectionRestriction]] = {}
 
@@ -70,13 +71,8 @@ class SrasInfoPageParser(FunPayHTMLObjectParser[SrasInfoPage, SrasInfoPageParsin
 
     def _parse_restriction(self, row: LexborNode) -> SrasSectionRestriction:
         cells = row.css('td')
-        link = cells[0].css_first('a')
-        if link is None:
-            raise ValueError('SRAS restriction row is missing a subcategory link.')
-
-        href = link.attributes.get('href')
-        if href is None:
-            raise ValueError('SRAS restriction link is missing href.')
+        link: LexborNode = cells[0].css_first('a')
+        href = cast(str, link.attributes.get('href'))
 
         subcategory_type = SubcategoryType.from_url(href)
         subcategory_id = self._parse_subcategory_id(href)

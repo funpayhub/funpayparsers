@@ -3,6 +3,7 @@ from __future__ import annotations
 
 __all__ = ('OfferPageParsingOptions', 'OfferPageParser')
 
+from typing import cast
 from dataclasses import dataclass
 
 from selectolax.lexbor import LexborNode, LexborHTMLParser
@@ -56,13 +57,10 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
     """
 
     def _parse(self) -> OfferPage:
+        # Offer pages always include these layout nodes; missing nodes are
+        # handled by the base parser wrapper as ParsingError.
         page_content: LexborNode = self.tree.css_first('div.page-content')
-        if page_content is None:
-            raise ValueError('Offer page source is missing page content.')
-
         param_list: LexborNode = page_content.css_first('div.param-list')
-        if param_list is None:
-            raise ValueError('Offer page source is missing params list.')
 
         auto_delivery: list[LexborNode] = page_content.css('i.auto-dlv-icon')
 
@@ -70,37 +68,28 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
         field_divs: list[LexborNode] = param_list.css('div.param-item')
         for field in field_divs:
             name: LexborNode = field.css_first('h5')
-            if name is None:
-                raise ValueError('Offer param item is missing name.')
-
             value: LexborNode = field.css('div')[-1]
             fields[name.text(strip=True)] = value.text(strip=True)
 
         payment_options: dict[str, PaymentOption] = {}
         payment_select: LexborNode = page_content.css_first('select.form-control[name="method"]')
-        if payment_select is None:
-            raise ValueError('Offer page source is missing payment method selector.')
 
         options: list[LexborNode] = payment_select.css('option')
         for option in options:
             if option.attributes.get('class', None) == 'hidden':
                 continue
 
-            data_content = option.attributes.get('data-content')
-            payment_method_value = option.attributes.get('value')
-            data_factors = option.attributes.get('data-factors')
-            if data_content is None or payment_method_value is None or data_factors is None:
-                raise ValueError('Payment option is missing required attributes.')
-
+            # Visible payment options always carry these data attributes.
+            data_content = cast(str, option.attributes.get('data-content'))
+            payment_method_value = cast(str, option.attributes.get('value'))
+            data_factors = cast(str, option.attributes.get('data-factors'))
             tree = LexborHTMLParser(data_content)
             payment_method_id = 'payment-method-' + payment_method_value
-            payment_title = tree.css_first('span.payment-title')
-            payment_value = tree.css_first('span.payment-value')
-            if payment_title is None or payment_value is None:
-                raise ValueError('Payment option content is missing title or value.')
+            payment_title: LexborNode = tree.css_first('span.payment-title')
+            payment_value: LexborNode = tree.css_first('span.payment-value')
 
             payment_options[payment_method_id] = PaymentOption(
-                raw_source=option.html or '',
+                raw_source=cast(str, option.html),
                 id=payment_method_id,
                 title=payment_title.text(strip=True),
                 price=MoneyValueParser(
@@ -110,28 +99,10 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
                 factors=[float(i) for i in data_factors.split(',')],
             )
 
-        header_tag = self.tree.css_first('header')
-        body_tag = self.tree.css_first('body')
-        chat_tag = self.tree.css_first('div.chat')
-        subcategory_title = page_content.css_first('h1')
-        if header_tag is None or body_tag is None or chat_tag is None or subcategory_title is None:
-            raise ValueError('Offer page source is missing required layout nodes.')
-
-        balance_total_rub = payment_select.attributes.get('data-balance-total-rub')
-        balance_rub = payment_select.attributes.get('data-balance-rub')
-        balance_total_usd = payment_select.attributes.get('data-balance-total-usd')
-        balance_usd = payment_select.attributes.get('data-balance-usd')
-        balance_total_eur = payment_select.attributes.get('data-balance-total-eur')
-        balance_eur = payment_select.attributes.get('data-balance-eur')
-        if (
-            balance_total_rub is None
-            or balance_rub is None
-            or balance_total_usd is None
-            or balance_usd is None
-            or balance_total_eur is None
-            or balance_eur is None
-        ):
-            raise ValueError('Payment selector is missing balance attributes.')
+        header_tag: LexborNode = self.tree.css_first('header')
+        body_tag: LexborNode = self.tree.css_first('body')
+        chat_tag: LexborNode = self.tree.css_first('div.chat')
+        subcategory_title: LexborNode = page_content.css_first('h1')
 
         return OfferPage(
             raw_source=self.raw_source,
@@ -152,12 +123,24 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
             ).parse(),
             payment_options=payment_options,
             user_balance=DetailedUserBalance(
-                raw_source=payment_select.html or '',
-                total_rub=float(balance_total_rub),
-                withdrawable_rub=float(balance_rub),
-                total_usd=float(balance_total_usd),
-                withdrawable_usd=float(balance_usd),
-                total_eur=float(balance_total_eur),
-                withdrawable_eur=float(balance_eur),
+                raw_source=cast(str, payment_select.html),
+                total_rub=float(
+                    cast(str, payment_select.attributes.get('data-balance-total-rub'))
+                ),
+                withdrawable_rub=float(
+                    cast(str, payment_select.attributes.get('data-balance-rub'))
+                ),
+                total_usd=float(
+                    cast(str, payment_select.attributes.get('data-balance-total-usd'))
+                ),
+                withdrawable_usd=float(
+                    cast(str, payment_select.attributes.get('data-balance-usd'))
+                ),
+                total_eur=float(
+                    cast(str, payment_select.attributes.get('data-balance-total-eur'))
+                ),
+                withdrawable_eur=float(
+                    cast(str, payment_select.attributes.get('data-balance-eur'))
+                ),
             ),
         )

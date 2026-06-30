@@ -4,7 +4,10 @@ from __future__ import annotations
 __all__ = ('SettingsPageParser', 'SettingsPageParsingOptions')
 
 
+from typing import cast
 from dataclasses import dataclass
+
+from selectolax.lexbor import LexborNode
 
 from funpayparsers.types import Settings
 from funpayparsers.types.pages import SettingsPage
@@ -41,19 +44,16 @@ class SettingsPageParser(FunPayHTMLObjectParser[SettingsPage, SettingsPageParsin
     """
 
     def _parse(self) -> SettingsPage:
-        header_tag = self.tree.css_first('header')
-        if header_tag is None:
-            raise ValueError('Settings page source is missing a header.')
+        # Settings pages always include these layout nodes; malformed sources
+        # are converted to ParsingError by the base parser wrapper.
+        header_tag: LexborNode = self.tree.css_first('header')
 
         header = PageHeaderParser(
             header_tag.html or '',
             options=self.options.page_header_parsing_options,
         ).parse()
 
-        settings_list = self.tree.css_first('div.setting-list')
-        if settings_list is None:
-            raise ValueError('Settings page source is missing settings list.')
-
+        settings_list: LexborNode = self.tree.css_first('div.setting-list')
         settings_groups = settings_list.css('div.setting-group')
 
         notifications = {}
@@ -63,18 +63,9 @@ class SettingsPageParser(FunPayHTMLObjectParser[SettingsPage, SettingsPageParsin
         notifications_block = settings_groups[-1]
         for button in notifications_block.css('button.btn-notice-channel'):
             if button.attributes['data-channel'] == '3' and 'disabled' not in button.attributes:
-                button_parent = button.parent
-                if button_parent is None:
-                    raise ValueError('Telegram settings button is missing parent node.')
-
-                channel_container = button_parent.parent
-                if channel_container is None:
-                    raise ValueError('Telegram settings button is missing channel container.')
-
-                username_node = channel_container.css_first('b')
-                if username_node is None:
-                    raise ValueError('Telegram settings block is missing username node.')
-
+                button_parent = cast(LexborNode, button.parent)
+                channel_container = cast(LexborNode, button_parent.parent)
+                username_node: LexborNode = channel_container.css_first('b')
                 telegram_username = username_node.text(strip=True)[1:]
 
             notifications[button.attributes['data-channel']] = (
@@ -84,14 +75,10 @@ class SettingsPageParser(FunPayHTMLObjectParser[SettingsPage, SettingsPageParsin
         offers_hiding_block = None if not header.sales_available else settings_groups[-2]
 
         if offers_hiding_block:
-            radio_item = offers_hiding_block.css_first('li.megaswitch-radio.active')
-            if radio_item is None:
-                raise ValueError('Offers hiding block is missing selected radio item.')
+            radio_item: LexborNode = offers_hiding_block.css_first('li.megaswitch-radio.active')
             offers_hidden = radio_item.attributes['data-value'] == '1'
 
-        body_tag = self.tree.css_first('body')
-        if body_tag is None:
-            raise ValueError('Settings page source is missing body.')
+        body_tag: LexborNode = self.tree.css_first('body')
 
         return SettingsPage(
             raw_source=self.raw_source,
