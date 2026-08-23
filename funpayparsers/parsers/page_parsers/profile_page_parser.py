@@ -95,6 +95,50 @@ class ProfilePageParsingOptions(ParsingOptions):
     Defaults to ``AchievementParsingOptions()``.
     """
 
+    parse_offers: bool = True
+    """
+    Whether to parse the offers section or not.
+
+    A profile can hold thousands of offers, and the section dominates the parsing
+    time of such a page. Set to ``False`` when only the profile head is needed;
+    ``ProfilePage.offers`` is then ``None``, same as for a profile with no offers.
+
+    Defaults to ``True``.
+    """
+
+    parse_reviews: bool = True
+    """
+    Whether to parse the reviews section or not.
+
+    ``ProfilePage.rating`` is parsed regardless of this option — it comes from the
+    rating block, not from the review list.
+
+    Set to ``False`` and ``ProfilePage.reviews`` is ``None``, same as for a profile
+    with no reviews.
+
+    Defaults to ``True``.
+    """
+
+    parse_chat: bool = True
+    """
+    Whether to parse the chat section or not.
+
+    Set to ``False`` and ``ProfilePage.chat`` is ``None``, same as for a profile
+    page fetched without an authorized session.
+
+    Defaults to ``True``.
+    """
+
+    parse_achievements: bool = True
+    """
+    Whether to parse the achievements section or not.
+
+    Set to ``False`` and ``ProfilePage.achievements`` is an empty list, same as for
+    a profile with no achievements.
+
+    Defaults to ``True``.
+    """
+
 
 class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOptions]):
     """
@@ -104,16 +148,22 @@ class ProfilePageParser(FunPayHTMLObjectParser[ProfilePage, ProfilePageParsingOp
     def _parse(self) -> ProfilePage:
         profile_header = self.tree.css_first('div.profile-header')
         reg_date_text_div = profile_header.css('div.param-item')
-        offer_divs = self.tree.css('div.mb20 div.offer')
-        achievements_divs = self.tree.css('div.achievement-item')
-        chat_div = self.tree.css('div.chat')
+        offer_divs = self.tree.css('div.mb20 div.offer') if self.options.parse_offers else []
+        achievements_divs = (
+            self.tree.css('div.achievement-item') if self.options.parse_achievements else []
+        )
+        chat_div = self.tree.css('div.chat') if self.options.parse_chat else []
 
         # It is better to parse the rating from the reviews block,
         # because some old profiles have only old type reviews (without rating)
         # and then there is no full rating block in profile header,
         # but in the reviews block it is always present when there are any reviews.
         rating_div = self.tree.css_first('div.param-item.mb10')
-        reviews_div = self.tree.css('div.offer:has(div.dyn-table-body)') if rating_div else None
+        reviews_div = (
+            self.tree.css('div.offer:has(div.dyn-table-body)')
+            if rating_div and self.options.parse_reviews
+            else None
+        )
 
         badges = []
         for i in profile_header.css('small.user-badges > span'):
