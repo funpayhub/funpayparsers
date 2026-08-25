@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from funpayparsers.types import MoneyValue
 from funpayparsers.exceptions import ParsingError
 from funpayparsers.types.enums import Currency
-from funpayparsers.types.pages import TransactionsPage
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
 from funpayparsers.parsers.money_value_parser import (
@@ -20,6 +19,7 @@ from funpayparsers.parsers.page_header_parser import (
     PageHeaderParser,
     PageHeaderParsingOptions,
 )
+from funpayparsers.types.pages.transactions_page import TransactionsPage
 from funpayparsers.parsers.transaction_previews_parser import (
     TransactionPreviewsParser,
     TransactionPreviewsParsingOptions,
