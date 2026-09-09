@@ -3,6 +3,7 @@ from __future__ import annotations
 
 __all__ = ('OfferPageParsingOptions', 'OfferPageParser')
 
+from typing import cast
 from dataclasses import dataclass
 
 from selectolax.lexbor import LexborNode, LexborHTMLParser
@@ -56,8 +57,11 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
     """
 
     def _parse(self) -> OfferPage:
+        # Offer pages always include these layout nodes; missing nodes are
+        # handled by the base parser wrapper as ParsingError.
         page_content: LexborNode = self.tree.css_first('div.page-content')
         param_list: LexborNode = page_content.css_first('div.param-list')
+
         auto_delivery: list[LexborNode] = page_content.css('i.auto-dlv-icon')
 
         fields = {}
@@ -69,48 +73,74 @@ class OfferPageParser(FunPayHTMLObjectParser[OfferPage, OfferPageParsingOptions]
 
         payment_options: dict[str, PaymentOption] = {}
         payment_select: LexborNode = page_content.css_first('select.form-control[name="method"]')
+
         options: list[LexborNode] = payment_select.css('option')
         for option in options:
             if option.attributes.get('class', None) == 'hidden':
                 continue
-            tree = LexborHTMLParser(option.attributes['data-content'])
-            payment_method_id = 'payment-method-' + option.attributes['value']
+
+            # Visible payment options always carry these data attributes.
+            data_content = cast(str, option.attributes.get('data-content'))
+            payment_method_value = cast(str, option.attributes.get('value'))
+            data_factors = cast(str, option.attributes.get('data-factors'))
+            tree = LexborHTMLParser(data_content)
+            payment_method_id = 'payment-method-' + payment_method_value
+            payment_title: LexborNode = tree.css_first('span.payment-title')
+            payment_value: LexborNode = tree.css_first('span.payment-value')
+
             payment_options[payment_method_id] = PaymentOption(
-                raw_source=option.html,
+                raw_source=cast(str, option.html),
                 id=payment_method_id,
-                title=tree.css_first('span.payment-title').text(strip=True),
+                title=payment_title.text(strip=True),
                 price=MoneyValueParser(
-                    raw_source=tree.css_first('span.payment-value').text(strip=True),
+                    raw_source=payment_value.text(strip=True),
                     options=self.options.money_value_parsing_options,
                 ).parse(),
-                factors=[float(i) for i in option.attributes['data-factors'].split(',')],
+                factors=[float(i) for i in data_factors.split(',')],
             )
+
+        header_tag: LexborNode = self.tree.css_first('header')
+        body_tag: LexborNode = self.tree.css_first('body')
+        chat_tag: LexborNode = self.tree.css_first('div.chat')
+        subcategory_title: LexborNode = page_content.css_first('h1')
 
         return OfferPage(
             raw_source=self.raw_source,
             header=PageHeaderParser(
-                self.tree.css_first('header').html or '',
+                header_tag.html or '',
                 options=self.options.page_header_parsing_options,
             ).parse(),
             app_data=AppDataParser(
-                self.tree.css_first('body').attributes.get('data-app-data') or '',
+                body_tag.attributes.get('data-app-data') or '',
                 options=self.options.app_data_parsing_options,
             ).parse(),
-            subcategory_full_name=page_content.css_first('h1').text(strip=True),
+            subcategory_full_name=subcategory_title.text(strip=True),
             auto_delivery=bool(auto_delivery),
             fields=fields,
             chat=ChatParser(
-                self.tree.css_first('div.chat').html or '',
+                chat_tag.html or '',
                 options=self.options.chat_parsing_options,
             ).parse(),
             payment_options=payment_options,
             user_balance=DetailedUserBalance(
-                raw_source=payment_select.html,
-                total_rub=float(payment_select.attributes['data-balance-total-rub']),
-                withdrawable_rub=float(payment_select.attributes['data-balance-rub']),
-                total_usd=float(payment_select.attributes['data-balance-total-usd']),
-                withdrawable_usd=float(payment_select.attributes['data-balance-usd']),
-                total_eur=float(payment_select.attributes['data-balance-total-eur']),
-                withdrawable_eur=float(payment_select.attributes['data-balance-eur']),
+                raw_source=cast(str, payment_select.html),
+                total_rub=float(
+                    cast(str, payment_select.attributes.get('data-balance-total-rub'))
+                ),
+                withdrawable_rub=float(
+                    cast(str, payment_select.attributes.get('data-balance-rub'))
+                ),
+                total_usd=float(
+                    cast(str, payment_select.attributes.get('data-balance-total-usd'))
+                ),
+                withdrawable_usd=float(
+                    cast(str, payment_select.attributes.get('data-balance-usd'))
+                ),
+                total_eur=float(
+                    cast(str, payment_select.attributes.get('data-balance-total-eur'))
+                ),
+                withdrawable_eur=float(
+                    cast(str, payment_select.attributes.get('data-balance-eur'))
+                ),
             ),
         )

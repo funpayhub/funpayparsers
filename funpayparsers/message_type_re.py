@@ -28,7 +28,8 @@ _f_dict = {'urs': _urs, 'oirs': _oirs}
 
 NEW_ORDER = re.compile(
     r'(?m:Покупатель (?P<u>%(urs)s) оплатил заказ #%(oirs)s\. .+\n'
-    r'(?P=u), не забудьте потом нажать кнопку «Подтвердить (?:выполнение заказа|получение валюты)»\.)|'
+    r'(?P=u), не забудьте потом нажать кнопку «Подтвердить '
+    r'(?:выполнение заказа|получение валюты)»\.)|'
     r'(?m:The buyer (?P<e_u>%(urs)s) has paid for order #%(oirs)s\. .+\n'
     r'(?P=e_u), do not forget to press the '
     r'«Confirm (?:order fulfilment|currency receipt)» button once you finish.)' % _f_dict
@@ -68,7 +69,8 @@ ORDER_CLOSED_BY_ADMIN = re.compile(
 Администратор <ИМЯ АДМИНИСТРАТОРА> подтвердил успешное выполнение заказа #<ID ЗАКАЗА> 
     и отправил деньги продавцу <ИМЯ ПРОДАВЦА>.
 
-The administrator <ADMIN USERNAME> has confirmed that order #<ORDER ID> has been fulfilled successfully 
+The administrator <ADMIN USERNAME> has confirmed that order #<ORDER ID> 
+    has been fulfilled successfully
     and that the seller <SELLER USERNAME> has been paid.
 """
 

@@ -4,7 +4,10 @@ from __future__ import annotations
 __all__ = ('SettingsPageParser', 'SettingsPageParsingOptions')
 
 
+from typing import cast
 from dataclasses import dataclass
+
+from selectolax.lexbor import LexborNode
 
 from funpayparsers.types import Settings
 from funpayparsers.types.pages import SettingsPage
@@ -41,13 +44,16 @@ class SettingsPageParser(FunPayHTMLObjectParser[SettingsPage, SettingsPageParsin
     """
 
     def _parse(self) -> SettingsPage:
+        # Settings pages always include these layout nodes; malformed sources
+        # are converted to ParsingError by the base parser wrapper.
+        header_tag: LexborNode = self.tree.css_first('header')
+
         header = PageHeaderParser(
-            self.tree.css_first('header').html or '',
+            header_tag.html or '',
             options=self.options.page_header_parsing_options,
         ).parse()
 
-        settings_list = self.tree.css_first('div.setting-list')
-
+        settings_list: LexborNode = self.tree.css_first('div.setting-list')
         settings_groups = settings_list.css('div.setting-group')
 
         notifications = {}
@@ -57,7 +63,10 @@ class SettingsPageParser(FunPayHTMLObjectParser[SettingsPage, SettingsPageParsin
         notifications_block = settings_groups[-1]
         for button in notifications_block.css('button.btn-notice-channel'):
             if button.attributes['data-channel'] == '3' and 'disabled' not in button.attributes:
-                telegram_username = button.parent.parent.css_first('b').text(strip=True)[1:]
+                button_parent = cast(LexborNode, button.parent)
+                channel_container = cast(LexborNode, button_parent.parent)
+                username_node: LexborNode = channel_container.css_first('b')
+                telegram_username = username_node.text(strip=True)[1:]
 
             notifications[button.attributes['data-channel']] = (
                 button.attributes['data-active'] == '1'
@@ -66,14 +75,16 @@ class SettingsPageParser(FunPayHTMLObjectParser[SettingsPage, SettingsPageParsin
         offers_hiding_block = None if not header.sales_available else settings_groups[-2]
 
         if offers_hiding_block:
-            radio_item = offers_hiding_block.css_first('li.megaswitch-radio.active')
+            radio_item: LexborNode = offers_hiding_block.css_first('li.megaswitch-radio.active')
             offers_hidden = radio_item.attributes['data-value'] == '1'
+
+        body_tag: LexborNode = self.tree.css_first('body')
 
         return SettingsPage(
             raw_source=self.raw_source,
             header=header,
             app_data=AppDataParser(
-                self.tree.css_first('body').attributes['data-app-data'] or '',
+                body_tag.attributes.get('data-app-data') or '',
                 options=self.options.app_data_parsing_options,
             ).parse(),
             settings=Settings(
