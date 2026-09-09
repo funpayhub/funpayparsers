@@ -132,23 +132,29 @@ def test_rating_survives_reviews_being_disabled():
 
 
 @pytest.mark.parametrize(
-    ('option', 'attr', 'empty'),
+    ('options', 'attr', 'empty'),
     [
-        ('parse_offers', 'offers', None),
-        ('parse_reviews', 'reviews', None),
-        ('parse_chat', 'chat', None),
-        ('parse_achievements', 'achievements', []),
+        (ProfilePageParsingOptions(parse_offers=False), 'offers', None),
+        (ProfilePageParsingOptions(parse_reviews=False), 'reviews', None),
+        (ProfilePageParsingOptions(parse_chat=False), 'chat', None),
+        (ProfilePageParsingOptions(parse_achievements=False), 'achievements', []),
     ],
 )
-def test_each_toggle_is_independent(option: str, attr: str, empty: object):
-    page = parse(ProfilePageParsingOptions(**{option: False}))
+def test_each_toggle_is_independent(
+    options: ProfilePageParsingOptions,
+    attr: str,
+    empty: object,
+) -> None:
+    page = parse(options)
 
     assert getattr(page, attr) == empty
-    for other, other_empty in [
+
+    sections: list[tuple[str, object]] = [
         ('offers', None),
         ('reviews', None),
         ('chat', None),
         ('achievements', []),
-    ]:
+    ]
+    for other, other_empty in sections:
         if other != attr:
             assert getattr(page, other) != other_empty
