@@ -7,9 +7,9 @@ __all__ = ('SettingsPageParser', 'SettingsPageParsingOptions')
 from dataclasses import dataclass
 
 from funpayparsers.types import Settings
-from funpayparsers.types.pages import SettingsPage
 from funpayparsers.parsers.base import ParsingOptions, FunPayHTMLObjectParser
 from funpayparsers.parsers.appdata_parser import AppDataParser, AppDataParsingOptions
+from funpayparsers.types.pages.settings_page import SettingsPage
 from funpayparsers.parsers.page_header_parser import (
     PageHeaderParser,
     PageHeaderParsingOptions,
