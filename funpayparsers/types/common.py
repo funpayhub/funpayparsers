@@ -14,7 +14,6 @@ __all__ = (
 
 from dataclasses import dataclass
 
-from funpayparsers.types import FunPayObject
 from funpayparsers.types.base import FunPayObject
 from funpayparsers.types.enums import Currency, BadgeType
 

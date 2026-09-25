@@ -52,11 +52,17 @@ class AppDataParser(FunPayJSONObjectParser[AppData, AppDataParsingOptions]):
                 hwid_required=webpush.get('hwid-required'),
             )
 
+        locale = (
+            Language.from_lang_code(self.data['locale'])
+            if isinstance(self.data.get('locale'), str)
+            else Language.UNKNOWN
+        )
+
         return AppData(
             raw_source=json.dumps(self.raw_source)
             if not isinstance(self.raw_source, str)
             else self.raw_source,
-            locale=Language.from_lang_code(self.data.get('locale')),
+            locale=locale,
             csrf_token=cast(str, self.data.get('csrf-token')),
             user_id=self.data.get('userId'),
             webpush=webpush,

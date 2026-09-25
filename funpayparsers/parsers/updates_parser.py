@@ -73,14 +73,18 @@ class UpdatesParser(FunPayJSONObjectParser[RunnerResponse, UpdatesParsingOptions
     """
 
     def _parse(self) -> RunnerResponse:
+        cpu_objects: list[RunnerResponseObject[CurrentlyViewingOfferInfo]] = []
+        node_objects: list[RunnerResponseObject[ChatNode]] = []
+        unknown_objects: list[dict[str, Any]] = []
+
         updates_obj = RunnerResponse(
             raw_source=str(self.raw_source),
             orders_counters=None,
             chat_counter=None,
             chat_bookmarks=None,
-            cpu=[],
-            nodes=[],
-            unknown_objects=[],
+            cpu=cpu_objects,
+            nodes=node_objects,
+            unknown_objects=unknown_objects,
             response=None,
         )
 
@@ -97,17 +101,17 @@ class UpdatesParser(FunPayJSONObjectParser[RunnerResponse, UpdatesParsingOptions
         for obj in objects:
             result = self._parse_update(obj)
             if result is None:
-                updates_obj.unknown_objects.append(obj)  # type: ignore[union-attr]
+                unknown_objects.append(obj)
             elif result.type is RunnerDataType.CHAT_NODE:
-                updates_obj.nodes.append(result)  # type: ignore[union-attr]
+                node_objects.append(result)
             elif result.type is RunnerDataType.CPU:
-                updates_obj.cpu.append(result)
+                cpu_objects.append(result)
             else:
                 setattr(updates_obj, self.__update_fields__[result.type], result)
 
-        updates_obj.nodes = updates_obj.nodes or None
-        updates_obj.unknown_objects = updates_obj.unknown_objects or None
-        updates_obj.cpu = updates_obj.cpu or None
+        updates_obj.nodes = node_objects or None
+        updates_obj.unknown_objects = unknown_objects or None
+        updates_obj.cpu = cpu_objects or None
 
         return updates_obj
 

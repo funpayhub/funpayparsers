@@ -4,6 +4,7 @@ from __future__ import annotations
 __all__ = ('SrasInfoPageParser', 'SrasInfoPageParsingOptions')
 
 import re
+from typing import cast
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
@@ -42,9 +43,11 @@ class SrasInfoPageParser(FunPayHTMLObjectParser[SrasInfoPage, SrasInfoPageParsin
     """Parser for SRAS info page (`https://funpay.com/sras/info`)."""
 
     def _parse(self) -> SrasInfoPage:
-        header_tag = self.tree.css_first('header')
-        body_tag = self.tree.css_first('body')
-        content_tag = self.tree.css_first('div.page-content-full')
+        # SRAS info pages always include these layout nodes; malformed sources
+        # are converted to ParsingError by the base parser wrapper.
+        header_tag: LexborNode = self.tree.css_first('header')
+        body_tag: LexborNode = self.tree.css_first('body')
+        content_tag: LexborNode = self.tree.css_first('div.page-content-full')
 
         restrictions: dict[SubcategoryType, dict[int, SrasSectionRestriction]] = {}
 
@@ -68,8 +71,8 @@ class SrasInfoPageParser(FunPayHTMLObjectParser[SrasInfoPage, SrasInfoPageParsin
 
     def _parse_restriction(self, row: LexborNode) -> SrasSectionRestriction:
         cells = row.css('td')
-        link = cells[0].css_first('a')
-        href = link.attributes['href']  # type: ignore[union-attr]
+        link: LexborNode = cells[0].css_first('a')
+        href = cast(str, link.attributes.get('href'))
 
         subcategory_type = SubcategoryType.from_url(href)
         subcategory_id = self._parse_subcategory_id(href)

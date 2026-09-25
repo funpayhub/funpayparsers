@@ -45,6 +45,9 @@ class OfferFieldsParser(FunPayHTMLObjectParser[OfferFields, OfferFieldsParsingOp
             if node is None or node.attributes.get('type') == 'hidden':
                 continue
 
+            if node.parent is None:
+                continue
+
             label = node.parent.css_first('label.control-label', strict=False, default=None)
             if label is None:
                 continue
