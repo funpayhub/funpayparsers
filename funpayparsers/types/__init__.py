@@ -11,6 +11,7 @@ from .updates import *
 from .finances import *
 from .messages import *
 from .settings import *
+from .security import *
 from .categories import *
 from .common_page_elements import *
 from .sras import *
