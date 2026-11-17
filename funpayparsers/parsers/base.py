@@ -15,7 +15,6 @@ from abc import ABC, abstractmethod
 from collections.abc import Mapping, Sequence
 
 from selectolax.lexbor import LexborHTMLParser
-from typing_extensions import Self
 
 from funpayparsers.exceptions import ParsingError
 from funpayparsers.types.base import FunPayObject
@@ -23,6 +22,7 @@ from funpayparsers.types.base import FunPayObject
 
 ReturnType = TypeVar('ReturnType', bound=Any)
 OptionsClass = TypeVar('OptionsClass', bound='ParsingOptions')
+_S = TypeVar('_S', bound=Any)
 
 
 @dataclass(frozen=True)
@@ -80,7 +80,7 @@ class ParsingOptions:
     are combined using ``dict.update()``.
     """
 
-    def __merge_options__(self, other: OptionsClass, non_explicit: bool = False) -> Self:
+    def __merge_options__(self: _S, other: OptionsClass, non_explicit: bool = False) -> _S:
         self_fields = {
             i.name: getattr(self, i.name)
             for i in getattr(self, '__dataclass_fields__', {}).values()
@@ -100,10 +100,10 @@ class ParsingOptions:
 
         return self.__class__(**self_fields)
 
-    def __and__(self, other: ParsingOptions) -> Self:
+    def __and__(self: _S, other: ParsingOptions) -> _S:
         return self.__merge_options__(other, non_explicit=False)
 
-    def __or__(self, other: OptionsClass) -> Self:
+    def __or__(self: _S, other: OptionsClass) -> _S:
         return self.__merge_options__(other, non_explicit=True)
 
 
